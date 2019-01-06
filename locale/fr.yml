@@ -1,0 +1,39 @@
+fof-links:
+
+  ##
+  # UNIQUE KEYS - The following keys are used in only one location each.
+  ##
+
+  # Translations in this namespace are used by the admin interface.
+  admin:
+
+    # These strings are used in the Edit Link modal dialog.
+    edit_link:
+      delete_link_button: Supprimer ce lien
+      delete_link_confirmation: "Êtes-vous sûr de vouloir supprimer ce lien ?"
+      internal_link: "Est-ce un lien flarum ?"
+      open_newtab: "Ouvrir le lien dans un nouvel onglet"
+      submit_button: => core.ref.save_changes
+      title: => fof-links.ref.create_link
+      title_label: => fof-links.ref.title
+      title_placeholder: => fof-links.ref.title
+      url_label: => fof-links.ref.url
+      url_placeholder: => fof-links.ref.url
+
+    # These strings are used in the Links page.
+    links:
+      about_text: Gérer les liens du menu principal
+      create_button: => fof-links.ref.create_link
+      links: => fof-links.ref.links
+
+    # These strings are used in the navigation bar.
+    nav:
+      links_button: => fof-links.ref.links
+      links_text: Gérer les principaux éléments de la liste de navigation.
+
+  # Strings in this namespace are referenced by two or more unique keys.
+  ref:
+    create_link: Créer un lien
+    links: Liens
+    title: Titre
+    url: Url
