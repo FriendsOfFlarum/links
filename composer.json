@@ -37,6 +37,9 @@
         "backgroundColor": "#e74c3c",
         "color": "#fff"
       }
+    },
+    "flagrow": {
+      "discuss": "https://discuss.flarum.org/d/18335-friendsofflarum-links"
     }
   }
 }
