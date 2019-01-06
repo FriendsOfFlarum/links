@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/fof/links.svg)](https://packagist.org/packages/fof/links)
 
-A [Flarum](http://flarum.org) extension. Manage Flarum primary navigation links.. Original by @sijad.
+A [Flarum](http://flarum.org) extension. Manage Flarum primary navigation links. Original by @sijad.
 
 ![links_front](https://cloud.githubusercontent.com/assets/7693001/14650497/47c7c8a4-0681-11e6-9da3-3e99eb080f75.png)
 
