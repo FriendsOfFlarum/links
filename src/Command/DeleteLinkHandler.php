@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -33,8 +33,10 @@ class DeleteLinkHandler
 
     /**
      * @param DeleteLink $command
-     * @return \FoF\Links\Link
+     *
      * @throws \Flarum\User\Exception\PermissionDeniedException
+     *
+     * @return \FoF\Links\Link
      */
     public function handle(DeleteLink $command)
     {

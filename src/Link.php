@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -24,9 +24,9 @@ class Link extends AbstractModel
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
+        'id'          => 'integer',
         'is_internal' => 'boolean',
-        'is_newtab' => 'boolean',
+        'is_newtab'   => 'boolean',
     ];
 
     /**
@@ -34,18 +34,19 @@ class Link extends AbstractModel
      *
      * @param string $name
      * @param string $url
-     * @param bool $isInternal
-     * @param bool $isNewtab
+     * @param bool   $isInternal
+     * @param bool   $isNewtab
+     *
      * @return static
      */
     public static function build($name, $url, $isInternal, $isNewtab)
     {
-        $link = new static;
+        $link = new static();
 
-        $link->title               = $name;
-        $link->url                 = $url;
-        $link->is_internal         = (bool) $isInternal;
-        $link->is_newtab           = (bool) $isNewtab;
+        $link->title = $name;
+        $link->url = $url;
+        $link->is_internal = (bool) $isInternal;
+        $link->is_newtab = (bool) $isNewtab;
 
         return $link;
     }

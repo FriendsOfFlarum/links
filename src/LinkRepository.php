@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,17 +12,18 @@
 namespace FoF\Links;
 
 use Flarum\User\User;
-use Illuminate\Database\Eloquent\Builder;
 
 class LinkRepository
 {
     /**
-     * Find a link by ID
+     * Find a link by ID.
      *
-     * @param int $id
+     * @param int  $id
      * @param User $actor
-     * @return Link
+     *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     *
+     * @return Link
      */
     public function findOrFail($id, User $actor = null)
     {
@@ -30,9 +31,10 @@ class LinkRepository
     }
 
     /**
-     * Get all links
+     * Get all links.
      *
      * @param User|null $user
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function all()

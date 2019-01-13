@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -31,7 +31,7 @@ class EditLinkHandler
 
     /**
      * @param LinkRepository $links
-     * @param LinkValidator $validator
+     * @param LinkValidator  $validator
      */
     public function __construct(LinkRepository $links, LinkValidator $validator)
     {
@@ -41,8 +41,10 @@ class EditLinkHandler
 
     /**
      * @param EditLink $command
-     * @return \FoF\Links\Link
+     *
      * @throws \Flarum\User\Exception\PermissionDeniedException
+     *
+     * @return \FoF\Links\Link
      */
     public function handle(EditLink $command)
     {

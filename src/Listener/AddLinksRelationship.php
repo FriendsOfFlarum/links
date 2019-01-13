@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,10 +12,10 @@
 namespace FoF\Links\Listener;
 
 use Flarum\Api\Controller\ShowForumController;
-use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Api\Event\WillGetData;
-use Flarum\Event\GetApiRelationship;
 use Flarum\Api\Event\WillSerializeData;
+use Flarum\Api\Serializer\ForumSerializer;
+use Flarum\Event\GetApiRelationship;
 use Flarum\Settings\SettingsRepositoryInterface;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Link;

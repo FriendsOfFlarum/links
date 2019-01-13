@@ -3,15 +3,15 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 use Flarum\Extend;
-use FoF\Links\Listener;
 use FoF\Links\Api\Controller;
+use FoF\Links\Listener;
 use Illuminate\Contracts\Events\Dispatcher;
 
 return [
@@ -32,5 +32,5 @@ return [
 
     function (Dispatcher $events) {
         $events->subscribe(Listener\AddLinksRelationship::class);
-    }
+    },
 ];

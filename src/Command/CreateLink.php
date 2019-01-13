@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -30,8 +30,8 @@ class CreateLink
     public $data;
 
     /**
-     * @param User $actor The user performing the action.
-     * @param array $data The attributes of the new link.
+     * @param User  $actor The user performing the action.
+     * @param array $data  The attributes of the new link.
      */
     public function __construct(User $actor, array $data)
     {

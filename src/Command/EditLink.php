@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,9 +37,9 @@ class EditLink
     public $data;
 
     /**
-     * @param int $linkId The ID of the link to edit.
-     * @param User $actor The user performing the action.
-     * @param array $data The attributes to update on the link.
+     * @param int   $linkId The ID of the link to edit.
+     * @param User  $actor  The user performing the action.
+     * @param array $data   The attributes to update on the link.
      */
     public function __construct($linkId, User $actor, array $data)
     {

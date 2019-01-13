@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/links.
  *
- * Copyright (c) 2018 FriendsOfFlarum.
+ * Copyright (c) 2019 FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,10 +38,10 @@ class DeleteLink
     public $data;
 
     /**
-     * @param int $linkId The ID of the link to delete.
-     * @param User $actor The user performing the action.
-     * @param array $data Any other link input associated with the action. This
-     *     is unused by default, but may be used by extensions.
+     * @param int   $linkId The ID of the link to delete.
+     * @param User  $actor  The user performing the action.
+     * @param array $data   Any other link input associated with the action. This
+     *                      is unused by default, but may be used by extensions.
      */
     public function __construct($linkId, User $actor, array $data = [])
     {
