@@ -14,17 +14,19 @@ namespace FoF\Links\Api\Controller;
 use Flarum\User\AssertPermissionTrait;
 use Flarum\Http\Controller\ControllerInterface;
 use FoF\Links\Link;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\EmptyResponse;
 
-class OrderLinksController implements ControllerInterface
+class OrderLinksController implements RequestHandlerInterface
 {
     use AssertPermissionTrait;
 
     /**
      * {@inheritdoc}
      */
-    public function handle(ServerRequestInterface $request)
+    public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         $this->assertAdmin($request->getAttribute('actor'));
 
