@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
@@ -19,7 +18,7 @@ return [
             return;
         }
 
-        $schema->create('links', function (Blueprint $table) use ($schema) {
+        $schema->create('links', function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('title', 50);
@@ -27,8 +26,6 @@ return [
             $table->string('url', 255);
             $table->integer('ref_id')->unsigned()->nullable();
             $table->integer('position')->nullable();
-
-            Migration::fixIndexNames($schema, $table);
         });
     },
     'down' => function (Builder $schema) {
