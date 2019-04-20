@@ -22,7 +22,7 @@ fof-links:
 
     # These strings are used in the Links page.
     links:
-      about_text: Gestiona los enlaces para el menú superior.
+      about_text: Gestiona los enlaces del menú superior.
       create_button: => fof-links.ref.create_link
       links: => fof-links.ref.links
 
