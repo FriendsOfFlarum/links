@@ -960,11 +960,14 @@ function sortLinks(links) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LinkItem; });
 /* harmony import */ var _babel_runtime_helpers_es6_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/es6/inheritsLoose */ "./node_modules/@babel/runtime/helpers/es6/inheritsLoose.js");
-/* harmony import */ var flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! flarum/components/LinkButton */ "flarum/components/LinkButton");
-/* harmony import */ var flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var flarum_app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! flarum/app */ "flarum/app");
+/* harmony import */ var flarum_app__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(flarum_app__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flarum/components/LinkButton */ "flarum/components/LinkButton");
+/* harmony import */ var flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_2__);
 
 
 /* global m*/
+
 
 
 var LinkItem =
@@ -980,8 +983,19 @@ function (_LinkButton) {
 
   _proto.view = function view() {
     var link = this.props.link;
+    var className = 'LinksButton Button Button--link';
+
+    if (link.isInternal()) {
+      var currentPath = m.route();
+      var linkPath = link.url().replace(flarum_app__WEBPACK_IMPORTED_MODULE_1___default.a.forum.attribute('baseUrl'), ''); // The link is active if the current path starts with the link path. Except if it's the base url, in which case only an exact match is considered active
+
+      if (currentPath.indexOf(linkPath) === 0 && (linkPath !== '/' || currentPath === '/')) {
+        className += ' active';
+      }
+    }
+
     return m("a", {
-      className: "LinksButton Button Button--link",
+      className: className,
       target: link.isNewtab() ? '_blank' : '',
       config: link.isInternal() ? m.route : '',
       href: link.url(),
@@ -990,7 +1004,7 @@ function (_LinkButton) {
   };
 
   return LinkItem;
-}(flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_1___default.a);
+}(flarum_components_LinkButton__WEBPACK_IMPORTED_MODULE_2___default.a);
 
 
 
@@ -1042,6 +1056,17 @@ app.initializers.add('fof-links', function () {
 /***/ (function(module, exports) {
 
 module.exports = flarum.core.compat['Model'];
+
+/***/ }),
+
+/***/ "flarum/app":
+/*!********************************************!*\
+  !*** external "flarum.core.compat['app']" ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = flarum.core.compat['app'];
 
 /***/ }),
 
