@@ -987,9 +987,10 @@ function (_LinkButton) {
 
     if (link.isInternal()) {
       var currentPath = m.route();
-      var linkPath = link.url().replace(flarum_app__WEBPACK_IMPORTED_MODULE_1___default.a.forum.attribute('baseUrl'), ''); // The link is active if the current path starts with the link path. Except if it's the base url, in which case only an exact match is considered active
+      var linkPath = link.url().replace(flarum_app__WEBPACK_IMPORTED_MODULE_1___default.a.forum.attribute('baseUrl'), ''); // The link is active if the current path starts with the link path.
+      // Except if it's the base url, in which case only an exact match is considered active
 
-      if (currentPath.indexOf(linkPath) === 0 && (linkPath !== '/' || currentPath === '/')) {
+      if (currentPath.indexOf(linkPath) === 0 && (currentPath === '/' || linkPath !== '/')) {
         className += ' active';
       }
     }
