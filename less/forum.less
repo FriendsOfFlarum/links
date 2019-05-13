@@ -1,0 +1,16 @@
+.LinksButton.active {
+  color: @primary-color;
+  font-weight: bold;
+}
+
+// This prevents the links from changing width when they become bold
+// by having an invisible copy of the text already in bold
+// based on https://stackoverflow.com/a/20249560/3133038
+.LinksButton::after {
+  display: block;
+  content: attr(title);
+  font-weight: bold;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
