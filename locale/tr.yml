@@ -1,0 +1,39 @@
+fof-links:
+
+  ##
+  # UNIQUE KEYS - The following keys are used in only one location each.
+  ##
+
+  # Translations in this namespace are used by the admin interface.
+  admin:
+
+    # These strings are used in the Edit Link modal dialog.
+    edit_link:
+      delete_link_button: Bağlantıyı Sil
+      delete_link_confirmation: "Bu bağlantıyı silmek istediğine emin misin?"
+      internal_link: "Bu bir Flarum bağlantısı mı?"
+      open_newtab: "Bağlantıyı yeni sekmede aç"
+      submit_button: => Değişiklikleri Kaydet
+      title: => Bağlantı Oluştur
+      title_label: => Bağlantı metni
+      title_placeholder: => Bağlantı metnini buraya yazın.
+      url_label: => Bağlantı
+      url_placeholder: => Bağlantıyı buraya yazın.
+
+    # These strings are used in the Links page.
+    links:
+      about_text: Menü bağlantılarını düzenle
+      create_button: => Bağlantı Oluştur
+      links: => Bağlantılar
+
+    # These strings are used in the navigation bar.
+    nav:
+      links_button: => Bağlantılar
+      links_text: Üst menü bağlantılarını yönetin.
+
+  # Strings in this namespace are referenced by two or more unique keys.
+  ref:
+    create_link: Bağlantı Oluştur
+    links: Bağlantılar
+    title: Başlık
+    url: URL
