@@ -1,6 +1,7 @@
-import app from 'flarum/app';
 import Page from 'flarum/components/Page';
 import Button from 'flarum/components/Button';
+
+import sortable from 'html5sortable/dist/html5sortable.es.js';
 
 import EditLinkModal from './EditLinkModal';
 import sortLinks from '../../common/utils/sortLinks';
@@ -48,9 +49,8 @@ export default class LinksPage extends Page {
     }
 
     config() {
-        this.$('ol')
-            .sortable()
-            .on('sortupdate', () => {
+        sortable(this.$('ol')).forEach(el =>
+            el.addEventListener('sortupdate', () => {
                 const order = this.$('.LinkList > li')
                     .map((i, el) => ({
                         id: $(el).data('id'),
@@ -74,6 +74,7 @@ export default class LinksPage extends Page {
 
                 m.redraw.strategy('all');
                 m.redraw();
-            });
+            })
+        );
     }
 }
