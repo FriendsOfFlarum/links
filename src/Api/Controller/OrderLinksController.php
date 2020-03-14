@@ -25,7 +25,7 @@ class OrderLinksController implements RequestHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->assertAdmin($request->getAttribute('actor'));
 
