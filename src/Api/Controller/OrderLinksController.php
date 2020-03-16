@@ -26,7 +26,7 @@ class OrderLinksController implements RequestHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->assertAdmin($request->getAttribute('actor'));
 
@@ -41,7 +41,7 @@ class OrderLinksController implements RequestHandlerInterface
             // https://github.com/flarum/tags/blob/a0744cf9d91819f7628bef1ac27ecb96c6ee97f1/src/Api/Controller/OrderTagsController.php
 
             Link::query()->update([
-                'position' => null,
+                'position'  => null,
                 'parent_id' => null,
             ]);
 
@@ -53,8 +53,8 @@ class OrderLinksController implements RequestHandlerInterface
                 if (isset($parent['children']) && is_array($parent['children'])) {
                     foreach ($parent['children'] as $j => $childId) {
                         Link::query()->where('id', $childId)->update([
-                            'position' => $j,
-                            'parent_id' => $parentId
+                            'position'  => $j,
+                            'parent_id' => $parentId,
                         ]);
                     }
                 }

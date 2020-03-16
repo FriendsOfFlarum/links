@@ -18,10 +18,9 @@ use Flarum\Database\AbstractModel;
  * @property string $title
  * @property string $url
  * @property int $position
- * @property boolean $is_internal
- * @property boolean $is_newtab
+ * @property bool $is_internal
+ * @property bool $is_newtab
  * @property int $parent_id
- *
  * @property Link $parent
  */
 class Link extends AbstractModel
