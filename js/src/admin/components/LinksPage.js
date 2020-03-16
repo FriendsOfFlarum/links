@@ -6,7 +6,7 @@ import sortable from 'html5sortable/dist/html5sortable.es.js';
 import EditLinkModal from './EditLinkModal';
 import sortLinks from '../../common/utils/sortLinks';
 
-function LinkItem(link) {
+function linkItem(link) {
     return (
         <li data-id={link.id()}>
             <div className="LinkListItem-info">
@@ -17,6 +17,14 @@ function LinkItem(link) {
                     onclick: () => app.modal.show(new EditLinkModal({ link })),
                 })}
             </div>
+
+            {!link.isChild() && (
+                <ol className="LinkListItem-children">
+                    {sortLinks(app.store.all('links'))
+                        .filter(child => child.parent() === link)
+                        .map(linkItem)}
+                </ol>
+            )}
         </li>
     );
 }
@@ -40,7 +48,11 @@ export default class LinksPage extends Page {
                     <div className="container">
                         <div className="LinkItems">
                             <label>{app.translator.trans('fof-links.admin.links.links')}</label>
-                            <ol className="LinkList">{sortLinks(app.store.all('links')).map(LinkItem)}</ol>
+                            <ol className="LinkList">
+                                {sortLinks(app.store.all('links'))
+                                    .filter(link => !link.isChild())
+                                    .map(linkItem)}
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -49,20 +61,39 @@ export default class LinksPage extends Page {
     }
 
     config() {
-        sortable(this.$('ol')).forEach(el =>
+        sortable(this.$('ol, ul'), {
+            acceptFrom: 'ol,ul',
+        }).forEach(el =>
             el.addEventListener('sortupdate', () => {
                 const order = this.$('.LinkList > li')
                     .map((i, el) => ({
                         id: $(el).data('id'),
+                        children: $(el)
+                            .find('li')
+                            .map((i, el) => $(el).data('id'))
+                            .get(),
                     }))
                     .get();
 
                 order.forEach((link, i) => {
-                    const item = app.store.getById('links', link.id);
-                    item.pushData({
+                    const parent = app.store.getById('links', link.id);
+
+                    parent.pushData({
                         attributes: {
                             position: i,
+                            isChild: false,
                         },
+                        relationships: { parent: null },
+                    });
+
+                    link.children.forEach((child, j) => {
+                        app.store.getById('links', child).pushData({
+                            attributes: {
+                                position: j,
+                                isChild: true,
+                            },
+                            relationships: { parent },
+                        });
                     });
                 });
 

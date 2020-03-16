@@ -14,6 +14,7 @@ namespace FoF\Links\Command;
 use Flarum\User\AssertPermissionTrait;
 use FoF\Links\Link;
 use FoF\Links\LinkValidator;
+use Illuminate\Support\Arr;
 
 class CreateLinkHandler
 {
@@ -50,6 +51,21 @@ class CreateLinkHandler
             array_get($data, 'attributes.isInternal'),
             array_get($data, 'attributes.isNewtab')
         );
+
+        $parentId = Arr::get($data, 'relationships.parent.data.id');
+
+        if ($parentId !== null) {
+            $rootLinks = Link::query()->whereNull('parent_id')->whereNotNull('position');
+
+            if ($parentId === 0) {
+                $link->position = $rootLinks->max('position') + 1;
+            } elseif ($rootLinks->find($parentId)) {
+                $position = Link::query()->where('parent_id', $parentId)->max('position');
+
+                $link->parent()->associate($parentId);
+                $link->position = $position === null ? 0 : $position + 1;
+            }
+        }
 
         $this->validator->assertValid($link->getAttributes());
 
