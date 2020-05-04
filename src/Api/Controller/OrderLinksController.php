@@ -13,10 +13,10 @@ namespace FoF\Links\Api\Controller;
 
 use Flarum\User\AssertPermissionTrait;
 use FoF\Links\Link;
+use Laminas\Diactoros\Response\EmptyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Laminas\Diactoros\Response\EmptyResponse;
 
 class OrderLinksController implements RequestHandlerInterface
 {
