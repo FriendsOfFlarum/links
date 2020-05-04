@@ -13,6 +13,16 @@ namespace FoF\Links;
 
 use Flarum\Database\AbstractModel;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $url
+ * @property int $position
+ * @property bool $is_internal
+ * @property bool $is_newtab
+ * @property int $parent_id
+ * @property Link $parent
+ */
 class Link extends AbstractModel
 {
     /**
@@ -24,7 +34,6 @@ class Link extends AbstractModel
      * @var array
      */
     protected $casts = [
-        'id'          => 'integer',
         'is_internal' => 'boolean',
         'is_newtab'   => 'boolean',
     ];
@@ -49,5 +58,10 @@ class Link extends AbstractModel
         $link->is_newtab = (bool) $isNewtab;
 
         return $link;
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class);
     }
 }

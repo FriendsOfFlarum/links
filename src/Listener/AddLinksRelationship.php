@@ -62,7 +62,7 @@ class AddLinksRelationship
     public function WillSerializeData(WillSerializeData $event)
     {
         if ($event->isController(ShowForumController::class)) {
-            $event->data['links'] = Link::get();
+            $event->data['links'] = Link::all();
         }
     }
 
@@ -72,7 +72,7 @@ class AddLinksRelationship
     public function includeLinksRelationship(WillGetData $event)
     {
         if ($event->isController(ShowForumController::class)) {
-            $event->addInclude(['links']);
+            $event->addInclude(['links', 'links.parent']);
         }
     }
 }

@@ -25,15 +25,22 @@ class LinkSerializer extends AbstractSerializer
      */
     protected function getDefaultAttributes($link)
     {
-        $attributes = [
+        return [
             'id'         => $link->id,
             'title'      => $link->title,
             'url'        => $link->url,
             'position'   => $link->position,
             'isInternal' => $link->is_internal,
             'isNewtab'   => $link->is_newtab,
+            'isChild'    => (bool) $link->parent_id,
         ];
+    }
 
-        return $attributes;
+    /**
+     * @return \Tobscure\JsonApi\Relationship
+     */
+    protected function parent($link)
+    {
+        return $this->hasOne($link, self::class);
     }
 }
