@@ -36,7 +36,7 @@ class OrderLinksController implements RequestHandlerInterface
             return new EmptyResponse(422);
         }
 
-        app('db.connection')->transaction(function () use ($request, $order) {
+        app('db.connection')->transaction(function () use ($order) {
             // code adapted from flarum/tags
             // https://github.com/flarum/tags/blob/a0744cf9d91819f7628bef1ac27ecb96c6ee97f1/src/Api/Controller/OrderTagsController.php
 
