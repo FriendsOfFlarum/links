@@ -15,6 +15,8 @@ fof-links:
       title: => fof-links.ref.create_link
       title_label: => fof-links.ref.title
       title_placeholder: => fof-links.ref.title
+      icon_label: "Иконка"
+      icon_text: "Введите название любого класса иконки <a>Font Awesome</a>, <em>без</em> префикса <code>fa-</code>."
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
 

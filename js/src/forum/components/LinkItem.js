@@ -2,11 +2,13 @@
 
 import app from 'flarum/app';
 import LinkButton from 'flarum/components/LinkButton';
+import icon from 'flarum/helpers/icon';
 
 export default class LinkItem extends LinkButton {
     view() {
         const link = this.props.link;
         let className = `LinksButton ${this.props.className || 'Button Button--link'}`;
+        const iconName = link.icon();
 
         if (link.isInternal()) {
             const currentPath = m.route();
@@ -29,6 +31,7 @@ export default class LinkItem extends LinkButton {
                 href={link.url()}
                 title={link.title()}
             >
+                {iconName ? icon(iconName, { className: 'Button-icon' }) : ''}
                 {link.title()}
             </a>
         );

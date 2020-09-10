@@ -17,6 +17,8 @@ fof-links:
       title: => fof-links.ref.create_link
       title_label: => fof-links.ref.title
       title_placeholder: => fof-links.ref.title
+      icon_label: => core.ref.icon
+      icon_text: => core.ref.icon_text
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
 

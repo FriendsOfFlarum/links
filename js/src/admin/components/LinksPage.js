@@ -1,5 +1,6 @@
 import Page from 'flarum/components/Page';
 import Button from 'flarum/components/Button';
+import icon from 'flarum/helpers/icon';
 
 import sortable from 'html5sortable/dist/html5sortable.es.js';
 
@@ -10,6 +11,7 @@ function linkItem(link) {
     return (
         <li data-id={link.id()}>
             <div className="LinkListItem-info">
+                {link.icon() ? <span className="LinkListItem-icon">{icon(link.icon())} </span> : ''}
                 <span className="LinkListItem-name">{link.title()}</span>
                 {Button.component({
                     className: 'Button Button--link',

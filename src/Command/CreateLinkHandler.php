@@ -47,6 +47,7 @@ class CreateLinkHandler
 
         $link = Link::build(
             array_get($data, 'attributes.title'),
+            array_get($data, 'attributes.icon'),
             array_get($data, 'attributes.url'),
             array_get($data, 'attributes.isInternal'),
             array_get($data, 'attributes.isNewtab')
