@@ -10,15 +10,15 @@ import Button from 'flarum/components/Button';
  * to create or edit a link.
  */
 export default class EditlinksModal extends Modal {
-    init() {
-        super.init();
+    oninit(vnode) {
+        super.oninit(vnode);
 
-        this.link = this.props.link || app.store.createRecord('links');
+        this.link = this.attrs.link || app.store.createRecord('links');
 
-        this.itemTitle = m.prop(this.link.title() || '');
-        this.url = m.prop(this.link.url() || '');
-        this.isInternal = m.prop(this.link.isInternal() && true);
-        this.isNewtab = m.prop(this.link.isNewtab() && true);
+        this.itemTitle = m.stream(this.link.title() || '');
+        this.url = m.stream(this.link.url() || '');
+        this.isInternal = m.stream(this.link.isInternal() && true);
+        this.isNewtab = m.stream(this.link.isNewtab() && true);
     }
 
     className() {
@@ -39,10 +39,7 @@ export default class EditlinksModal extends Modal {
                         <input
                             className="FormControl"
                             placeholder={app.translator.trans('fof-links.admin.edit_link.title_placeholder')}
-                            value={this.itemTitle()}
-                            oninput={e => {
-                                this.itemTitle(e.target.value);
-                            }}
+                            bidi={this.itemTitle}
                         />
                     </div>
 
@@ -52,10 +49,7 @@ export default class EditlinksModal extends Modal {
                             className="FormControl"
                             placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
                             type="url"
-                            value={this.url()}
-                            oninput={e => {
-                                this.url(e.target.value);
-                            }}
+                            bidi={this.url}
                         />
                     </div>
 
@@ -95,8 +89,7 @@ export default class EditlinksModal extends Modal {
                             type: 'submit',
                             className: 'Button Button--primary EditLinkModal-save',
                             loading: this.loading,
-                            children: app.translator.trans('fof-links.admin.edit_link.submit_button'),
-                        })}
+                        }, app.translator.trans('fof-links.admin.edit_link.submit_button'))}
                         {this.link.exists ? (
                             <button type="button" className="Button EditLinkModal-delete" onclick={() => this.delete()}>
                                 {app.translator.trans('fof-links.admin.edit_link.delete_link_button')}

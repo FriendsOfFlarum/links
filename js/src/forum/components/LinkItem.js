@@ -5,11 +5,11 @@ import LinkButton from 'flarum/components/LinkButton';
 
 export default class LinkItem extends LinkButton {
     view() {
-        const link = this.props.link;
-        let className = `LinksButton ${this.props.className || 'Button Button--link'}`;
+        const link = this.attrs.link;
+        let className = `LinksButton ${this.attrs.className || 'Button Button--link'}`;
 
         if (link.isInternal()) {
-            const currentPath = m.route();
+            const currentPath = m.route.get() || "/";
             let linkPath = link.url().replace(app.forum.attribute('baseUrl'), '');
 
             if (linkPath === '') linkPath = '/';
@@ -21,14 +21,17 @@ export default class LinkItem extends LinkButton {
             }
         }
 
+        const linkAttrs = {
+            className: className,
+            target: link.isNewtab() ? '_blank' : '',
+            title: link.title()
+        };
+
+        linkAttrs[link.isInternal() ? 'route' : 'href'] = link.url();
+
         return (
-            <a
-                className={className}
-                target={link.isNewtab() ? '_blank' : ''}
-                config={link.isInternal() ? m.route : ''}
-                href={link.url()}
-                title={link.title()}
-            >
+
+            <a {...linkAttrs}>
                 {link.title()}
             </a>
         );
