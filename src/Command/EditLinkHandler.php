@@ -14,6 +14,7 @@ namespace FoF\Links\Command;
 use Flarum\User\AssertPermissionTrait;
 use FoF\Links\LinkRepository;
 use FoF\Links\LinkValidator;
+use Illuminate\Support\Arr;
 
 class EditLinkHandler
 {
@@ -55,7 +56,7 @@ class EditLinkHandler
 
         $this->assertAdmin($actor);
 
-        $attributes = array_get($data, 'attributes', []);
+        $attributes = Arr::get($data, 'attributes', []);
 
         if (isset($attributes['title'])) {
             $link->title = $attributes['title'];
