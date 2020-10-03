@@ -1,6 +1,7 @@
 /* global m*/
 
 import app from 'flarum/app';
+import Link from 'flarum/components/Link';
 import LinkButton from 'flarum/components/LinkButton';
 
 export default class LinkItem extends LinkButton {
@@ -24,16 +25,17 @@ export default class LinkItem extends LinkButton {
         const linkAttrs = {
             className: className,
             target: link.isNewtab() ? '_blank' : '',
-            title: link.title()
+            title: link.title(),
+            external: !link.isInternal(),
+            href: link.url()
         };
 
-        linkAttrs[link.isInternal() ? 'route' : 'href'] = link.url();
 
         return (
 
-            <a {...linkAttrs}>
+            <Link {...linkAttrs}>
                 {link.title()}
-            </a>
+            </Link>
         );
     }
 }
