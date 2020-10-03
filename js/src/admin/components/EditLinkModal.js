@@ -4,6 +4,7 @@
 import app from 'flarum/app';
 import Modal from 'flarum/components/Modal';
 import Button from 'flarum/components/Button';
+import Stream from 'flarum/utils/Stream';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -15,10 +16,10 @@ export default class EditlinksModal extends Modal {
 
         this.link = this.attrs.link || app.store.createRecord('links');
 
-        this.itemTitle = m.stream(this.link.title() || '');
-        this.url = m.stream(this.link.url() || '');
-        this.isInternal = m.stream(this.link.isInternal() && true);
-        this.isNewtab = m.stream(this.link.isNewtab() && true);
+        this.itemTitle = Stream(this.link.title() || '');
+        this.url = Stream(this.link.url() || '');
+        this.isInternal = Stream(this.link.isInternal() && true);
+        this.isNewtab = Stream(this.link.isNewtab() && true);
     }
 
     className() {
