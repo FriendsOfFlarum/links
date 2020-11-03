@@ -14,14 +14,14 @@ namespace FoF\Links;
 use Flarum\Database\AbstractModel;
 
 /**
- * @property int $id
+ * @property int    $id
  * @property string $title
  * @property string $url
- * @property int $position
- * @property bool $is_internal
- * @property bool $is_newtab
- * @property int $parent_id
- * @property Link $parent
+ * @property int    $position
+ * @property bool   $is_internal
+ * @property bool   $is_newtab
+ * @property int    $parent_id
+ * @property Link   $parent
  */
 class Link extends AbstractModel
 {
