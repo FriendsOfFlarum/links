@@ -5,6 +5,8 @@ import app from 'flarum/app';
 import Modal from 'flarum/components/Modal';
 import Button from 'flarum/components/Button';
 import Stream from 'flarum/utils/Stream';
+import icon from 'flarum/helpers/icon';
+import withAttr from 'flarum/utils/withAttr';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -17,6 +19,7 @@ export default class EditlinksModal extends Modal {
         this.link = this.attrs.link || app.store.createRecord('links');
 
         this.itemTitle = Stream(this.link.title() || '');
+        this.icon = Stream(this.link.icon() || '');
         this.url = Stream(this.link.url() || '');
         this.isInternal = Stream(this.link.isInternal() && true);
         this.isNewtab = Stream(this.link.isNewtab() && true);
@@ -28,7 +31,7 @@ export default class EditlinksModal extends Modal {
 
     title() {
         const title = this.itemTitle();
-        return title || app.translator.trans('fof-links.admin.edit_link.title');
+        return title ? [this.icon() ? [icon(this.icon()), ' '] : '', title] : app.translator.trans('fof-links.admin.edit_link.title');
     }
 
     content() {
@@ -42,6 +45,16 @@ export default class EditlinksModal extends Modal {
                             placeholder={app.translator.trans('fof-links.admin.edit_link.title_placeholder')}
                             bidi={this.itemTitle}
                         />
+                    </div>
+
+                    <div className="Form-group">
+                        <label>{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
+                        <div className="helpText">
+                            {app.translator.trans('fof-links.admin.edit_link.icon_text', {
+                                a: <a href="https://fontawesome.com/icons?m=free" tabindex="-1" />,
+                            })}
+                        </div>
+                        <input className="FormControl" placeholder="fas fa-bolt" value={this.icon()} oninput={withAttr('value', this.icon)} />
                     </div>
 
                     <div className="Form-group">
@@ -112,6 +125,7 @@ export default class EditlinksModal extends Modal {
         this.link
             .save({
                 title: this.itemTitle(),
+                icon: this.icon(),
                 url: this.url(),
                 isInternal: this.isInternal(),
                 isNewtab: this.isNewtab(),
