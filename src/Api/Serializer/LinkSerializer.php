@@ -28,6 +28,7 @@ class LinkSerializer extends AbstractSerializer
         return [
             'id'         => $link->id,
             'title'      => $link->title,
+            'icon'       => $link->icon,
             'url'        => $link->url,
             'position'   => $link->position,
             'isInternal' => $link->is_internal,

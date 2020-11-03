@@ -59,6 +59,10 @@ class EditLinkHandler
             $link->title = $attributes['title'];
         }
 
+        if (isset($attributes['icon'])) {
+            $link->icon = $attributes['icon'];
+        }
+
         if (isset($attributes['url'])) {
             $link->url = $attributes['url'];
         }

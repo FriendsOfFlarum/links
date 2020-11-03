@@ -17,6 +17,8 @@ fof-links:
       title: => fof-links.ref.create_link
       title_label: => fof-links.ref.title
       title_placeholder: => fof-links.ref.title
+      icon_label: Icône
+      icon_text: "Saisissez le nom d’une des classes d’icônes de <a>Font Awesome</a> <em>en incluant</em> le préfixe <code>fas fa-</code>."
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
 
