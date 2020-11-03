@@ -11,13 +11,10 @@
 
 namespace FoF\Links\Command;
 
-use Flarum\User\AssertPermissionTrait;
 use FoF\Links\LinkRepository;
 
 class DeleteLinkHandler
 {
-    use AssertPermissionTrait;
-
     /**
      * @var LinkRepository
      */
@@ -44,7 +41,7 @@ class DeleteLinkHandler
 
         $link = $this->links->findOrFail($command->linkId, $actor);
 
-        $this->assertAdmin($actor);
+        $actor->assertAdmin($actor);
 
         $link->delete();
 
