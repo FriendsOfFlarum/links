@@ -5,29 +5,29 @@ import icon from 'flarum/helpers/icon';
 import sortLinks from '../../common/utils/sortLinks';
 
 export default class LinkDropdown extends SplitDropdown {
-    static initProps(props) {
-        super.initProps(props);
+    static initAttrs(attrs) {
+        super.initAttrs(attrs);
 
-        props.className += ' LinkDropdown';
-        props.buttonClassName += ' Button--link';
+        attrs.className += ' LinkDropdown';
+        attrs.buttonClassName += ' Button--link';
     }
 
-    view() {
-        this.props.children = this.items().toArray();
+    view(vnode) {
+        const children = this.items().toArray();
 
-        return super.view();
+        return super.view({ ...vnode, children });
     }
 
-    getButton() {
-        // Make a copy of the props of the first child component. We will assign
-        // these props to a new button, so that it has exactly the same behaviour as
+    getButton(children) {
+        // Make a copy of the attrs of the first child component. We will assign
+        // these attrs to a new button, so that it has exactly the same behaviour as
         // the first child.
-        const firstChild = this.getFirstChild();
-        firstChild.props.className = (firstChild.props.className || '') + ' SplitDropdown-button Button ' + this.props.buttonClassName;
+        const firstChild = this.getFirstChild(children);
+        firstChild.attrs.className = (firstChild.attrs.className || '') + ' SplitDropdown-button Button ' + this.attrs.buttonClassName;
 
         return [
             firstChild,
-            <button className={'Dropdown-toggle Button Button--icon ' + this.props.buttonClassName} data-toggle="dropdown">
+            <button className={'Dropdown-toggle Button Button--icon ' + this.attrs.buttonClassName} data-toggle="dropdown">
                 {icon('fas fa-caret-down', { className: 'Button-caret' })}
             </button>,
         ];
@@ -40,7 +40,7 @@ export default class LinkDropdown extends SplitDropdown {
      */
     items() {
         const items = new ItemList();
-        const parent = this.props.link;
+        const parent = this.attrs.link;
 
         items.add(`link${parent.id()}`, LinkItem.component({ link: parent }));
 

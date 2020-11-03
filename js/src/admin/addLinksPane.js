@@ -6,9 +6,9 @@ import AdminLinkButton from 'flarum/components/AdminLinkButton';
 import LinksPage from './components/LinksPage';
 
 export default function() {
-    app.routes.links = { path: '/links', component: LinksPage.component() };
+    app.routes.links = { path: '/links', component: LinksPage };
 
-    app.extensionSettings['fof-links'] = () => m.route(app.route('links'));
+    app.extensionSettings['fof-links'] = () => m.route.set(app.route('links'));
 
     extend(AdminNav.prototype, 'items', items => {
         items.add(
@@ -16,9 +16,8 @@ export default function() {
             AdminLinkButton.component({
                 href: app.route('links'),
                 icon: 'fas fa-bars',
-                children: app.translator.trans('fof-links.admin.nav.links_button'),
                 description: app.translator.trans('fof-links.admin.nav.links_text'),
-            })
+            }, app.translator.trans('fof-links.admin.nav.links_button'))
         );
     });
 }

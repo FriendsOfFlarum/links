@@ -46,10 +46,10 @@ class CreateLinkHandler
         $this->assertAdmin($actor);
 
         $link = Link::build(
-            array_get($data, 'attributes.title'),
-            array_get($data, 'attributes.url'),
-            array_get($data, 'attributes.isInternal'),
-            array_get($data, 'attributes.isNewtab')
+            Arr::get($data, 'attributes.title'),
+            Arr::get($data, 'attributes.url'),
+            Arr::get($data, 'attributes.isInternal'),
+            Arr::get($data, 'attributes.isNewtab')
         );
 
         $parentId = Arr::get($data, 'relationships.parent.data.id');

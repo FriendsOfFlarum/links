@@ -1,7 +1,7 @@
 import Page from 'flarum/components/Page';
 import Button from 'flarum/components/Button';
 
-import sortable from 'html5sortable/dist/html5sortable.es.js';
+import sortable from 'sortablejs';
 
 import EditLinkModal from './EditLinkModal';
 import sortLinks from '../../common/utils/sortLinks';
@@ -14,12 +14,12 @@ function linkItem(link) {
                 {Button.component({
                     className: 'Button Button--link',
                     icon: 'fas fa-pencil-alt',
-                    onclick: () => app.modal.show(new EditLinkModal({ link })),
+                    onclick: () => app.modal.show(EditLinkModal, { link }),
                 })}
             </div>
 
             {!link.isChild() && (
-                <ol className="LinkListItem-children">
+                <ol className="LinkListItem-children LinkList">
                     {sortLinks(app.store.all('links'))
                         .filter(child => child.parent() === link)
                         .map(linkItem)}
@@ -30,6 +30,12 @@ function linkItem(link) {
 }
 
 export default class LinksPage extends Page {
+    oninit(vnode) {
+        super.oninit(vnode);
+
+        this.forcedRefreshKey = 0;
+    }
+
     view() {
         return (
             <div className="LinksPage">
@@ -39,16 +45,15 @@ export default class LinksPage extends Page {
                         {Button.component({
                             className: 'Button Button--primary',
                             icon: 'fas fa-plus',
-                            children: app.translator.trans('fof-links.admin.links.create_button'),
-                            onclick: () => app.modal.show(new EditLinkModal()),
-                        })}
+                            onclick: () => app.modal.show(EditLinkModal),
+                        }, app.translator.trans('fof-links.admin.links.create_button'))}
                     </div>
                 </div>
                 <div className="LinksPage-list">
-                    <div className="container">
+                    <div className="container" key={this.forcedRefreshKey} oncreate={this.onListOnCreate.bind(this)}>
                         <div className="LinkItems">
                             <label>{app.translator.trans('fof-links.admin.links.links')}</label>
-                            <ol className="LinkList">
+                            <ol className="LinkList LinkList--primary">
                                 {sortLinks(app.store.all('links'))
                                     .filter(link => !link.isChild())
                                     .map(linkItem)}
@@ -60,52 +65,60 @@ export default class LinksPage extends Page {
         );
     }
 
-    config() {
-        sortable(this.$('ol, ul'), {
-            acceptFrom: 'ol,ul',
-        }).forEach(el =>
-            el.addEventListener('sortupdate', () => {
-                const order = this.$('.LinkList > li')
-                    .map((i, el) => ({
-                        id: $(el).data('id'),
-                        children: $(el)
-                            .find('li')
-                            .map((i, el) => $(el).data('id'))
-                            .get(),
-                    }))
-                    .get();
-
-                order.forEach((link, i) => {
-                    const parent = app.store.getById('links', link.id);
-
-                    parent.pushData({
-                        attributes: {
-                            position: i,
-                            isChild: false,
-                        },
-                        relationships: { parent: null },
-                    });
-
-                    link.children.forEach((child, j) => {
-                        app.store.getById('links', child).pushData({
-                            attributes: {
-                                position: j,
-                                isChild: true,
-                            },
-                            relationships: { parent },
-                        });
-                    });
-                });
-
-                app.request({
-                    url: `${app.forum.attribute('apiUrl')}/links/order`,
-                    method: 'POST',
-                    data: { order },
-                });
-
-                m.redraw.strategy('all');
-                m.redraw();
+    onListOnCreate(vnode) {
+        this.$('.LinkList').get().map(e => {
+            sortable.create(e, {
+                group: 'links',
+                animation: 150,
+                swapThreshold: 0.65,
+                dragClass: 'sortable-dragging',
+                ghostClass: 'sortable-placeholder',
+                onSort: (e) => this.onSortUpdate(e)
             })
-        );
+        });
+    }
+
+    onSortUpdate(e) {
+        console.log("hi")
+        const order = this.$('.LinkList--primary > li')
+            .map((i, el) => ({
+                id: $(el).data('id'),
+                children: $(el)
+                    .find('li')
+                    .map((i, el) => $(el).data('id'))
+                    .get(),
+            }))
+            .get();
+
+        order.forEach((link, i) => {
+            const parent = app.store.getById('links', link.id);
+
+            parent.pushData({
+                attributes: {
+                    position: i,
+                    isChild: false,
+                },
+                relationships: { parent: null },
+            });
+
+            link.children.forEach((child, j) => {
+                app.store.getById('links', child).pushData({
+                    attributes: {
+                        position: j,
+                        isChild: true,
+                    },
+                    relationships: { parent },
+                });
+            });
+        });
+
+        app.request({
+            url: `${app.forum.attribute('apiUrl')}/links/order`,
+            method: 'POST',
+            body: { order },
+        });
+
+        this.forcedRefreshKey++;
+        m.redraw();
     }
 }
