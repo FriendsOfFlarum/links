@@ -10,10 +10,14 @@
  */
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\SChema\Builder;
+use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
+        if ($schema->hasColumn('links', 'parent_id')) {
+            return;
+        }
+
         $schema->table('links', function (Blueprint $table) {
             $table->unsignedInteger('parent_id')->nullable();
 

@@ -9,8 +9,23 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
-return Migration::addColumns('links', [
-    'icon' => ['string', 'length' => 100, 'nullable' => true],
-]);
+return [
+    'up' => function (Builder $schema) {
+        if ($schema->hasColumn('links', 'icon')) {
+            return;
+        }
+
+        $schema->table('links', function (Blueprint $table) {
+            $table->string('icon', 100)->nullable();
+        });
+    },
+
+    'down' => function (Builder $schema) {
+        $schema->table('links', function (Blueprint $table) {
+            $table->dropColumn('icon');
+        });
+    },
+];
