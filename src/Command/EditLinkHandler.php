@@ -51,7 +51,7 @@ class EditLinkHandler
 
         $link = $this->links->findOrFail($command->linkId, $actor);
 
-        $actor->assertAdmin($actor);
+        $actor->assertAdmin();
 
         $attributes = Arr::get($data, 'attributes', []);
 

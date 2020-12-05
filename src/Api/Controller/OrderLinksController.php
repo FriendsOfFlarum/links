@@ -11,7 +11,6 @@
 
 namespace FoF\Links\Api\Controller;
 
-use Flarum\User\AssertPermissionTrait;
 use FoF\Links\Link;
 use Illuminate\Support\Arr;
 use Laminas\Diactoros\Response\EmptyResponse;
@@ -21,15 +20,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class OrderLinksController implements RequestHandlerInterface
 {
-    use AssertPermissionTrait;
-
     /**
      * {@inheritdoc}
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->assertAdmin($request->getAttribute('actor'));
-
+        $request->getAttribute('actor')->assertAdmin();
         $order = Arr::get($request->getParsedBody(), 'order');
 
         if ($order === null) {

@@ -41,7 +41,7 @@ class DeleteLinkHandler
 
         $link = $this->links->findOrFail($command->linkId, $actor);
 
-        $actor->assertAdmin($actor);
+        $actor->assertAdmin();
 
         $link->delete();
 

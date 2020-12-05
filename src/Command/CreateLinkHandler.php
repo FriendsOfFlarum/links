@@ -40,7 +40,7 @@ class CreateLinkHandler
         $actor = $command->actor;
         $data = $command->data;
 
-        $actor->assertAdmin($actor);
+        $actor->assertAdmin();
 
         $link = Link::build(
             Arr::get($data, 'attributes.title'),
