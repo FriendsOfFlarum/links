@@ -6,8 +6,12 @@
   ],
   "type": "flarum-extension",
   "license": "MIT",
+  "support": {
+    "issues": "https://github.com/FriendsOfFlarum/links/issues",
+    "source": "https://github.com/FriendsOfFlarum/links"
+  },
   "require": {
-    "flarum/core": "^0.1.0-beta.14"
+    "flarum/core": ">=0.1.0-beta.15 <0.1.0-beta.16" 
   },
   "authors": [
     {
@@ -19,7 +23,6 @@
       "email": "me+fof@datitisev.me",
       "role": "Developer"
     }
-
   ],
   "replace": {
     "sijad/flarum-ext-links": "*"
@@ -32,6 +35,12 @@
   "extra": {
     "flarum-extension": {
       "title": "FoF Links",
+      "category": "feature",
+      "info": {
+          "donate": "https://opencollective.com/fof/donate",
+          "website": "https://friendsofflarum.org/",
+          "support": "https://discuss.flarum.org/d/18335"
+      },
       "icon": {
         "name": "fas fa-bars",
         "backgroundColor": "#e74c3c",
@@ -39,7 +48,7 @@
       }
     },
     "flagrow": {
-      "discuss": "https://discuss.flarum.org/d/18335-friendsofflarum-links"
+      "discuss": "https://discuss.flarum.org/d/18335"
     }
   }
 }
