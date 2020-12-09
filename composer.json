@@ -8,8 +8,16 @@
   "license": "MIT",
   "support": {
     "issues": "https://github.com/FriendsOfFlarum/links/issues",
-    "source": "https://github.com/FriendsOfFlarum/links"
+    "source": "https://github.com/FriendsOfFlarum/links",
+    "forum": "https://discuss.flarum.org/d/18335"
   },
+  "homepage": "https://friendsofflarum.org",
+  "funding": [
+    {
+      "type": "website",
+      "url": "https://opencollective.com/fof/donate"
+    }
+  ],
   "require": {
     "flarum/core": ">=0.1.0-beta.15 <0.1.0-beta.16" 
   },
@@ -36,11 +44,6 @@
     "flarum-extension": {
       "title": "FoF Links",
       "category": "feature",
-      "info": {
-          "donate": "https://opencollective.com/fof/donate",
-          "website": "https://friendsofflarum.org/",
-          "support": "https://discuss.flarum.org/d/18335"
-      },
       "icon": {
         "name": "fas fa-bars",
         "backgroundColor": "#e74c3c",
