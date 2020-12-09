@@ -9,10 +9,12 @@
  * file that was distributed with this source code.
  */
 
+use Flarum\Api\Controller\ShowForumController;
+use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Extend;
 use FoF\Links\Api\Controller;
-use FoF\Links\Listener;
-use Illuminate\Contracts\Events\Dispatcher;
+use FoF\Links\Api\Serializer\LinkSerializer;
+use FoF\Links\LoadForumLinksRelationship;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
@@ -31,7 +33,10 @@ return [
         ->patch('/links/{id}', 'links.update', Controller\UpdateLinkController::class)
         ->delete('/links/{id}', 'links.delete', Controller\DeleteLinkController::class),
 
-    function (Dispatcher $events) {
-        $events->subscribe(Listener\AddLinksRelationship::class);
-    },
+    (new Extend\ApiSerializer(ForumSerializer::class))
+        ->hasMany('links', LinkSerializer::class),
+
+    (new Extend\ApiController(ShowForumController::class))
+        ->addInclude(['links', 'links.parent'])
+        ->prepareDataForSerialization(LoadForumLinksRelationship::class),
 ];
