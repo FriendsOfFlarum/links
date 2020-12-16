@@ -1,4 +1,4 @@
-import Page from 'flarum/components/Page';
+import ExtensionPage from 'flarum/components/ExtensionPage';
 import Button from 'flarum/components/Button';
 import icon from 'flarum/helpers/icon';
 
@@ -31,26 +31,23 @@ function linkItem(link) {
     );
 }
 
-export default class LinksPage extends Page {
+export default class LinksPage extends ExtensionPage {
     oninit(vnode) {
         super.oninit(vnode);
 
         this.forcedRefreshKey = 0;
     }
 
-    view() {
+    content() {
         return (
             <div className="LinksPage">
-                <div className="LinksPage-header">
-                    <div className="container">
-                        <p>{app.translator.trans('fof-links.admin.links.about_text')}</p>
+                <div className="container">
                         {Button.component({
                             className: 'Button Button--primary',
                             icon: 'fas fa-plus',
                             onclick: () => app.modal.show(EditLinkModal),
                         }, app.translator.trans('fof-links.admin.links.create_button'))}
                     </div>
-                </div>
                 <div className="LinksPage-list">
                     <div className="container" key={this.forcedRefreshKey} oncreate={this.onListOnCreate.bind(this)}>
                         <div className="LinkItems">

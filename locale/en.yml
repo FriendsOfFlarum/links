@@ -24,14 +24,8 @@ fof-links:
 
     # These strings are used in the Links page.
     links:
-      about_text: Manage primary menu links.
       create_button: => fof-links.ref.create_link
       links: => fof-links.ref.links
-
-    # These strings are used in the navigation bar.
-    nav:
-      links_button: => fof-links.ref.links
-      links_text: Manage the primary navigation list items.
 
   # Strings in this namespace are referenced by two or more unique keys.
   ref:
