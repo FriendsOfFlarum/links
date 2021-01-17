@@ -36,8 +36,8 @@ class Link extends AbstractModel
      * @var array
      */
     protected $casts = [
-        'is_internal' => 'boolean',
-        'is_newtab'   => 'boolean',
+        'is_internal'           => 'boolean',
+        'is_newtab'             => 'boolean',
         'registered_users_only' => 'boolean',
     ];
 

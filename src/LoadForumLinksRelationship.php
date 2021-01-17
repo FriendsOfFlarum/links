@@ -25,7 +25,7 @@ class LoadForumLinksRelationship
     {
         /** @var \Flarum\User\User */
         $actor = $request->getattribute('actor');
-        
+
         $data['links'] = $actor->isGuest() ? Link::where('registered_users_only', false)->get() : Link::all();
     }
 }

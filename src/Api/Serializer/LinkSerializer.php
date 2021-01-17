@@ -26,14 +26,14 @@ class LinkSerializer extends AbstractSerializer
     protected function getDefaultAttributes($link)
     {
         return [
-            'id'         => $link->id,
-            'title'      => $link->title,
-            'icon'       => $link->icon,
-            'url'        => $link->url,
-            'position'   => $link->position,
-            'isInternal' => $link->is_internal,
-            'isNewtab'   => $link->is_newtab,
-            'isChild'    => (bool) $link->parent_id,
+            'id'                  => $link->id,
+            'title'               => $link->title,
+            'icon'                => $link->icon,
+            'url'                 => $link->url,
+            'position'            => $link->position,
+            'isInternal'          => $link->is_internal,
+            'isNewtab'            => $link->is_newtab,
+            'isChild'             => (bool) $link->parent_id,
             'registeredUsersOnly' => $link->registered_users_only,
         ];
     }
