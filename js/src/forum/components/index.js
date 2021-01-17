@@ -3,5 +3,5 @@ import LinkItem from './LinkItem';
 
 export const components = {
     LinkDropdown,
-    LinkItem
+    LinkItem,
 };

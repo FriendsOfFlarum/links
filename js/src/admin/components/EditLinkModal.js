@@ -8,6 +8,7 @@ import Stream from 'flarum/utils/Stream';
 import icon from 'flarum/helpers/icon';
 import withAttr from 'flarum/utils/withAttr';
 import Switch from 'flarum/components/Switch';
+import ItemList from 'flarum/utils/ItemList';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -39,97 +40,139 @@ export default class EditlinksModal extends Modal {
     content() {
         return (
             <div className="Modal-body">
-                <div className="Form">
-                    <div className="Form-group">
-                        <label>{app.translator.trans('fof-links.admin.edit_link.title_label')}</label>
-                        <input
-                            className="FormControl"
-                            placeholder={app.translator.trans('fof-links.admin.edit_link.title_placeholder')}
-                            bidi={this.itemTitle}
-                        />
-                    </div>
-
-                    <div className="Form-group">
-                        <label>{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
-                        <div className="helpText">
-                            {app.translator.trans('fof-links.admin.edit_link.icon_text', {
-                                a: <a href="https://fontawesome.com/icons?m=free" tabindex="-1" />,
-                            })}
-                        </div>
-                        <input className="FormControl" placeholder="fas fa-bolt" value={this.icon()} oninput={withAttr('value', this.icon)} />
-                    </div>
-
-                    <div className="Form-group">
-                        <label>{app.translator.trans('fof-links.admin.edit_link.url_label')}</label>
-                        <input
-                            className="FormControl"
-                            placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
-                            type="url"
-                            bidi={this.url}
-                        />
-                    </div>
-
-                    <div className="Form-group">
-                        <div>
-                            <label className="checkbox">
-                                <input
-                                    type="checkbox"
-                                    value="1"
-                                    checked={this.isInternal()}
-                                    onchange={(e) => {
-                                        if (this.isInternal(e.target.checked)) {
-                                            this.isNewtab(false);
-                                        }
-                                    }}
-                                />
-                                {app.translator.trans('fof-links.admin.edit_link.internal_link')}
-                            </label>
-                            <label className="checkbox">
-                                <input
-                                    type="checkbox"
-                                    value="1"
-                                    checked={this.isNewtab()}
-                                    onchange={(e) => {
-                                        if (this.isNewtab(e.target.checked)) {
-                                            this.isInternal(false);
-                                        }
-                                    }}
-                                />
-                                {app.translator.trans('fof-links.admin.edit_link.open_newtab')}
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="Form-group">
-                        {Switch.component(
-                            {
-                                state: this.registeredUsersOnly(),
-                                onchange: this.registeredUsersOnly,
-                            },
-                            app.translator.trans('fof-links.admin.edit_link.registered_only')
-                        )}
-                    </div>
-                    
-                    <div className="Form-group">
-                        {Button.component(
-                            {
-                                type: 'submit',
-                                className: 'Button Button--primary EditLinkModal-save',
-                                loading: this.loading,
-                            },
-                            app.translator.trans('fof-links.admin.edit_link.submit_button')
-                        )}
-                        {this.link.exists ? (
-                            <button type="button" className="Button EditLinkModal-delete" onclick={() => this.delete()}>
-                                {app.translator.trans('fof-links.admin.edit_link.delete_link_button')}
-                            </button>
-                        ) : (
-                            ''
-                        )}
-                    </div>
-                </div>
+                <div className="Form">{this.items().toArray()}</div>
             </div>
         );
+    }
+
+    items() {
+        const items = new ItemList();
+
+        items.add(
+            'title',
+            [
+                <div className="Form-group">
+                    <label>{app.translator.trans('fof-links.admin.edit_link.title_label')}</label>
+                    <input
+                        className="FormControl"
+                        placeholder={app.translator.trans('fof-links.admin.edit_link.title_placeholder')}
+                        bidi={this.itemTitle}
+                    />
+                </div>,
+            ],
+            100
+        );
+
+        items.add(
+            'icon',
+            [
+                <div className="Form-group">
+                    <label>{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
+                    <div className="helpText">
+                        {app.translator.trans('fof-links.admin.edit_link.icon_text', {
+                            a: <a href="https://fontawesome.com/icons?m=free" tabindex="-1" />,
+                        })}
+                    </div>
+                    <input className="FormControl" placeholder="fas fa-bolt" value={this.icon()} oninput={withAttr('value', this.icon)} />
+                </div>,
+            ],
+            80
+        );
+
+        items.add(
+            'url',
+            [
+                <div className="Form-group">
+                    <label>{app.translator.trans('fof-links.admin.edit_link.url_label')}</label>
+                    <input
+                        className="FormControl"
+                        placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
+                        type="url"
+                        bidi={this.url}
+                    />
+                </div>,
+            ],
+            60
+        );
+
+        items.add(
+            'checkboxes',
+            [
+                <div className="Form-group">
+                    <div>
+                        <label className="checkbox">
+                            <input
+                                type="checkbox"
+                                value="1"
+                                checked={this.isInternal()}
+                                onchange={(e) => {
+                                    if (this.isInternal(e.target.checked)) {
+                                        this.isNewtab(false);
+                                    }
+                                }}
+                            />
+                            {app.translator.trans('fof-links.admin.edit_link.internal_link')}
+                        </label>
+                        <label className="checkbox">
+                            <input
+                                type="checkbox"
+                                value="1"
+                                checked={this.isNewtab()}
+                                onchange={(e) => {
+                                    if (this.isNewtab(e.target.checked)) {
+                                        this.isInternal(false);
+                                    }
+                                }}
+                            />
+                            {app.translator.trans('fof-links.admin.edit_link.open_newtab')}
+                        </label>
+                    </div>
+                </div>,
+            ],
+            40
+        );
+
+        items.add(
+            'registered',
+            [
+                <div className="Form-group">
+                    {Switch.component(
+                        {
+                            state: this.registeredUsersOnly(),
+                            onchange: this.registeredUsersOnly,
+                        },
+                        app.translator.trans('fof-links.admin.edit_link.registered_only')
+                    )}
+                </div>,
+            ],
+            20
+        );
+
+        items.add(
+            'actions',
+            [
+                <div className="Form-group">
+                    {Button.component(
+                        {
+                            type: 'submit',
+                            className: 'Button Button--primary EditLinkModal-save',
+                            loading: this.loading,
+                        },
+                        app.translator.trans('fof-links.admin.edit_link.submit_button')
+                    )}
+                    {this.link.exists ? (
+                        <button type="button" className="Button EditLinkModal-delete" onclick={() => this.delete()}>
+                            {app.translator.trans('fof-links.admin.edit_link.delete_link_button')}
+                        </button>
+                    ) : (
+                        ''
+                    )}
+                </div>,
+            ],
+            0
+        );
+
+        return items;
     }
 
     onsubmit(e) {
