@@ -12,7 +12,7 @@ export default class LinkItem extends LinkButton {
         const iconName = link.icon();
 
         if (link.isInternal()) {
-            const currentPath = m.route.get() || "/";
+            const currentPath = m.route.get() || '/';
             let linkPath = link.url().replace(app.forum.attribute('baseUrl'), '');
 
             if (linkPath === '') linkPath = '/';
@@ -29,12 +29,10 @@ export default class LinkItem extends LinkButton {
             target: link.isNewtab() ? '_blank' : '',
             title: link.title(),
             external: !link.isInternal(),
-            href: link.url()
+            href: link.url(),
         };
 
-
         return (
-
             <Link {...linkAttrs}>
                 {iconName ? icon(iconName, { className: 'Button-icon' }) : ''}
                 {link.title()}

@@ -23,7 +23,7 @@ function linkItem(link) {
             {!link.isChild() && (
                 <ol className="LinkListItem-children LinkList">
                     {sortLinks(app.store.all('links'))
-                        .filter(child => child.parent() === link)
+                        .filter((child) => child.parent() === link)
                         .map(linkItem)}
                 </ol>
             )}
@@ -42,19 +42,22 @@ export default class LinksPage extends ExtensionPage {
         return (
             <div className="LinksPage">
                 <div className="container">
-                        {Button.component({
+                    {Button.component(
+                        {
                             className: 'Button Button--primary',
                             icon: 'fas fa-plus',
                             onclick: () => app.modal.show(EditLinkModal),
-                        }, app.translator.trans('fof-links.admin.links.create_button'))}
-                    </div>
+                        },
+                        app.translator.trans('fof-links.admin.links.create_button')
+                    )}
+                </div>
                 <div className="LinksPage-list">
                     <div className="container" key={this.forcedRefreshKey} oncreate={this.onListOnCreate.bind(this)}>
                         <div className="LinkItems">
                             <label>{app.translator.trans('fof-links.admin.links.links')}</label>
                             <ol className="LinkList LinkList--primary">
                                 {sortLinks(app.store.all('links'))
-                                    .filter(link => !link.isChild())
+                                    .filter((link) => !link.isChild())
                                     .map(linkItem)}
                             </ol>
                         </div>
@@ -65,20 +68,21 @@ export default class LinksPage extends ExtensionPage {
     }
 
     onListOnCreate(vnode) {
-        this.$('.LinkList').get().map(e => {
-            sortable.create(e, {
-                group: 'links',
-                animation: 150,
-                swapThreshold: 0.65,
-                dragClass: 'sortable-dragging',
-                ghostClass: 'sortable-placeholder',
-                onSort: (e) => this.onSortUpdate(e)
-            })
-        });
+        this.$('.LinkList')
+            .get()
+            .map((e) => {
+                sortable.create(e, {
+                    group: 'links',
+                    animation: 150,
+                    swapThreshold: 0.65,
+                    dragClass: 'sortable-dragging',
+                    ghostClass: 'sortable-placeholder',
+                    onSort: (e) => this.onSortUpdate(e),
+                });
+            });
     }
 
     onSortUpdate(e) {
-        console.log("hi")
         const order = this.$('.LinkList--primary > li')
             .map((i, el) => ({
                 id: $(el).data('id'),

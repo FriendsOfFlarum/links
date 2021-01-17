@@ -45,8 +45,8 @@ export default class LinkDropdown extends SplitDropdown {
         items.add(`link${parent.id()}`, LinkItem.component({ link: parent }));
 
         sortLinks(app.store.all('links'))
-            .filter(link => link.parent() === parent)
-            .forEach(child => items.add(`link${parent.id()}-${child.id()}`, LinkItem.component({ link: child, className: ' ' })));
+            .filter((link) => link.parent() === parent)
+            .forEach((child) => items.add(`link${parent.id()}-${child.id()}`, LinkItem.component({ link: child, className: ' ' })));
 
         return items;
     }

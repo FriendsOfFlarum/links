@@ -3,6 +3,10 @@ import app from 'flarum/app';
 import Link from '../common/models/Link';
 import LinksPage from './components/LinksPage';
 
+export * from './components';
+export * from '../common/utils';
+export * from '../common/models';
+
 app.initializers.add('fof-links', () => {
     app.store.models.links = Link;
 
