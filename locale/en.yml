@@ -13,6 +13,7 @@ fof-links:
       delete_link_confirmation: "Are you sure you want to delete this link?"
       internal_link: "Is it an internal link?"
       open_newtab: "Open link in new tab"
+      registered_only: "Only visible to registered users"
       submit_button: => core.ref.save_changes
       title: => fof-links.ref.create_link
       title_label: => fof-links.ref.title

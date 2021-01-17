@@ -7,6 +7,7 @@ import Button from 'flarum/components/Button';
 import Stream from 'flarum/utils/Stream';
 import icon from 'flarum/helpers/icon';
 import withAttr from 'flarum/utils/withAttr';
+import Switch from 'flarum/components/Switch';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -23,6 +24,7 @@ export default class EditlinksModal extends Modal {
         this.url = Stream(this.link.url() || '');
         this.isInternal = Stream(this.link.isInternal() && true);
         this.isNewtab = Stream(this.link.isNewtab() && true);
+        this.registeredUsersOnly = Stream(this.link.registeredUsersOnly() && true);
     }
 
     className() {
@@ -74,7 +76,7 @@ export default class EditlinksModal extends Modal {
                                     type="checkbox"
                                     value="1"
                                     checked={this.isInternal()}
-                                    onchange={e => {
+                                    onchange={(e) => {
                                         if (this.isInternal(e.target.checked)) {
                                             this.isNewtab(false);
                                         }
@@ -87,7 +89,7 @@ export default class EditlinksModal extends Modal {
                                     type="checkbox"
                                     value="1"
                                     checked={this.isNewtab()}
-                                    onchange={e => {
+                                    onchange={(e) => {
                                         if (this.isNewtab(e.target.checked)) {
                                             this.isInternal(false);
                                         }
@@ -99,11 +101,24 @@ export default class EditlinksModal extends Modal {
                     </div>
 
                     <div className="Form-group">
-                        {Button.component({
-                            type: 'submit',
-                            className: 'Button Button--primary EditLinkModal-save',
-                            loading: this.loading,
-                        }, app.translator.trans('fof-links.admin.edit_link.submit_button'))}
+                        {Switch.component(
+                            {
+                                state: this.registeredUsersOnly(),
+                                onchange: this.registeredUsersOnly,
+                            },
+                            app.translator.trans('fof-links.admin.edit_link.registered_only')
+                        )}
+                    </div>
+                    
+                    <div className="Form-group">
+                        {Button.component(
+                            {
+                                type: 'submit',
+                                className: 'Button Button--primary EditLinkModal-save',
+                                loading: this.loading,
+                            },
+                            app.translator.trans('fof-links.admin.edit_link.submit_button')
+                        )}
                         {this.link.exists ? (
                             <button type="button" className="Button EditLinkModal-delete" onclick={() => this.delete()}>
                                 {app.translator.trans('fof-links.admin.edit_link.delete_link_button')}
@@ -129,10 +144,11 @@ export default class EditlinksModal extends Modal {
                 url: this.url(),
                 isInternal: this.isInternal(),
                 isNewtab: this.isNewtab(),
+                registeredUsersOnly: this.registeredUsersOnly(),
             })
             .then(
                 () => this.hide(),
-                response => {
+                (response) => {
                     this.loading = false;
                     this.handleErrors(response);
                 }

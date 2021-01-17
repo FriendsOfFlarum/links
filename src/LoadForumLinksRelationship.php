@@ -23,6 +23,9 @@ class LoadForumLinksRelationship
      */
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
     {
-        $data['links'] = Link::all();
+        /** @var \Flarum\User\User */
+        $actor = $request->getattribute('actor');
+        
+        $data['links'] = $actor->isGuest() ? Link::where('registered_users_only', false)->get() : Link::all();
     }
 }
