@@ -11,5 +11,5 @@ export default class Link extends mixin(Model, {
     isNewtab: Model.attribute('isNewtab'),
     isChild: Model.attribute('isChild'),
     parent: Model.hasOne('parent'),
-    registeredUsersOnly: Model.attribute('registeredUsersOnly'),
+    visibility: Model.attribute('visibility'),
 }) {}

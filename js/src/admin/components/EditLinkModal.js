@@ -7,8 +7,8 @@ import Button from 'flarum/components/Button';
 import Stream from 'flarum/utils/Stream';
 import icon from 'flarum/helpers/icon';
 import withAttr from 'flarum/utils/withAttr';
-import Switch from 'flarum/components/Switch';
 import ItemList from 'flarum/utils/ItemList';
+import Select from 'flarum/components/Select';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -25,7 +25,7 @@ export default class EditlinksModal extends Modal {
         this.url = Stream(this.link.url() || '');
         this.isInternal = Stream(this.link.isInternal() && true);
         this.isNewtab = Stream(this.link.isNewtab() && true);
-        this.registeredUsersOnly = Stream(this.link.registeredUsersOnly() && true);
+        this.visibility = Stream(this.link.visibility() || 'everyone');
     }
 
     className() {
@@ -132,21 +132,16 @@ export default class EditlinksModal extends Modal {
             40
         );
 
-        items.add(
-            'registered',
-            [
-                <div className="Form-group">
-                    {Switch.component(
-                        {
-                            state: this.registeredUsersOnly(),
-                            onchange: this.registeredUsersOnly,
-                        },
-                        app.translator.trans('fof-links.admin.edit_link.registered_only')
-                    )}
-                </div>,
-            ],
-            20
-        );
+        items.add('visibility', [
+            <div className="Form-group">
+                <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+                {Select.component({
+                    value: this.visibility(),
+                    onchange: this.visibility,
+                    options: this.typeOptions()
+                })}
+            </div>
+        ], 20);
 
         items.add(
             'actions',
@@ -175,6 +170,16 @@ export default class EditlinksModal extends Modal {
         return items;
     }
 
+    typeOptions() {
+        let opts;
+        opts = ['everyone', 'members', 'guests'].reduce((o, key) => {
+            o[key] = app.translator.trans(`fof-links.admin.edit_link.${key}-label`);
+    
+            return o;
+        }, {});
+        return opts;
+    }
+
     onsubmit(e) {
         e.preventDefault();
 
@@ -187,7 +192,7 @@ export default class EditlinksModal extends Modal {
                 url: this.url(),
                 isInternal: this.isInternal(),
                 isNewtab: this.isNewtab(),
-                registeredUsersOnly: this.registeredUsersOnly(),
+                visibility: this.visibility(),
             })
             .then(
                 () => this.hide(),

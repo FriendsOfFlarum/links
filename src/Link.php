@@ -38,7 +38,6 @@ class Link extends AbstractModel
     protected $casts = [
         'is_internal'           => 'boolean',
         'is_newtab'             => 'boolean',
-        'registered_users_only' => 'boolean',
     ];
 
     /**
@@ -52,7 +51,7 @@ class Link extends AbstractModel
      *
      * @return static
      */
-    public static function build($name, $icon, $url, $isInternal, $isNewtab, $registeredUsersOnly)
+    public static function build($name, $icon, $url, $isInternal, $isNewtab, $visibility)
     {
         $link = new static();
 
@@ -61,7 +60,7 @@ class Link extends AbstractModel
         $link->url = $url;
         $link->is_internal = (bool) $isInternal;
         $link->is_newtab = (bool) $isNewtab;
-        $link->registered_users_only = (bool) $registeredUsersOnly;
+        $link->visibility = $visibility;;
 
         return $link;
     }

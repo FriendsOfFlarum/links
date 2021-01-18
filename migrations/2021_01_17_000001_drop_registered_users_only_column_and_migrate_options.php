@@ -14,22 +14,19 @@ use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
-        if ($schema->hasColumn('links', 'registered_users_only')) {
-            return;
-        }
+        $connection = $schema->getConnection();
+        $prefix = $connection->getTablePrefix();
 
-        $schema->table('links', function (Blueprint $table) {
-            $table->boolean('registered_users_only')->default(false);
-            $table->index('registered_users_only');
-        });
-    },
+        $connection->statement("UPDATE {$prefix}links SET visibility = 'members' WHERE registered_users_only = 1");
 
-    'down' => function (Builder $schema) {
         if ($schema->hasColumn('links', 'registered_users_only')) {
             $schema->table('links', function (Blueprint $table) {
                 $table->dropIndex(['registered_users_only']);
                 $table->dropColumn('registered_users_only');
             });
         }
+    },
+    'down' => function (Builder $schema) {
+        // Nothing
     },
 ];

@@ -12,10 +12,20 @@
 namespace FoF\Links;
 
 use Flarum\Api\Controller\ShowForumController;
+use Flarum\Foundation\Config;
+use Illuminate\Support\Arr;
 use Psr\Http\Message\ServerRequestInterface;
 
 class LoadForumLinksRelationship
 {
+    /** @var Config */
+    protected $config;
+
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+    
     /**
      * @param ShowForumController $controller
      * @param $data
@@ -25,7 +35,16 @@ class LoadForumLinksRelationship
     {
         /** @var \Flarum\User\User */
         $actor = $request->getattribute('actor');
+        $adminPath = Arr::get($this->config, 'paths.admin');
 
-        $data['links'] = $actor->isGuest() ? Link::where('registered_users_only', false)->get() : Link::all();
+        // So that admins don't have to see guest only items but can manage them in admin panel, 
+        // we only serialize all links if we're visiting the admin panel
+        if ($actor->isAdmin() && $request->getUri()->getPath() === "/$adminPath") {
+            return $data['links'] = Link::all();
+        }
+
+        $data['links'] = $actor->isGuest() ? 
+            Link::where('visibility', 'guests')->orWhere('visibility', 'everyone')->get() : 
+            Link::where('visibility', 'members')->orWhere('visibility', 'everyone')->get();
     }
 }

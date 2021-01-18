@@ -75,8 +75,8 @@ class EditLinkHandler
             $link->is_newtab = $attributes['isNewtab'];
         }
 
-        if (isset($attributes['registeredUsersOnly'])) {
-            $link->registered_users_only = $attributes['registeredUsersOnly'];
+        if (isset($attributes['visibility'])) {
+            $link->visibility = $attributes['visibility'];
         }
 
         $this->validator->assertValid($link->getDirty());

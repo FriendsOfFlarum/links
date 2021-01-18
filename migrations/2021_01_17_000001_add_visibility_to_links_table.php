@@ -14,22 +14,20 @@ use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
-        if ($schema->hasColumn('links', 'registered_users_only')) {
+        if ($schema->hasColumn('links', 'visibility')) {
             return;
         }
 
         $schema->table('links', function (Blueprint $table) {
-            $table->boolean('registered_users_only')->default(false);
-            $table->index('registered_users_only');
+            $table->enum('visibility', ['everyone', 'members', 'guests'])->default('everyone');
+            $table->index('visibility');
         });
     },
 
     'down' => function (Builder $schema) {
-        if ($schema->hasColumn('links', 'registered_users_only')) {
-            $schema->table('links', function (Blueprint $table) {
-                $table->dropIndex(['registered_users_only']);
-                $table->dropColumn('registered_users_only');
-            });
-        }
+        $schema->table('links', function (Blueprint $table) {
+            $table->dropIndex(['visibility']);
+            $table->dropColumn('visibility');
+        });
     },
 ];
