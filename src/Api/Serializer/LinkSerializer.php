@@ -34,7 +34,7 @@ class LinkSerializer extends AbstractSerializer
             'isInternal'          => $link->is_internal,
             'isNewtab'            => $link->is_newtab,
             'isChild'             => (bool) $link->parent_id,
-            'visibility' => $link->visibility,
+            'visibility'          => $link->visibility,
         ];
     }
 

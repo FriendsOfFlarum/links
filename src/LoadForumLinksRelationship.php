@@ -25,7 +25,7 @@ class LoadForumLinksRelationship
     {
         $this->config = $config;
     }
-    
+
     /**
      * @param ShowForumController $controller
      * @param $data
@@ -37,14 +37,14 @@ class LoadForumLinksRelationship
         $actor = $request->getattribute('actor');
         $adminPath = Arr::get($this->config, 'paths.admin');
 
-        // So that admins don't have to see guest only items but can manage them in admin panel, 
+        // So that admins don't have to see guest only items but can manage them in admin panel,
         // we only serialize all links if we're visiting the admin panel
         if ($actor->isAdmin() && $request->getUri()->getPath() === "/$adminPath") {
             return $data['links'] = Link::all();
         }
 
-        $data['links'] = $actor->isGuest() ? 
-            Link::where('visibility', 'guests')->orWhere('visibility', 'everyone')->get() : 
+        $data['links'] = $actor->isGuest() ?
+            Link::where('visibility', 'guests')->orWhere('visibility', 'everyone')->get() :
             Link::where('visibility', 'members')->orWhere('visibility', 'everyone')->get();
     }
 }

@@ -60,7 +60,7 @@ class Link extends AbstractModel
         $link->url = $url;
         $link->is_internal = (bool) $isInternal;
         $link->is_newtab = (bool) $isNewtab;
-        $link->visibility = $visibility;;
+        $link->visibility = $visibility;
 
         return $link;
     }
