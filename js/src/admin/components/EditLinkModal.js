@@ -132,16 +132,20 @@ export default class EditlinksModal extends Modal {
             40
         );
 
-        items.add('visibility', [
-            <div className="Form-group">
-                <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
-                {Select.component({
-                    value: this.visibility(),
-                    onchange: this.visibility,
-                    options: this.typeOptions()
-                })}
-            </div>
-        ], 20);
+        items.add(
+            'visibility',
+            [
+                <div className="Form-group">
+                    <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+                    {Select.component({
+                        value: this.visibility(),
+                        onchange: this.visibility,
+                        options: this.typeOptions(),
+                    })}
+                </div>,
+            ],
+            20
+        );
 
         items.add(
             'actions',
@@ -174,7 +178,7 @@ export default class EditlinksModal extends Modal {
         let opts;
         opts = ['everyone', 'members', 'guests'].reduce((o, key) => {
             o[key] = app.translator.trans(`fof-links.admin.edit_link.${key}-label`);
-    
+
             return o;
         }, {});
         return opts;
