@@ -8,8 +8,9 @@ import icon from 'flarum/helpers/icon';
 export default class LinkItem extends LinkButton {
     view() {
         const link = this.attrs.link;
-        let className = `LinksButton ${this.attrs.className || 'Button Button--link'}`;
         const iconName = link.icon();
+        let className = `LinksButton ${this.attrs.className || 'Button Button--link'}`;
+        let rel = null;
 
         if (link.isInternal()) {
             const currentPath = m.route.get() || '/';
@@ -22,10 +23,20 @@ export default class LinkItem extends LinkButton {
             if (currentPath.indexOf(linkPath) === 0 && (currentPath === '/' || linkPath !== '/')) {
                 className += ' active';
             }
+        } else {
+            // Prevent security risk on older browsers.
+            // Modern browsers now have `noopener` by default and
+            // require `opener` to enable `window.opener`.
+            //
+            // Learn more:
+            // https://web.dev/external-anchors-use-rel-noopener
+            // https://mathiasbynens.github.io/rel-noopener/
+            rel = link.isNewtab() ? 'noopener noreferrer' : null;
         }
 
         const linkAttrs = {
-            className: className,
+            className,
+            rel,
             target: link.isNewtab() ? '_blank' : '',
             title: link.title(),
             external: !link.isInternal(),
