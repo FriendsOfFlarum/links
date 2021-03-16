@@ -1,9 +1,9 @@
 /* global m*/
 
-import app from 'flarum/app';
-import Link from 'flarum/components/Link';
-import LinkButton from 'flarum/components/LinkButton';
-import icon from 'flarum/helpers/icon';
+import app from 'flarum/common/app';
+import Link from 'flarum/common/components/Link';
+import LinkButton from 'flarum/common/components/LinkButton';
+import icon from 'flarum/common/helpers/icon';
 
 export default class LinkItem extends LinkButton {
     view() {

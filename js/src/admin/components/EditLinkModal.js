@@ -1,14 +1,14 @@
 /* global m*/
 /* global confirm*/
 
-import app from 'flarum/app';
-import Modal from 'flarum/components/Modal';
-import Button from 'flarum/components/Button';
-import Stream from 'flarum/utils/Stream';
-import icon from 'flarum/helpers/icon';
-import withAttr from 'flarum/utils/withAttr';
-import ItemList from 'flarum/utils/ItemList';
-import Select from 'flarum/components/Select';
+import app from 'flarum/common/app';
+import Modal from 'flarum/common/components/Modal';
+import Button from 'flarum/common/components/Button';
+import Stream from 'flarum/common/utils/Stream';
+import icon from 'flarum/common/helpers/icon';
+import withAttr from 'flarum/common/utils/withAttr';
+import ItemList from 'flarum/common/utils/ItemList';
+import Select from 'flarum/common/components/Select';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user

@@ -1,5 +1,5 @@
-import { extend } from 'flarum/extend';
-import HeaderPrimary from 'flarum/components/HeaderPrimary';
+import { extend } from 'flarum/common/extend';
+import HeaderPrimary from 'flarum/common/components/HeaderPrimary';
 
 import Link from '../common/models/Link';
 import LinkItem from './components/LinkItem';

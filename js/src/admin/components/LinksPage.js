@@ -1,6 +1,6 @@
-import ExtensionPage from 'flarum/components/ExtensionPage';
-import Button from 'flarum/components/Button';
-import icon from 'flarum/helpers/icon';
+import ExtensionPage from 'flarum/common/components/ExtensionPage';
+import Button from 'flarum/common/components/Button';
+import icon from 'flarum/common/helpers/icon';
 
 import sortable from 'sortablejs';
 

@@ -1,4 +1,4 @@
-import app from 'flarum/app';
+import app from 'flarum/common/app';
 
 import Link from '../common/models/Link';
 import LinksPage from './components/LinksPage';

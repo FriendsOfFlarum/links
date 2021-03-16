@@ -1,7 +1,7 @@
-import SplitDropdown from 'flarum/components/SplitDropdown';
-import ItemList from 'flarum/utils/ItemList';
+import SplitDropdown from 'flarum/common/components/SplitDropdown';
+import ItemList from 'flarum/common/utils/ItemList';
 import LinkItem from './LinkItem';
-import icon from 'flarum/helpers/icon';
+import icon from 'flarum/common/helpers/icon';
 import sortLinks from '../../common/utils/sortLinks';
 
 export default class LinkDropdown extends SplitDropdown {
