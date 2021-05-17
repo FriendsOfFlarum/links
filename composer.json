@@ -19,13 +19,9 @@
     }
   ],
   "require": {
-    "flarum/core": "^0.1.0-beta.16" 
+    "flarum/core": "^1.0.0" 
   },
   "authors": [
-    {
-      "name": "Sajjad Hashemian",
-      "email": "wolaws@gmail.com"
-    },
     {
       "name": "David Sevilla Martín",
       "email": "me+fof@datitisev.me",
