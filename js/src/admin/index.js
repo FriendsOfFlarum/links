@@ -8,7 +8,7 @@ export * from '../common/utils';
 export * from '../common/models';
 
 app.initializers.add('fof-links', () => {
-    app.store.models.links = Link;
+  app.store.models.links = Link;
 
-    app.extensionData.for('fof-links').registerPage(LinksPage);
+  app.extensionData.for('fof-links').registerPage(LinksPage);
 });

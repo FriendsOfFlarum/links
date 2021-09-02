@@ -11,16 +11,16 @@ export * from '../common/utils';
 export * from '../common/models';
 
 app.initializers.add('fof-links', () => {
-    app.store.models.links = Link;
+  app.store.models.links = Link;
 
-    extend(HeaderPrimary.prototype, 'items', (items) => {
-        const links = app.store.all('links').filter((link) => !link.isChild());
-        const addLink = (parent) => {
-            const hasChildren = !!app.store.all('links').filter((link) => link.parent() == parent).length;
+  extend(HeaderPrimary.prototype, 'items', (items) => {
+    const links = app.store.all('links').filter((link) => !link.isChild());
+    const addLink = (parent) => {
+      const hasChildren = !!app.store.all('links').filter((link) => link.parent() == parent).length;
 
-            items.add(`link${parent.id()}`, hasChildren ? LinkDropdown.component({ link: parent }) : LinkItem.component({ link: parent }));
-        };
+      items.add(`link${parent.id()}`, hasChildren ? LinkDropdown.component({ link: parent }) : LinkItem.component({ link: parent }));
+    };
 
-        sortLinks(links).map(addLink);
-    });
+    sortLinks(links).map(addLink);
+  });
 });

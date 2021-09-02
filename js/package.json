@@ -12,7 +12,8 @@
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "lint": "prettier --write src"
+    "format": "prettier --write src",
+    "format-check": "prettier --check src"
   },
   "devDependencies": {
     "@flarum/prettier-config": "^1.0.0",
