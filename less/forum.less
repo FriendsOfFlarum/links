@@ -1,50 +1,3 @@
-@media @tablet-up {
-  #header .Search.focused {
-    margin-left: 0 !important;
-    transition: none !important;
-  }
-
-  .Header-primary .Header-controls {
-    --scrollbar-width: 6px;
-
-    display: flex;
-    overflow-x: auto;
-    max-width: var(--controls-max-width, 450px);
-    padding-bottom: 2px;
-
-    scrollbar-width: thin;
-
-    &::-webkit-scrollbar {
-      width: var(--scrollbar-width);
-      height: var(--scrollbar-width);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #b3afb3;
-      border-radius: 30px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: #b3afb3;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f0f0f0;
-      border-radius: 0px;
-      box-shadow: inset 0px 0px 0px 0px #f0f0f0;
-    }
-  }
-}
-
-// Firefox uses the CSS spec for scrollbar styling, and doesn't
-// support fixed sizes. We need to account for its slightly wider
-// scrollbar by removing the padding.
-@supports not selector(::-webkit-scrollbar) {
-  .Header-primary .Header-controls {
-    padding-bottom: 0;
-  }
-}
-
 .LinksButton {
   &.active {
     font-weight: 600;
@@ -68,8 +21,7 @@
   }
 }
 
-li > .LinksButton:hover,
-.LinksButton.SplitDropdown-button:hover {
+li > .LinksButton:hover, .LinksButton.SplitDropdown-button:hover {
   text-decoration: underline;
 }
 
