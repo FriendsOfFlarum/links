@@ -41,7 +41,7 @@ export default class LinkItem extends LinkButton {
       title: link.title(),
       external: !link.isInternal(),
       href: link.url(),
-      "aria-label": link.title(),
+      'aria-label': link.title(),
     };
 
     return (
