@@ -36,6 +36,7 @@ class CreateLinkHandler
     public function __construct(LinkValidator $validator, Dispatcher $events)
     {
         $this->validator = $validator;
+        $this->events = $events;
     }
 
     /**
