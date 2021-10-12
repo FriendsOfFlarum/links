@@ -32,8 +32,8 @@ abstract class AbstractLinkEvent
     public $data;
 
     /**
-     * @param Link $link
-     * @param User $actor
+     * @param Link  $link
+     * @param User  $actor
      * @param array $data
      */
     public function __construct(Link $link, User $actor, array $data)
