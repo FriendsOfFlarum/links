@@ -11,8 +11,10 @@
 
 namespace FoF\Links\Command;
 
+use FoF\Links\Event\Saving;
 use FoF\Links\LinkRepository;
 use FoF\Links\LinkValidator;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
 
 class EditLinkHandler
@@ -28,13 +30,19 @@ class EditLinkHandler
     protected $validator;
 
     /**
+     * @var Dispatcher
+     */
+    protected $events;
+
+    /**
      * @param LinkRepository $links
      * @param LinkValidator  $validator
      */
-    public function __construct(LinkRepository $links, LinkValidator $validator)
+    public function __construct(LinkRepository $links, LinkValidator $validator, Dispatcher $events)
     {
         $this->links = $links;
         $this->validator = $validator;
+        $this->events = $events;
     }
 
     /**
@@ -78,6 +86,8 @@ class EditLinkHandler
         if (isset($attributes['visibility'])) {
             $link->visibility = $attributes['visibility'];
         }
+
+        $this->events->dispatch(new Saving($link, $actor, $data));
 
         $this->validator->assertValid($link->getDirty());
 
