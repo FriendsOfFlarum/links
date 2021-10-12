@@ -11,28 +11,6 @@
 
 namespace FoF\Links\Event;
 
-use Flarum\User\User;
-use FoF\Links\Link;
-
-class Created
+class Created extends AbstractLinkEvent
 {
-    /**
-     * @var Link
-     */
-    public $link;
-
-    /**
-     * @var User
-     */
-    public $actor;
-
-    /**
-     * @param Link $link
-     * @param User $actor
-     */
-    public function __construct(Link $link, User $actor)
-    {
-        $this->link = $link;
-        $this->actor = $actor;
-    }
 }

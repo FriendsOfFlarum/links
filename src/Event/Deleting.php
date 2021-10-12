@@ -11,6 +11,6 @@
 
 namespace FoF\Links\Event;
 
-class Creating extends AbstractLinkEvent
+class Deleting extends AbstractLinkEvent
 {
 }

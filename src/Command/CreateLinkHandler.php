@@ -80,7 +80,7 @@ class CreateLinkHandler
 
         $link->save();
 
-        $this->events->dispatch(new Created($link, $actor));
+        $this->events->dispatch(new Created($link, $actor, []));
 
         return $link;
     }
