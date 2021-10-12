@@ -11,8 +11,11 @@
 
 namespace FoF\Links\Command;
 
+use FoF\Links\Event\Created;
+use FoF\Links\Event\Creating;
 use FoF\Links\Link;
 use FoF\Links\LinkValidator;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
 
 class CreateLinkHandler
@@ -23,11 +26,17 @@ class CreateLinkHandler
     protected $validator;
 
     /**
+     * @var Dispatcher
+     */
+    protected $events;
+
+    /**
      * @param LinkValidator $validator
      */
-    public function __construct(LinkValidator $validator)
+    public function __construct(LinkValidator $validator, Dispatcher $events)
     {
         $this->validator = $validator;
+        $this->events = $events;
     }
 
     /**
@@ -66,9 +75,13 @@ class CreateLinkHandler
             }
         }
 
+        $this->events->dispatch(new Creating($link, $actor, $data));
+
         $this->validator->assertValid($link->getAttributes());
 
         $link->save();
+
+        $this->events->dispatch(new Created($link, $actor, []));
 
         return $link;
     }

@@ -11,7 +11,10 @@
 
 namespace FoF\Links\Command;
 
+use FoF\Links\Event\Deleted;
+use FoF\Links\Event\Deleting;
 use FoF\Links\LinkRepository;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class DeleteLinkHandler
 {
@@ -21,11 +24,17 @@ class DeleteLinkHandler
     protected $links;
 
     /**
+     * @var Dispatcher
+     */
+    protected $events;
+
+    /**
      * @param LinkRepository $links
      */
-    public function __construct(LinkRepository $links)
+    public function __construct(LinkRepository $links, Dispatcher $events)
     {
         $this->links = $links;
+        $this->events = $events;
     }
 
     /**
@@ -43,7 +52,11 @@ class DeleteLinkHandler
 
         $actor->assertAdmin();
 
+        $this->events->dispatch(new Deleting($link, $actor, []));
+
         $link->delete();
+
+        $this->events->dispatch(new Deleted($link, $actor, []));
 
         return $link;
     }
