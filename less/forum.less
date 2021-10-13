@@ -1,28 +1,50 @@
+.LinkDropdown {
+  &.open > .LinksButton,
+  &:hover > button {
+    color: var(--button-color, @primary-color) !important;
+  }
+}
+
 .LinksButton {
-  &.active {
-    font-weight: 600;
+  &--label {
+    cursor: unset !important;
+    .user-select(unset);
+    color: var(--button-color, @control-color) !important;
+
+    .LinkDropdown > & {
+      cursor: pointer !important;
+    }
   }
 
-  // This prevents the links from changing width when they become bold
-  // by having an invisible copy of the text already in bold
-  // based on https://stackoverflow.com/a/20249560/3133038
-  &::after {
-    display: block;
-    content: attr(title);
-    font-weight: bold;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+  &:not(.LinksButton--label) {
+    &.active {
+      font-weight: 600;
+    }
+
+    // This prevents the links from changing width when they become bold
+    // by having an invisible copy of the text already in bold
+    // based on https://stackoverflow.com/a/20249560/3133038
+    &::after {
+      display: block;
+      content: attr(title);
+      font-weight: bold;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+
+    li > &,
+    &.SplitDropdown-button {
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   + .Dropdown-toggle {
     width: auto;
     margin-right: 10px;
   }
-}
-
-li > .LinksButton:hover, .LinksButton.SplitDropdown-button:hover {
-  text-decoration: underline;
 }
 
 @media @phone {
