@@ -34,7 +34,22 @@ export default class EditlinksModal extends Modal {
 
   title() {
     const title = this.itemTitle();
-    return title ? [this.icon() ? [icon(this.icon()), ' '] : '', title] : app.translator.trans('fof-links.admin.edit_link.title');
+
+    if (!title) {
+      return app.translator.trans('fof-links.admin.edit_link.title');
+    }
+
+    const iconClass = this.icon();
+
+    if (iconClass) {
+      return (
+        <>
+          {icon(iconClass)} {title}
+        </>
+      );
+    }
+
+    return title;
   }
 
   content() {
