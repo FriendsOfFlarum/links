@@ -31,10 +31,7 @@ export default class LinkDropdown extends SplitDropdown {
 
     return [
       firstChild,
-      <button
-        className={classList('Dropdown-toggle', 'Button', 'Button--icon', this.attrs.buttonClassName)}
-        data-toggle="dropdown"
-      >
+      <button className={classList('Dropdown-toggle', 'Button', 'Button--icon', this.attrs.buttonClassName)} data-toggle="dropdown">
         {icon('fas fa-caret-down', { className: 'Button-caret' })}
       </button>,
     ];
