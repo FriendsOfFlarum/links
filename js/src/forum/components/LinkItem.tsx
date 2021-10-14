@@ -69,7 +69,7 @@ export default class LinkItem extends LinkButton {
       className: this.class,
       rel: this.rel,
       target: this.linkTarget,
-      external: !link.isInternal(),
+      external: link.isNewtab() ? false : !link.isInternal(),
       href: link.url(),
     };
 
