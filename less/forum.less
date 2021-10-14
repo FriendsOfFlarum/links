@@ -1,7 +1,31 @@
 .LinkDropdown {
   &.open > .LinksButton,
   &:hover > button {
-    color: var(--button-color, @primary-color) !important;
+    color: @header-control-color !important;
+
+    & when (@config-colored-header = false) {
+      color: var(--button-color, @primary-color) !important;
+    }
+  }
+}
+
+.LinkDropdown ul {
+  li {
+    .Dropdown-separator {
+      display: block !important;
+    }
+
+    &:first-child + li .Dropdown-separator:first-of-type {
+      display: none !important;
+    }
+  }
+
+  .LinksButton {
+    color: var(--button-color, @control-color) !important;
+
+    &--label {
+      color: @heading-color !important;
+    }
   }
 }
 
@@ -9,7 +33,7 @@
   &--label {
     cursor: unset !important;
     .user-select(unset);
-    color: var(--button-color, @control-color) !important;
+    color: @header-control-color !important;
 
     .LinkDropdown > & {
       cursor: pointer !important;
