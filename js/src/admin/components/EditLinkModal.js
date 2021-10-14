@@ -34,7 +34,22 @@ export default class EditlinksModal extends Modal {
 
   title() {
     const title = this.itemTitle();
-    return title ? [this.icon() ? [icon(this.icon()), ' '] : '', title] : app.translator.trans('fof-links.admin.edit_link.title');
+
+    if (!title) {
+      return app.translator.trans('fof-links.admin.edit_link.title');
+    }
+
+    const iconClass = this.icon();
+
+    if (iconClass) {
+      return (
+        <>
+          {icon(iconClass)} {title}
+        </>
+      );
+    }
+
+    return title;
   }
 
   content() {
@@ -79,8 +94,18 @@ export default class EditlinksModal extends Modal {
       'url',
       [
         <div className="Form-group">
-          <label>{app.translator.trans('fof-links.admin.edit_link.url_label')}</label>
-          <input className="FormControl" placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')} type="url" bidi={this.url} />
+          <label for="link-url">{app.translator.trans('fof-links.admin.edit_link.url_label')}</label>
+          <p class="helpText" id="link-url-help">
+            {app.translator.trans('fof-links.admin.edit_link.url_description')}
+          </p>
+          <input
+            id="link-url"
+            aria-describedby="link-url-help"
+            className="FormControl"
+            placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
+            type="url"
+            bidi={this.url}
+          />
         </div>,
       ],
       60

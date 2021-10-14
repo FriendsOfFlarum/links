@@ -19,7 +19,8 @@ class LinkValidator extends AbstractValidator
      * {@inheritdoc}
      */
     protected $rules = [
-        'title' => ['required'],
-        'url'   => ['required'],
+        'title' => ['required', 'string', 'max:50'],
+        'url'   => ['string', 'max:255'],
+        'icon'  => ['string', 'max:100'],
     ];
 }
