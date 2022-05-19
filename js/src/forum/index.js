@@ -1,3 +1,4 @@
+import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import HeaderPrimary from 'flarum/common/components/HeaderPrimary';
 

@@ -1,7 +1,7 @@
 /* global m*/
 /* global confirm*/
 
-import app from 'flarum/common/app';
+import app from 'flarum/admin/app';
 import Modal from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';

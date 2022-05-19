@@ -1,6 +1,6 @@
 /* global m*/
 
-import app from 'flarum/common/app';
+import app from 'flarum/forum/app';
 import Link from 'flarum/common/components/Link';
 import LinkButton from 'flarum/common/components/LinkButton';
 import icon from 'flarum/common/helpers/icon';
