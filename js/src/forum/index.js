@@ -17,7 +17,7 @@ app.initializers.add('fof-links', () => {
   extend(HeaderPrimary.prototype, 'items', (items) => {
     const links = app.store.all('links').filter((link) => !link.isChild());
     const addLink = (parent) => {
-      const hasChildren = !!app.store.all('links').filter((link) => link.parent() == parent).length;
+      const hasChildren = app.store.all('links').some((link) => link.parent() == parent);
 
       items.add(`link${parent.id()}`, hasChildren ? LinkDropdown.component({ link: parent }) : LinkItem.component({ link: parent }));
     };
