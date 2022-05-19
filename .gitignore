@@ -1,7 +1,3 @@
-.DS_Store
-Thumbs.db
 node_modules
 composer.lock
 vendor
-js/dist
-package-lock.json
