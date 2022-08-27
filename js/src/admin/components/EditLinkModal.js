@@ -200,20 +200,24 @@ export default class EditlinksModal extends Modal {
     return opts;
   }
 
+  submitData() {
+    return {
+      title: this.itemTitle(),
+      icon: this.icon(),
+      url: this.url(),
+      isInternal: this.isInternal(),
+      isNewtab: this.isNewtab(),
+      visibility: this.visibility(),
+    }
+  }
+
   onsubmit(e) {
     e.preventDefault();
 
     this.loading = true;
 
     this.link
-      .save({
-        title: this.itemTitle(),
-        icon: this.icon(),
-        url: this.url(),
-        isInternal: this.isInternal(),
-        isNewtab: this.isNewtab(),
-        visibility: this.visibility(),
-      })
+      .save(this.submitData())
       .then(
         () => this.hide(),
         (response) => {
