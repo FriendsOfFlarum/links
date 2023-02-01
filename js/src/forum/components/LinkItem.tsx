@@ -55,7 +55,8 @@ export default class LinkItem extends LinkButton {
           }}
           data-toggle={this.attrs.isDropdownButton ? 'dropdown' : undefined}
         >
-          {this.icon} {link.title()}
+          {this.icon}
+          <span className="LinksButton-title">{link.title()}</span>
         </LinkLabelNode>
         {this.attrs.inDropdown && <Separator />}
       </>
@@ -75,7 +76,8 @@ export default class LinkItem extends LinkButton {
 
     return (
       <Link {...linkAttrs}>
-        {this.icon} {link.title()}
+        {this.icon}
+        <span className="LinksButton-title">{link.title()}</span>
       </Link>
     );
   }
@@ -95,7 +97,7 @@ export default class LinkItem extends LinkButton {
     const iconClass = link.icon();
 
     if (iconClass) {
-      return icon(iconClass, { className: 'Button-icon' });
+      return icon(iconClass, { className: 'Button-icon LinksButton-icon' });
     }
 
     return null;
