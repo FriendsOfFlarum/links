@@ -32,6 +32,9 @@ fof-links:
       create_button: => fof-links.ref.create_link
       links: => fof-links.ref.links
 
+    settings:
+      show_icons_only_on_mobile: Show icons only on mobile
+
   # Strings in this namespace are referenced by two or more unique keys.
   ref:
     create_link: Create Link
