@@ -39,4 +39,9 @@ return [
     (new Extend\ApiController(ShowForumController::class))
         ->addInclude(['links', 'links.parent'])
         ->prepareDataForSerialization(LoadForumLinksRelationship::class),
+
+    (new Extend\Settings())
+        ->registerLessConfigVar('fof-links-show-only-icons-on-mobile', 'fof-links.show_icons_only_on_mobile', function ($value) {
+            return $value ? 'true' : 'false';
+        }),
 ];

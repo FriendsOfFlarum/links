@@ -208,7 +208,7 @@ export default class EditlinksModal extends Modal {
       isInternal: this.isInternal(),
       isNewtab: this.isNewtab(),
       visibility: this.visibility(),
-    }
+    };
   }
 
   onsubmit(e) {
@@ -216,15 +216,13 @@ export default class EditlinksModal extends Modal {
 
     this.loading = true;
 
-    this.link
-      .save(this.submitData())
-      .then(
-        () => this.hide(),
-        (response) => {
-          this.loading = false;
-          this.handleErrors(response);
-        }
-      );
+    this.link.save(this.submitData()).then(
+      () => this.hide(),
+      (response) => {
+        this.loading = false;
+        this.handleErrors(response);
+      }
+    );
   }
 
   delete() {

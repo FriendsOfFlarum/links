@@ -40,9 +40,24 @@ export default class LinksPage extends ExtensionPage {
     this.forcedRefreshKey = 0;
   }
 
-  content() {
+  sections() {
+    const items = super.sections();
+
+    items.setPriority('content', 100);
+
+    items.add('links', this.links(), 80);
+
+    return items;
+  }
+
+  links() {
     return (
       <div className="LinksPage">
+        <div className="ExtensionPage-permissions-header">
+          <div className="container">
+            <h2 className="ExtensionTitle">{app.translator.trans('fof-links.admin.links.links')}</h2>
+          </div>
+        </div>
         <div className="container">
           {Button.component(
             {
