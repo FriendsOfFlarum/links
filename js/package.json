@@ -8,7 +8,7 @@
     "flarum-tsconfig": "^1.0.2",
     "flarum-webpack-config": "^2.0.0",
     "sortablejs": "^1.14.0",
-    "webpack": "^5.72.1",
+    "webpack": "^5.76.0",
     "webpack-cli": "^4.9.2"
   },
   "devDependencies": {
