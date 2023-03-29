@@ -33,7 +33,7 @@ fof-links:
       links: => fof-links.ref.links
 
     settings:
-      show_icons_only_on_mobile: Show icons only on mobile
+      show_icons_only_on_tablet: Show icons only on tablet screens
 
   # Strings in this namespace are referenced by two or more unique keys.
   ref:
