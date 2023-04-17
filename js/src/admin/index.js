@@ -15,7 +15,7 @@ app.initializers.add('fof-links', () => {
     .registerPage(LinksPage)
     .registerSetting({
       setting: 'fof-links.show_icons_only_on_mobile',
-      label: app.translator.trans('fof-links.admin.settings.show_icons_only_on_mobile'),
+      label: app.translator.trans('fof-links.admin.settings.show_icons_only_on_tablet'),
       type: 'boolean',
     });
 });

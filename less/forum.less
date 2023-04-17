@@ -69,15 +69,13 @@
     margin-right: 10px;
   }
 
-  @media (max-width: 1100px) {
-    &-icon {
-      & when (@fof-links-show-only-icons-on-mobile = true) {
+  & when (@fof-links-show-only-icons-on-mobile = true) {
+    @media @tablet {
+      &-icon {
         margin-right: 0;
       }
-    }
 
-    &-title {
-      & when (@fof-links-show-only-icons-on-mobile = true) {
+      &-title {
         display: none;
       }
     }
