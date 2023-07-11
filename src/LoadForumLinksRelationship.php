@@ -27,8 +27,8 @@ class LoadForumLinksRelationship
     }
 
     /**
-     * @param ShowForumController $controller
-     * @param $data
+     * @param ShowForumController    $controller
+     * @param                        $data
      * @param ServerRequestInterface $request
      */
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
