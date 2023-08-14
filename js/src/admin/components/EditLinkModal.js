@@ -26,10 +26,14 @@ export default class EditlinksModal extends Modal {
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
     this.visibility = Stream(this.link.visibility() || 'everyone');
+
+    if (this.isInternal()) {
+      this.updateInternalUrl();
+    }
   }
 
   className() {
-    return 'EditLinkModal Modal--small';
+    return 'EditLinkModal Modal--medium';
   }
 
   title() {
@@ -98,14 +102,22 @@ export default class EditlinksModal extends Modal {
           <p class="helpText" id="link-url-help">
             {app.translator.trans('fof-links.admin.edit_link.url_description')}
           </p>
-          <input
-            id="link-url"
-            aria-describedby="link-url-help"
-            className="FormControl"
-            placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
-            type="url"
-            bidi={this.url}
-          />
+          <div id="link-url-input" data-internal={this.isInternal()}>
+            {this.isInternal() && (
+              <label htmlFor="link-url" className="link-url-prefix">
+                {app.forum.attribute('baseUrl')}
+              </label>
+            )}
+            <input
+              id="link-url"
+              aria-describedby="link-url-help"
+              className="FormControl"
+              placeholder={app.translator.trans('fof-links.admin.edit_link.url_placeholder')}
+              type="text"
+              required={this.isInternal() || this.isNewtab()}
+              bidi={this.url}
+            />
+          </div>
         </div>,
       ],
       60
@@ -125,6 +137,8 @@ export default class EditlinksModal extends Modal {
                   if (this.isInternal(e.target.checked)) {
                     this.isNewtab(false);
                   }
+
+                  this.updateInternalUrl();
                 }}
               />
               {app.translator.trans('fof-links.admin.edit_link.internal_link')}
@@ -135,8 +149,9 @@ export default class EditlinksModal extends Modal {
                 value="1"
                 checked={this.isNewtab()}
                 onchange={(e) => {
-                  if (this.isNewtab(e.target.checked)) {
+                  if (this.isNewtab(e.target.checked) && this.isInternal()) {
                     this.isInternal(false);
+                    this.updateInternalUrl();
                   }
                 }}
               />
@@ -176,7 +191,7 @@ export default class EditlinksModal extends Modal {
             app.translator.trans('fof-links.admin.edit_link.submit_button')
           )}
           {this.link.exists ? (
-            <button type="button" className="Button EditLinkModal-delete" onclick={() => this.delete()}>
+            <button type="button" className="Button Button--danger EditLinkModal-delete" onclick={() => this.delete()}>
               {app.translator.trans('fof-links.admin.edit_link.delete_link_button')}
             </button>
           ) : (
@@ -229,6 +244,17 @@ export default class EditlinksModal extends Modal {
     if (confirm(app.translator.trans('fof-links.admin.edit_link.delete_link_confirmation'))) {
       this.link.delete().then(() => m.redraw());
       this.hide();
+    }
+  }
+
+  updateInternalUrl() {
+    const base = app.forum.attribute('baseUrl');
+    const url = this.url();
+
+    if (this.isInternal()) {
+      this.url(url.replace(base, ''));
+    } else if (url.startsWith('/')) {
+      this.url(base + url);
     }
   }
 }

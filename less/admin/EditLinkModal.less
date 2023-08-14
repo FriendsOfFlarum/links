@@ -2,6 +2,39 @@
   .Form-group:not(:last-child) {
     margin-bottom: 30px;
   }
+
+  #link-url-input {
+    border: 2px solid transparent;
+
+    &[data-internal] {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      border-radius: 4px;
+      transition: border-color .15s;
+
+      &:focus, &:focus-within {
+        border-color: var(--primary-color);
+      }
+
+      label {
+        padding: 8px 5px 8px 13px;
+        cursor: not-allowed;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        background-color: var(--body-bg);
+        color: var(--muted-more-color);
+      }
+
+      input {
+        padding-left: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-color: transparent !important;
+
+        --transition: none;
+      }
+    }
+  }
 }
 .EditLinkModal-delete {
   float: right;
