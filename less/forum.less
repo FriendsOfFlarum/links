@@ -15,8 +15,12 @@
       display: block !important;
     }
 
-    &:first-child + li .Dropdown-separator:first-of-type {
+    &:nth-child(2) .Dropdown-separator:first-of-type, &:last-child .Dropdown-separator:last-of-type {
       display: none !important;
+    }
+
+    &:has(.Dropdown-separator) + li .Dropdown-separator:first-of-type {
+      display: none;
     }
   }
 
