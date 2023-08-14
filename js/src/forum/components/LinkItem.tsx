@@ -71,7 +71,7 @@ export default class LinkItem extends LinkButton {
       rel: this.rel,
       target: this.linkTarget,
       external: link.isNewtab() ? false : !link.isInternal(),
-      href: link.url(),
+      href: this.linkHref,
     };
 
     return (
@@ -155,7 +155,7 @@ export default class LinkItem extends LinkButton {
   get linkTarget(): string | undefined {
     const link = this.attrs.link;
 
-    if (link.isInternal()) return undefined;
+    if (this.isInternal) return undefined;
 
     return link.isNewtab() ? '_blank' : undefined;
   }
