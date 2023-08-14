@@ -31,13 +31,13 @@ export default class LinkItem extends LinkButton {
   // Just definitions to satisfy TypeScript
   attrs!: ILinkItemAttrs;
 
-  view(vnode: Mithril.Vnode<ILinkItemAttrs, never>): Mithril.Children {
+  view(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
     if (this.isLabel) return this.labelView(vnode);
 
     return this.linkView(vnode);
   }
 
-  labelView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): Mithril.Children {
+  labelView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
     const link = this.attrs.link;
 
     const LinkLabelNode = this.attrs.inDropdown ? 'span' : Button;
@@ -63,7 +63,7 @@ export default class LinkItem extends LinkButton {
     );
   }
 
-  linkView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): Mithril.Children {
+  linkView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
     const link = this.attrs.link;
 
     const linkAttrs = {
@@ -90,6 +90,17 @@ export default class LinkItem extends LinkButton {
 
   get isLabel(): boolean {
     return this.attrs.link.url().length === 0;
+  }
+
+  get linkHref(): string {
+    const link = this.attrs.link;
+    const url = link.url();
+
+    if (url.startsWith('/') && link.isInternal()) {
+      return app.forum.attribute('baseUrl') + url;
+    }
+
+    return url;
   }
 
   get icon(): Mithril.Child | null {
@@ -126,10 +137,15 @@ export default class LinkItem extends LinkButton {
 
     if (!link.isInternal()) return false;
 
-    const currentPath = m.route.get() || '/';
+    const base = app.forum.attribute<string>('baseUrl');
 
-    let linkPath = link.url().replace(app.forum.attribute('baseUrl'), '');
-    if (linkPath === '') linkPath = '/';
+    // Mithril returns the current path relative to the origin, which isn't necessarily the base forum URL
+    const currentUrl = new URL(m.route.get() || '/', base);
+    const currentPath = currentUrl.href.replace(base, '');
+
+    // The link from `this.linkHref` should already be absolute, but we'll make sure
+    const linkUrl = new URL(this.linkHref, base);
+    const linkPath = linkUrl.href.replace(base, '');
 
     // The link is active if the current path starts with the link path.
     // Except if it's the base url, in which case only an exact match is considered active
