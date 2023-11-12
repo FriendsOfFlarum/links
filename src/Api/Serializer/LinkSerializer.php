@@ -21,7 +21,7 @@ class LinkSerializer extends AbstractSerializer
     protected $type = 'links';
 
     /**
-     * {@inheritdoc}
+     * @param \FoF\Links\Link $link
      */
     protected function getDefaultAttributes($link)
     {
@@ -39,6 +39,8 @@ class LinkSerializer extends AbstractSerializer
     }
 
     /**
+     * @param \FoF\Links\Link $link
+     *
      * @return \Tobscure\JsonApi\Relationship
      */
     protected function parent($link)
