@@ -40,6 +40,7 @@ class LinkSerializer extends AbstractSerializer
 
     /**
      * @param \FoF\Links\Link $link
+     *
      * @return \Tobscure\JsonApi\Relationship
      */
     protected function parent($link)
