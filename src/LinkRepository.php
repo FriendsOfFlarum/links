@@ -32,13 +32,9 @@ class LinkRepository
 
     /**
      * Get all links.
-     *
-     * @param User|null $user
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function all()
     {
-        return Link::newQuery();
+        return Link::query()->get();
     }
 }

@@ -24,6 +24,7 @@ use Flarum\Database\AbstractModel;
  * @property bool   $registered_users_only
  * @property int    $parent_id
  * @property Link   $parent
+ * @property string $visibility
  */
 class Link extends AbstractModel
 {
@@ -44,7 +45,7 @@ class Link extends AbstractModel
      * Create a new link.
      *
      * @param string $name
-     * @param string icon
+     * @param string $icon
      * @param string $url
      * @param bool   $isInternal
      * @param bool   $isNewtab
