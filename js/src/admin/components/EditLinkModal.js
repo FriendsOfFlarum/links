@@ -25,6 +25,7 @@ export default class EditlinksModal extends Modal {
     this.url = Stream(this.link.url() || '');
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
+    this.useRelMe = Stream(this.link.useRelMe() && true);
     this.visibility = Stream(this.link.visibility() || 'everyone');
 
     if (this.isInternal()) {
@@ -159,6 +160,10 @@ export default class EditlinksModal extends Modal {
               />
               {app.translator.trans('fof-links.admin.edit_link.open_newtab')}
             </label>
+            <label className="checkbox">
+              <input type="checkbox" value="1" bidi={this.useRelMe} />
+              {app.translator.trans('fof-links.admin.edit_link.use_rel_me')}
+            </label>
           </div>
         </div>,
       ],
@@ -224,6 +229,7 @@ export default class EditlinksModal extends Modal {
       url: this.url(),
       isInternal: this.isInternal(),
       isNewtab: this.isNewtab(),
+      useRelMe: this.useRelMe(),
       visibility: this.visibility(),
     };
   }

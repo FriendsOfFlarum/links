@@ -18,6 +18,7 @@ interface ILink {
   title(): string;
   icon(): string;
   isNewtab(): boolean;
+  useRelMe(): boolean;
 }
 
 interface ILinkItemAttrs extends IButtonAttrs {
@@ -122,7 +123,7 @@ export default class LinkItem extends LinkButton {
     // Learn more:
     // https://web.dev/external-anchors-use-rel-noopener
 
-    return this.attrs.link.isNewtab() ? 'noopener noreferrer' : undefined;
+    return classList(this.attrs.link.isNewtab() && 'noopener noreferrer', this.attrs.link.useRelMe() && 'me') || undefined;
   }
 
   get class(): string {
