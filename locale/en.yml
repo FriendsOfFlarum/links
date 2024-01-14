@@ -26,6 +26,7 @@ fof-links:
       url_description: Leave blank to show as a label.
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
+      use_rel_me: Add <code>rel="me"</code> attribute for identity verification on other sites
       visibility: Link visibility
 
     # These strings are used in the Links page.

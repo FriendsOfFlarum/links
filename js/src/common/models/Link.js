@@ -9,6 +9,7 @@ export default class Link extends mixin(Model, {
   position: Model.attribute('position'),
   isInternal: Model.attribute('isInternal'),
   isNewtab: Model.attribute('isNewtab'),
+  useRelMe: Model.attribute('useRelMe'),
   isChild: Model.attribute('isChild'),
   parent: Model.hasOne('parent'),
   visibility: Model.attribute('visibility'),

@@ -33,6 +33,7 @@ class LinkSerializer extends AbstractSerializer
             'position'            => $link->position,
             'isInternal'          => $link->is_internal,
             'isNewtab'            => $link->is_newtab,
+            'useRelMe'            => $link->use_relme,
             'isChild'             => (bool) $link->parent_id,
             'visibility'          => $link->visibility,
         ];

@@ -57,7 +57,8 @@ class CreateLinkHandler
             Arr::get($data, 'attributes.url'),
             Arr::get($data, 'attributes.isInternal'),
             Arr::get($data, 'attributes.isNewtab'),
-            Arr::get($data, 'attributes.visibility')
+            Arr::get($data, 'attributes.visibility'),
+            Arr::get($data, 'attributes.useRelMe')
         );
 
         $parentId = Arr::get($data, 'relationships.parent.data.id');

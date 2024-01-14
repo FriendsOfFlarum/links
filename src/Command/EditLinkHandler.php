@@ -83,6 +83,10 @@ class EditLinkHandler
             $link->is_newtab = $attributes['isNewtab'];
         }
 
+        if (isset($attributes['useRelMe'])) {
+            $link->use_relme = $attributes['useRelMe'];
+        }
+
         if (isset($attributes['visibility'])) {
             $link->visibility = $attributes['visibility'];
         }

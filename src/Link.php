@@ -21,6 +21,7 @@ use Flarum\Database\AbstractModel;
  * @property int    $position
  * @property bool   $is_internal
  * @property bool   $is_newtab
+ * @property bool   $use_relme
  * @property bool   $registered_users_only
  * @property int    $parent_id
  * @property Link   $parent
@@ -52,7 +53,7 @@ class Link extends AbstractModel
      *
      * @return static
      */
-    public static function build($name, $icon, $url, $isInternal, $isNewtab, $visibility)
+    public static function build($name, $icon, $url, $isInternal, $isNewtab, $visibility, $useRelMe = false)
     {
         $link = new static();
 
@@ -61,6 +62,7 @@ class Link extends AbstractModel
         $link->url = $url;
         $link->is_internal = (bool) $isInternal;
         $link->is_newtab = (bool) $isNewtab;
+        $link->use_relme = (bool) $useRelMe;
         $link->visibility = $visibility;
 
         return $link;
