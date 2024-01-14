@@ -22,6 +22,7 @@ fof-links:
       title_placeholder: => fof-links.ref.title
       icon_label: => core.ref.icon
       icon_text: => core.ref.icon_text
+      icon_additional_text: If you want to use a brand icon, the prefix is <code>fab fa-</code> instead.
       url_description: Leave blank to show as a label.
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
