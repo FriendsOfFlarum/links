@@ -85,8 +85,10 @@ export default class EditlinksModal extends Modal {
           <label>{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
           <div className="helpText">
             {app.translator.trans('fof-links.admin.edit_link.icon_text', {
-              a: <a href="https://fontawesome.com/icons?m=free" tabindex="-1" />,
+              a: <a href="https://fontawesome.com/v5/search?o=r&m=free" tabindex="-1" />,
             })}
+            <br />
+            {app.translator.trans('fof-links.admin.edit_link.icon_additional_text')}
           </div>
           <input className="FormControl" placeholder="fas fa-bolt" value={this.icon()} oninput={withAttr('value', this.icon)} />
         </div>,
