@@ -1,15 +1,13 @@
 import app from 'flarum/admin/app';
-
-import Link from '../common/models/Link';
 import LinksPage from './components/LinksPage';
 
 export * from './components';
 export * from '../common/utils';
 export * from '../common/models';
 
-app.initializers.add('fof-links', () => {
-  app.store.models.links = Link;
+export { default as extend } from './extend';
 
+app.initializers.add('fof-links', () => {
   app.extensionData
     .for('fof-links')
     .registerPage(LinksPage)
