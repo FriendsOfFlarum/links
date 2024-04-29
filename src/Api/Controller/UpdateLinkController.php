@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Api\Controller\AbstractShowController;
+use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\EditLink;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -45,7 +46,7 @@ class UpdateLinkController extends AbstractShowController
     protected function data(ServerRequestInterface $request, Document $document)
     {
         $id = Arr::get($request->getQueryParams(), 'id');
-        $actor = $request->getAttribute('actor');
+        $actor = RequestUtil::getActor($request);
         $data = Arr::get($request->getParsedBody(), 'data');
 
         return $this->bus->dispatch(

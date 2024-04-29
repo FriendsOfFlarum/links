@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Api\Controller\AbstractCreateController;
+use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\CreateLink;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -45,7 +46,7 @@ class CreateLinkController extends AbstractCreateController
     protected function data(ServerRequestInterface $request, Document $document)
     {
         return $this->bus->dispatch(
-            new CreateLink($request->getAttribute('actor'), Arr::get($request->getParsedBody(), 'data'))
+            new CreateLink(RequestUtil::getActor($request), Arr::get($request->getParsedBody(), 'data'))
         );
     }
 }
