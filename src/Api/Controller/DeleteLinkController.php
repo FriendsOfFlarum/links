@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Api\Controller\AbstractDeleteController;
+use Flarum\Http\RequestUtil;
 use FoF\Links\Command\DeleteLink;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
@@ -38,7 +39,7 @@ class DeleteLinkController extends AbstractDeleteController
     protected function delete(ServerRequestInterface $request)
     {
         $this->bus->dispatch(
-            new DeleteLink(Arr::get($request->getQueryParams(), 'id'), $request->getAttribute('actor'))
+            new DeleteLink(Arr::get($request->getQueryParams(), 'id'), RequestUtil::getActor($request))
         );
     }
 }

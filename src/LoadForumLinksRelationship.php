@@ -13,6 +13,7 @@ namespace FoF\Links;
 
 use Flarum\Api\Controller\ShowForumController;
 use Flarum\Foundation\Config;
+use Flarum\Http\RequestUtil;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -33,8 +34,7 @@ class LoadForumLinksRelationship
      */
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
     {
-        /** @var \Flarum\User\User */
-        $actor = $request->getattribute('actor');
+        $actor = RequestUtil::getActor($request);
         $adminPath = Arr::get($this->config, 'paths.admin');
 
         // So that admins don't have to see guest only items but can manage them in admin panel,

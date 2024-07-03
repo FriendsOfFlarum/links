@@ -2,27 +2,17 @@
 
 import app from 'flarum/forum/app';
 import Link from 'flarum/common/components/Link';
+import LinkModel from '../../common/models/Link';
 import LinkButton from 'flarum/common/components/LinkButton';
 import icon from 'flarum/common/helpers/icon';
 import Separator from 'flarum/common/components/Separator';
-
 import classList from 'flarum/common/utils/classList';
-
 import type { IButtonAttrs } from 'flarum/common/components/Button';
 import type Mithril from 'mithril';
 import Button from 'flarum/common/components/Button';
 
-interface ILink {
-  isInternal(): boolean;
-  url(): string;
-  title(): string;
-  icon(): string;
-  isNewtab(): boolean;
-  useRelMe(): boolean;
-}
-
-interface ILinkItemAttrs extends IButtonAttrs {
-  link: ILink;
+export interface ILinkItemAttrs extends IButtonAttrs {
+  link: LinkModel;
   className?: string;
   inDropdown?: boolean;
   isDropdownButton?: boolean;

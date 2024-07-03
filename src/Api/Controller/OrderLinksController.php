@@ -11,6 +11,7 @@
 
 namespace FoF\Links\Api\Controller;
 
+use Flarum\Http\RequestUtil;
 use FoF\Links\Link;
 use Illuminate\Support\Arr;
 use Laminas\Diactoros\Response\EmptyResponse;
@@ -25,7 +26,7 @@ class OrderLinksController implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $request->getAttribute('actor')->assertAdmin();
+        RequestUtil::getActor($request)->assertAdmin();
         $order = Arr::get($request->getParsedBody(), 'order');
 
         if ($order === null) {
