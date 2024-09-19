@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
@@ -8,7 +17,7 @@ use Flarum\Testing\integration\TestCase;
 class LinkVisibilityTest extends TestCase
 {
     use RetrievesAuthorizedUsers;
-    
+
     public function setUp(): void
     {
         parent::setUp();
@@ -23,8 +32,8 @@ class LinkVisibilityTest extends TestCase
                 ['id' => 1, 'title' => 'Google', 'url' => 'https://google.com', 'visibility' => 'everyone'],
                 ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'visibility' => 'guests'],
                 ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'visibility' => 'members'],
-                ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'visibility' => 'members']
-            ]
+                ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'visibility' => 'members'],
+            ],
         ]);
     }
 
@@ -32,7 +41,7 @@ class LinkVisibilityTest extends TestCase
     {
         return [
             [1],
-            [2]
+            [2],
         ];
     }
 
@@ -86,13 +95,14 @@ class LinkVisibilityTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider forumUsersDataProvider
      */
     public function members_see_everyone_and_members_links(int $userId)
     {
         $response = $this->send(
             $this->request('GET', '/api', [
-                'authenticatedAs' => $userId
+                'authenticatedAs' => $userId,
             ])
         );
 

@@ -15,7 +15,6 @@ use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 
 class LinkRepository
 {
@@ -68,8 +67,9 @@ class LinkRepository
     /**
      * Get all links, optionally making sure they are visible to a
      * certain user.
-     * 
+     *
      * @param User|null $user
+     *
      * @return \Illuminate\Database\Eloquent\Collection<Link>
      */
     public function all(User $user = null)
@@ -83,7 +83,8 @@ class LinkRepository
      * Scope a query to only include records that are visible to a user.
      *
      * @param Builder<Link> $query
-     * @param User|null $user
+     * @param User|null     $user
+     *
      * @return Builder<Link>
      */
     protected function scopeVisibleTo(Builder $query, ?User $user = null)

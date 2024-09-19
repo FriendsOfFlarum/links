@@ -16,7 +16,6 @@ use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Extend;
 use FoF\Links\Api\Controller;
 use FoF\Links\Api\Serializer\LinkSerializer;
-use FoF\Links\LoadForumLinksRelationship;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),

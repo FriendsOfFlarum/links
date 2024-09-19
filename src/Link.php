@@ -31,7 +31,7 @@ use Flarum\Database\ScopeVisibilityTrait;
 class Link extends AbstractModel
 {
     use ScopeVisibilityTrait;
-    
+
     /**
      * {@inheritdoc}
      */
