@@ -47,7 +47,7 @@ class LoadForumLinksRelationship
         // So that admins don't have to see guest only items but can manage them in admin panel,
         // we only serialize all links if we're visiting the admin panel
         if ($actor->isAdmin() && $this->isAdminPath($request)) {
-            return $data['links'] = Link::query()->all();
+            return $data['links'] = Link::all();
         }
 
         //$data['links'] = $this->links->getLinks($actor);
