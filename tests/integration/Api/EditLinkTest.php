@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Extend;
@@ -39,7 +48,7 @@ class EditLinkTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/links/1', [
                 'authenticatedAs' => $userId,
-                'json' => [
+                'json'            => [
                     'data' => [
                         'type'       => 'links',
                         'id'         => '1',
@@ -81,7 +90,7 @@ class EditLinkTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/links/1', [
                 'authenticatedAs' => $userId,
-                'json' => [],
+                'json'            => [],
             ])
         );
 
@@ -103,7 +112,7 @@ class EditLinkTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/links/2', [
                 'authenticatedAs' => $userId,
-                'json' => [
+                'json'            => [
                     'data' => [
                         'type'       => 'links',
                         'id'         => '2',
@@ -141,7 +150,7 @@ class EditLinkTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/links/1', [
                 'authenticatedAs' => $userId,
-                'json' => [
+                'json'            => [
                     'data' => [
                         'type'       => 'links',
                         'id'         => '1',

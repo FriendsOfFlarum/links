@@ -50,8 +50,8 @@ class CreateLinkTest extends TestCase
                     'visibility' => 'everyone',
                     'position'   => 0,
                     'isInternal' => true,
-                    'isNewtab' => true,
-                    'useRelMe' => true,
+                    'isNewtab'   => true,
+                    'useRelMe'   => true,
                 ],
             ],
         ];
@@ -63,9 +63,9 @@ class CreateLinkTest extends TestCase
             'data' => [
                 'type'       => 'links',
                 'attributes' => [
-                    'title' => 'Facebook',
-                    'url'   => 'https://facebook.com',
-                    'icon'  => 'fab fa-facebook',
+                    'title'      => 'Facebook',
+                    'url'        => 'https://facebook.com',
+                    'icon'       => 'fab fa-facebook',
                     'visibility' => 'everyone',
                 ],
             ],
@@ -173,7 +173,6 @@ class CreateLinkTest extends TestCase
         $this->assertEquals('everyone', $link->visibility);
         $this->assertEquals('fab fa-facebook', $link->icon);
         $this->assertFalse($response['data']['attributes']['isChild']);
-
 
         // check defaults of optional fields
         $this->assertFalse($link->is_internal);
