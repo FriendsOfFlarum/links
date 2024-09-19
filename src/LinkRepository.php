@@ -58,6 +58,7 @@ class LinkRepository
      * Gets the cache key for the appropriate links for the given user.
      *
      * @param User $actor
+     *
      * @return string
      */
     public function cacheKey(User $actor): string
@@ -69,6 +70,7 @@ class LinkRepository
      * Get the links for the given user.
      *
      * @param User $actor
+     *
      * @return Collection
      */
     public function getLinks(User $actor): Collection
@@ -78,10 +80,11 @@ class LinkRepository
 
     /**
      * Get the links for guests.
-     * 
+     *
      * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
      *
      * @param User $actor
+     *
      * @return Collection
      */
     public function getGuestLinks(User $actor): Collection
@@ -111,10 +114,11 @@ class LinkRepository
 
     /**
      * Get the links for members.
-     * 
+     *
      * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
      *
      * @param User $actor
+     *
      * @return Collection
      */
     public function getMemberLinks(User $actor): Collection
@@ -133,6 +137,7 @@ class LinkRepository
      * Get the links for members from the database.
      *
      * @param User $actor
+     *
      * @return Collection
      */
     protected function getMemberLinksFromDatabase(User $actor): Collection
