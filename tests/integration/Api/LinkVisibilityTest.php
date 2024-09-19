@@ -71,8 +71,8 @@ class LinkVisibilityTest extends TestCase
 
     /**
      * @test
-     * 
-     * @param int|null $userId
+     *
+     * @param int|null   $userId
      * @param array<int> $expectedLinks
      *
      * @dataProvider forumUsersDataProvider
