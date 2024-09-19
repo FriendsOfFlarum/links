@@ -50,11 +50,7 @@ class LoadForumLinksRelationship
             return $data['links'] = Link::all();
         }
 
-        //$data['links'] = $this->links->getLinks($actor);
-
-        $data['links'] = Link::query()
-            ->whereVisibleTo($actor)
-            ->get();
+        $data['links'] = $this->links->getLinks($actor);
     }
 
     private function isAdminPath(ServerRequestInterface $request): bool

@@ -20,7 +20,6 @@ class LinkRepository
 {
     protected static $cacheKeyPrefix = 'fof-links.links.';
     protected static $cacheGuestLinksKey = 'guest';
-    protected static $cacheMemberLinksKey = 'member';
 
     /**
      * @var Cache
@@ -96,106 +95,73 @@ class LinkRepository
         return $query;
     }
 
-    // /**
-    //  * Gets the cache key for the appropriate links for the given user.
-    //  *
-    //  * @param User $actor
-    //  *
-    //  * @return string
-    //  */
-    // public function cacheKey(User $actor): string
-    // {
-    //     return self::$cacheKeyPrefix.($actor->isGuest() ? self::$cacheGuestLinksKey : self::$cacheMemberLinksKey);
-    // }
+    /**
+     * Gets the cache key for the appropriate links for the given user. Only applicable for guests.
+     *
+     * @param User $actor
+     *
+     * @return string
+     */
+    public function cacheKey(User $actor): string
+    {
+        if ($actor->isGuest()) {
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+        } else {
+            throw new \InvalidArgumentException('Only guests can have cached links at this time.');
+        }
+    }
 
-    // /**
-    //  * Get the links for the given user.
-    //  *
-    //  * @param User $actor
-    //  *
-    //  * @return Collection
-    //  */
-    // public function getLinks(User $actor): Collection
-    // {
-    //     return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getMemberLinks($actor);
-    // }
+    /**
+     * Get the links for the given user.
+     *
+     * @param User $actor
+     *
+     * @return Collection
+     */
+    public function getLinks(User $actor): Collection
+    {
+        return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getLinksFromDatabase($actor);
+    }
 
-    // /**
-    //  * Get the links for guests.
-    //  *
-    //  * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
-    //  *
-    //  * @param User $actor
-    //  *
-    //  * @return Collection
-    //  */
-    // public function getGuestLinks(User $actor): Collection
-    // {
-    //     if ($links = $this->cache->get($this->cacheKey($actor))) {
-    //         return $links;
-    //     } else {
-    //         $links = $this->getGuestLinksFromDatabase();
-    //         $this->cache->forever($this->cacheKey($actor), $links);
+    /**
+     * Get the links for guests.
+     *
+     * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
+     *
+     * @param User $actor
+     *
+     * @return Collection
+     */
+    public function getGuestLinks(User $actor): Collection
+    {
+        if ($links = $this->cache->get($this->cacheKey($actor))) {
+            return $links;
+        } else {
+            $links = $this->getLinksFromDatabase($actor);
+            $this->cache->forever($this->cacheKey($actor), $links);
 
-    //         return $links;
-    //     }
-    // }
+            return $links;
+        }
+    }
 
-    // /**
-    //  * Get the links for guests from the database.
-    //  *
-    //  * @return Collection
-    //  */
-    // protected function getGuestLinksFromDatabase(): Collection
-    // {
-    //     return Link::query()
-    //         ->where('visibility', 'guests')
-    //         ->orWhere('visibility', 'everyone')
-    //         ->get();
-    // }
+    /**
+     * Get the links for guests from the database.
+     *
+     * @return Collection
+     */
+    protected function getLinksFromDatabase(User $actor): Collection
+    {
+        return Link::query()
+        ->whereVisibleTo($actor)
+        ->get();
+    }
 
-    // /**
-    //  * Get the links for members.
-    //  *
-    //  * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
-    //  *
-    //  * @param User $actor
-    //  *
-    //  * @return Collection
-    //  */
-    // public function getMemberLinks(User $actor): Collection
-    // {
-    //     if ($links = $this->cache->get($this->cacheKey($actor))) {
-    //         return $links;
-    //     } else {
-    //         $links = $this->getMemberLinksFromDatabase($actor);
-    //         $this->cache->forever($this->cacheKey($actor), $links);
-
-    //         return $links;
-    //     }
-    // }
-
-    // /**
-    //  * Get the links for members from the database.
-    //  *
-    //  * @param User $actor
-    //  *
-    //  * @return Collection
-    //  */
-    // protected function getMemberLinksFromDatabase(User $actor): Collection
-    // {
-    //     return Link::query()
-    //         ->where('visibility', 'members')
-    //         ->orWhere('visibility', 'everyone')
-    //         ->get();
-    // }
-
-    // /**
-    //  * Clear the links cache.
-    //  */
-    // public function clearLinksCache(): void
-    // {
-    //     $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
-    //     $this->cache->forget(self::$cacheKeyPrefix.self::$cacheMemberLinksKey);
-    // }
+    /**
+     * Clear the links cache.
+     */
+    public function clearLinksCache(): void
+    {
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        //$this->cache->forget(self::$cacheKeyPrefix.self::$cacheMemberLinksKey);
+    }
 }
