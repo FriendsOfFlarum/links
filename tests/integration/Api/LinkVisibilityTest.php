@@ -13,6 +13,7 @@ namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use FoF\Links\Link;
 
 class LinkVisibilityTest extends TestCase
 {
@@ -40,8 +41,9 @@ class LinkVisibilityTest extends TestCase
     public function forumUsersDataProvider(): array
     {
         return [
-            [1],
-            [2],
+            [null, [1, 2]],
+            [1, [1, 3, 4]],
+            [2, [1, 3, 4]],
         ];
     }
 
@@ -55,7 +57,7 @@ class LinkVisibilityTest extends TestCase
         });
     }
 
-    public function searchForLink(array $links, int $id): array
+    public function getLinkById(int $id, array $links): array
     {
         $result = array_filter($links, function ($link) use ($id) {
             return $link['attributes']['id'] === $id;
@@ -69,36 +71,13 @@ class LinkVisibilityTest extends TestCase
 
     /**
      * @test
-     */
-    public function guests_see_guest_and_everyone_links()
-    {
-        $response = $this->send(
-            $this->request('GET', '/api')
-        );
-
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $data = json_decode($response->getBody(), true);
-
-        $links = $this->extractLinksFromIncluded($data);
-
-        $this->assertCount(2, $links);
-
-        $link = $this->searchForLink($links, 1);
-
-        $this->assertEquals('Google', $link['attributes']['title']);
-
-        $link = $this->searchForLink($links, 2);
-
-        $this->assertEquals('Facebook', $link['attributes']['title']);
-    }
-
-    /**
-     * @test
+     * 
+     * @param int|null $userId
+     * @param array<int> $expectedLinks
      *
      * @dataProvider forumUsersDataProvider
      */
-    public function members_see_everyone_and_members_links(int $userId)
+    public function user_type_sees_expected_links(?int $userId, array $expectedLinks)
     {
         $response = $this->send(
             $this->request('GET', '/api', [
@@ -112,18 +91,19 @@ class LinkVisibilityTest extends TestCase
 
         $links = $this->extractLinksFromIncluded($data);
 
-        $this->assertCount(3, $links);
+        $this->assertEquals(count($expectedLinks), count($links));
 
-        $link = $this->searchForLink($links, 1);
+        foreach ($expectedLinks as $expectedLink) {
+            $link = $this->getLinkById($expectedLink, $links);
 
-        $this->assertEquals('Google', $link['attributes']['title']);
+            $this->assertNotNull($link);
 
-        $link = $this->searchForLink($links, 3);
+            $dbLink = Link::find($expectedLink);
 
-        $this->assertEquals('Twitter', $link['attributes']['title']);
+            $this->assertNotNull($dbLink);
 
-        $link = $this->searchForLink($links, 4);
-
-        $this->assertEquals('Reddit', $link['attributes']['title']);
+            $this->assertEquals($dbLink->title, $link['attributes']['title']);
+            $this->assertEquals($dbLink->url, $link['attributes']['url']);
+        }
     }
 }
