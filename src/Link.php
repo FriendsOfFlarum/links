@@ -84,8 +84,10 @@ class Link extends AbstractModel
 
     public function delete()
     {
-        parent::delete();
+        $result = parent::delete();
 
         resolve(LinkRepository::class)->clearLinksCache();
+
+        return $result;
     }
 }
