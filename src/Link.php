@@ -72,4 +72,22 @@ class Link extends AbstractModel
     {
         return $this->belongsTo(self::class);
     }
+
+    public function save(array $options = []): bool
+    {
+        $result = parent::save($options);
+
+        resolve(LinkRepository::class)->clearLinksCache();
+
+        return $result;
+    }
+
+    public function delete()
+    {
+        $result = parent::delete();
+
+        resolve(LinkRepository::class)->clearLinksCache();
+
+        return $result;
+    }
 }
