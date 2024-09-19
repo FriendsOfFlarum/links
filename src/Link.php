@@ -12,6 +12,7 @@
 namespace FoF\Links;
 
 use Flarum\Database\AbstractModel;
+use Flarum\Database\ScopeVisibilityTrait;
 
 /**
  * @property int    $id
@@ -29,6 +30,8 @@ use Flarum\Database\AbstractModel;
  */
 class Link extends AbstractModel
 {
+    use ScopeVisibilityTrait;
+    
     /**
      * {@inheritdoc}
      */
@@ -73,21 +76,21 @@ class Link extends AbstractModel
         return $this->belongsTo(self::class);
     }
 
-    public function save(array $options = []): bool
-    {
-        $result = parent::save($options);
+    // public function save(array $options = []): bool
+    // {
+    //     $result = parent::save($options);
 
-        resolve(LinkRepository::class)->clearLinksCache();
+    //     resolve(LinkRepository::class)->clearLinksCache();
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
-    public function delete()
-    {
-        $result = parent::delete();
+    // public function delete()
+    // {
+    //     $result = parent::delete();
 
-        resolve(LinkRepository::class)->clearLinksCache();
+    //     resolve(LinkRepository::class)->clearLinksCache();
 
-        return $result;
-    }
+    //     return $result;
+    // }
 }

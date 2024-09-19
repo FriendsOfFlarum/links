@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+namespace FoF\Links;
+
 use Flarum\Api\Controller\ShowForumController;
 use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Extend;
@@ -44,4 +46,7 @@ return [
         ->registerLessConfigVar('fof-links-show-only-icons-on-mobile', 'fof-links.show_icons_only_on_mobile', function ($value) {
             return $value ? 'true' : 'false';
         }),
+
+    (new Extend\ModelVisibility(Link::class))
+        ->scope(Access\ScopeLinkVisibility::class),
 ];
