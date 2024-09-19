@@ -162,6 +162,5 @@ class LinkRepository
     public function clearLinksCache(): void
     {
         $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
-        //$this->cache->forget(self::$cacheKeyPrefix.self::$cacheMemberLinksKey);
     }
 }
