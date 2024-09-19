@@ -93,7 +93,7 @@ class LinkRepository
             return $links;
         } else {
             $links = $this->getGuestLinksFromDatabase();
-            $this->cache->put($this->cacheKey($actor), $links, 60);
+            $this->cache->forever($this->cacheKey($actor), $links);
 
             return $links;
         }
@@ -127,7 +127,7 @@ class LinkRepository
             return $links;
         } else {
             $links = $this->getMemberLinksFromDatabase($actor);
-            $this->cache->put($this->cacheKey($actor), $links, 60);
+            $this->cache->forever($this->cacheKey($actor), $links);
 
             return $links;
         }
