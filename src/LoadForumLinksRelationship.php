@@ -19,12 +19,20 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class LoadForumLinksRelationship
 {
-    /** @var Config */
+    /**
+     * @var Config
+     */
     protected $config;
 
-    public function __construct(Config $config)
+    /**
+     * @var LinkRepository
+     */
+    protected $links;
+
+    public function __construct(Config $config, LinkRepository $links)
     {
         $this->config = $config;
+        $this->links = $links;
     }
 
     /**
@@ -43,8 +51,6 @@ class LoadForumLinksRelationship
             return $data['links'] = Link::all();
         }
 
-        $data['links'] = $actor->isGuest() ?
-            Link::where('visibility', 'guests')->orWhere('visibility', 'everyone')->get() :
-            Link::where('visibility', 'members')->orWhere('visibility', 'everyone')->get();
+        $data['links'] = $this->links->getLinks($actor);
     }
 }
