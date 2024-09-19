@@ -56,6 +56,7 @@ class CreateLinkController extends AbstractCreateController
                 'data' => 'Invalid payload',
             ]);
         }
+
         return $this->bus->dispatch(
             new CreateLink($actor, $data)
         );

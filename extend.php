@@ -50,5 +50,5 @@ return [
         ->scope(Access\ScopeLinkVisibility::class),
 
     (new Extend\Policy())
-        ->modelPolicy(Link::class, Access\LinkPolicy::class)
+        ->modelPolicy(Link::class, Access\LinkPolicy::class),
 ];

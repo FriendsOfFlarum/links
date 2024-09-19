@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Extend;
@@ -10,7 +19,7 @@ use FoF\Links\Link;
 class CreateLinkTest extends TestCase
 {
     use RetrievesAuthorizedUsers;
-    
+
     public function setUp(): void
     {
         parent::setUp();
@@ -38,7 +47,7 @@ class CreateLinkTest extends TestCase
     {
         return [
             [null],
-            [2]
+            [2],
         ];
     }
 
@@ -46,11 +55,11 @@ class CreateLinkTest extends TestCase
     {
         return [
             'data' => [
-                'type' => 'links',
+                'type'       => 'links',
                 'attributes' => [
-                    'title' => 'Facebook',
-                    'url' => 'https://facebook.com',
-                    'icon' => 'fab fa-facebook',
+                    'title'      => 'Facebook',
+                    'url'        => 'https://facebook.com',
+                    'icon'       => 'fab fa-facebook',
                     'visibility' => 'everyone',
                 ],
             ],
@@ -59,6 +68,7 @@ class CreateLinkTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider authorizedUsers
      */
     public function authorized_user_cannot_create_link_with_no_data(int $userId)
@@ -78,6 +88,7 @@ class CreateLinkTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider authorizedUsers
      */
     public function authorized_user_can_create_link(int $userId)
@@ -85,7 +96,7 @@ class CreateLinkTest extends TestCase
         $response = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => $userId,
-                'json' => $this->payload(),
+                'json'            => $this->payload(),
             ])
         );
 
@@ -111,21 +122,22 @@ class CreateLinkTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider unauthorizedUsers
      */
     public function unauthorized_cannot_create_link(?int $userId)
     {
         if (!$userId) {
             $this->extend(
-                (new Extend\Csrf)
+                (new Extend\Csrf())
                     ->exemptRoute('links.create')
             );
         }
-        
+
         $response = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => $userId,
-                'json' => $this->payload(),
+                'json'            => $this->payload(),
             ])
         );
 
