@@ -15,10 +15,12 @@ use Flarum\Extend;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
+use FoF\Links\Tests\fixtures\LinkUsersTrait;
 
 class CreateLinkTest extends TestCase
 {
     use RetrievesAuthorizedUsers;
+    use LinkUsersTrait;
 
     public function setUp(): void
     {
@@ -31,24 +33,9 @@ class CreateLinkTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'url' => 'https://google.com', 'visibility' => 'everyone'],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'visibility' => 'everyone', 'parent_id' => null],
             ],
         ]);
-    }
-
-    public function authorizedUsers(): array
-    {
-        return [
-            [1],
-        ];
-    }
-
-    public function unauthorizedUsers(): array
-    {
-        return [
-            [null],
-            [2],
-        ];
     }
 
     public function payload(): array
@@ -60,6 +47,25 @@ class CreateLinkTest extends TestCase
                     'title'      => 'Facebook',
                     'url'        => 'https://facebook.com',
                     'icon'       => 'fab fa-facebook',
+                    'visibility' => 'everyone',
+                    'position'   => 0,
+                    'isInternal' => true,
+                    'isNewtab' => true,
+                    'useRelMe' => true,
+                ],
+            ],
+        ];
+    }
+
+    public function minimalPayload(): array
+    {
+        return [
+            'data' => [
+                'type'       => 'links',
+                'attributes' => [
+                    'title' => 'Facebook',
+                    'url'   => 'https://facebook.com',
+                    'icon'  => 'fab fa-facebook',
                     'visibility' => 'everyone',
                 ],
             ],
@@ -76,6 +82,7 @@ class CreateLinkTest extends TestCase
         $response = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => $userId,
+                'json'            => [],
             ])
         );
 
@@ -109,6 +116,12 @@ class CreateLinkTest extends TestCase
         $this->assertEquals('Facebook', $response['data']['attributes']['title']);
         $this->assertEquals('https://facebook.com', $response['data']['attributes']['url']);
         $this->assertEquals('everyone', $response['data']['attributes']['visibility']);
+        $this->assertEquals('fab fa-facebook', $response['data']['attributes']['icon']);
+        $this->assertEquals(0, $response['data']['attributes']['position']);
+        $this->assertTrue($response['data']['attributes']['isInternal']);
+        $this->assertTrue($response['data']['attributes']['isNewtab']);
+        $this->assertTrue($response['data']['attributes']['useRelMe']);
+        $this->assertFalse($response['data']['attributes']['isChild']);
 
         $id = $response['data']['id'];
 
@@ -118,6 +131,56 @@ class CreateLinkTest extends TestCase
         $this->assertEquals('Facebook', $link->title);
         $this->assertEquals('https://facebook.com', $link->url);
         $this->assertEquals('everyone', $link->visibility);
+        $this->assertEquals('fab fa-facebook', $link->icon);
+        $this->assertEquals(0, $link->position);
+        $this->assertTrue($link->is_internal);
+        $this->assertTrue($link->is_newtab);
+        $this->assertTrue($link->use_relme);
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider authorizedUsers
+     */
+    public function authorized_user_can_create_link_with_minimal_data(int $userId)
+    {
+        $response = $this->send(
+            $this->request('POST', '/api/links', [
+                'authenticatedAs' => $userId,
+                'json'            => $this->minimalPayload(),
+            ])
+        );
+
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $response = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertArrayHasKey('data', $response);
+        $this->assertArrayHasKey('id', $response['data']);
+        $this->assertEquals('Facebook', $response['data']['attributes']['title']);
+        $this->assertEquals('https://facebook.com', $response['data']['attributes']['url']);
+        $this->assertEquals('everyone', $response['data']['attributes']['visibility']);
+        $this->assertEquals('fab fa-facebook', $response['data']['attributes']['icon']);
+
+        $id = $response['data']['id'];
+
+        $link = Link::find($id);
+
+        $this->assertNotNull($link);
+        $this->assertEquals('Facebook', $link->title);
+        $this->assertEquals('https://facebook.com', $link->url);
+        $this->assertEquals('everyone', $link->visibility);
+        $this->assertEquals('fab fa-facebook', $link->icon);
+        $this->assertFalse($response['data']['attributes']['isChild']);
+
+
+        // check defaults of optional fields
+        $this->assertFalse($link->is_internal);
+        $this->assertFalse($link->is_newtab);
+        $this->assertFalse($link->use_relme);
+        $this->assertNull($link->parent_id);
+        $this->assertNull($link->position);
     }
 
     /**

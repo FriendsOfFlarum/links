@@ -23,7 +23,6 @@ use Flarum\Database\ScopeVisibilityTrait;
  * @property bool   $is_internal
  * @property bool   $is_newtab
  * @property bool   $use_relme
- * @property bool   $registered_users_only
  * @property int    $parent_id
  * @property Link   $parent
  * @property string $visibility
@@ -43,6 +42,7 @@ class Link extends AbstractModel
     protected $casts = [
         'is_internal'           => 'boolean',
         'is_newtab'             => 'boolean',
+        'use_relme'             => 'boolean',
     ];
 
     /**

@@ -30,7 +30,7 @@ class LinkVisibilityTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'url' => 'https://google.com', 'visibility' => 'everyone'],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'visibility' => 'everyone', 'parent_id' => null],
                 ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'visibility' => 'guests'],
                 ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'visibility' => 'members'],
                 ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'visibility' => 'members'],
