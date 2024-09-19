@@ -142,8 +142,8 @@ class LinkRepository
      */
     protected function getMemberLinksFromDatabase(User $actor): Collection
     {
-        return Link::query()->
-            where('visibility', 'members')
+        return Link::query()
+            ->where('visibility', 'members')
             ->orWhere('visibility', 'everyone')
             ->get();
     }
