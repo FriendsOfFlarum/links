@@ -48,4 +48,7 @@ return [
 
     (new Extend\ModelVisibility(Link::class))
         ->scope(Access\ScopeLinkVisibility::class),
+
+    (new Extend\Policy())
+        ->modelPolicy(Link::class, Access\LinkPolicy::class)
 ];

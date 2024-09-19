@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Api\Controller\AbstractCreateController;
+use Flarum\Foundation\ValidationException;
 use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\CreateLink;
@@ -45,8 +46,18 @@ class CreateLinkController extends AbstractCreateController
      */
     protected function data(ServerRequestInterface $request, Document $document)
     {
+        $actor = RequestUtil::getActor($request);
+        $actor->assertAdmin();
+
+        $data = Arr::get($request->getParsedBody(), 'data');
+
+        if (!$data) {
+            throw new ValidationException([
+                'data' => 'Invalid payload',
+            ]);
+        }
         return $this->bus->dispatch(
-            new CreateLink(RequestUtil::getActor($request), Arr::get($request->getParsedBody(), 'data'))
+            new CreateLink($actor, $data)
         );
     }
 }
