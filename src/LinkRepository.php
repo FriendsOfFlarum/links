@@ -20,17 +20,17 @@ class LinkRepository
     protected static $cacheKeyPrefix = 'fof-links.links.';
     protected static $cacheGuestLinksKey = 'guest';
     protected static $cacheMemberLinksKey = 'member';
-    
+
     /**
      * @var Cache
      */
     protected $cache;
-    
+
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
     }
-    
+
     /**
      * Find a link by ID.
      *
@@ -56,7 +56,7 @@ class LinkRepository
 
     public function cacheKey(User $actor): string
     {
-        return self::$cacheKeyPrefix . ($actor->isGuest() ? self::$cacheGuestLinksKey : self::$cacheMemberLinksKey);
+        return self::$cacheKeyPrefix.($actor->isGuest() ? self::$cacheGuestLinksKey : self::$cacheMemberLinksKey);
     }
 
     public function getLinks(User $actor): Collection
@@ -106,7 +106,7 @@ class LinkRepository
 
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheMemberLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheMemberLinksKey);
     }
 }
