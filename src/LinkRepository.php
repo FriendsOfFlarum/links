@@ -54,16 +54,36 @@ class LinkRepository
         return Link::query()->get();
     }
 
+    /**
+     * Gets the cache key for the appropriate links for the given user.
+     *
+     * @param User $actor
+     * @return string
+     */
     public function cacheKey(User $actor): string
     {
         return self::$cacheKeyPrefix.($actor->isGuest() ? self::$cacheGuestLinksKey : self::$cacheMemberLinksKey);
     }
 
+    /**
+     * Get the links for the given user.
+     *
+     * @param User $actor
+     * @return Collection
+     */
     public function getLinks(User $actor): Collection
     {
         return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getMemberLinks($actor);
     }
 
+    /**
+     * Get the links for guests.
+     * 
+     * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
+     *
+     * @param User $actor
+     * @return Collection
+     */
     public function getGuestLinks(User $actor): Collection
     {
         if ($links = $this->cache->get($this->cacheKey($actor))) {
@@ -76,6 +96,11 @@ class LinkRepository
         }
     }
 
+    /**
+     * Get the links for guests from the database.
+     *
+     * @return Collection
+     */
     protected function getGuestLinksFromDatabase(): Collection
     {
         return Link::query()
@@ -84,6 +109,14 @@ class LinkRepository
             ->get();
     }
 
+    /**
+     * Get the links for members.
+     * 
+     * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
+     *
+     * @param User $actor
+     * @return Collection
+     */
     public function getMemberLinks(User $actor): Collection
     {
         if ($links = $this->cache->get($this->cacheKey($actor))) {
@@ -96,6 +129,12 @@ class LinkRepository
         }
     }
 
+    /**
+     * Get the links for members from the database.
+     *
+     * @param User $actor
+     * @return Collection
+     */
     protected function getMemberLinksFromDatabase(User $actor): Collection
     {
         return Link::query()->
@@ -104,6 +143,9 @@ class LinkRepository
             ->get();
     }
 
+    /**
+     * Clear the links cache.
+     */
     public function clearLinksCache(): void
     {
         $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
