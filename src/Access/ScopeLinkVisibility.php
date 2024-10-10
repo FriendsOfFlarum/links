@@ -12,6 +12,7 @@
 namespace FoF\Links\Access;
 
 use Flarum\User\User;
+use FoF\Links\Link;
 use Illuminate\Database\Eloquent\Builder;
 
 class ScopeLinkVisibility
@@ -31,5 +32,8 @@ class ScopeLinkVisibility
             $query
                 ->orWhere('visibility', 'members');
         }
+        // $query->whereIn('id', function ($query) use ($actor) {
+        //     Link::query()->setQuery($query->from('links'))->whereHasPermission($actor, 'view')->select('links.id');
+        // });
     }
 }

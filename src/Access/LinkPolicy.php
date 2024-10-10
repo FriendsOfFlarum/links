@@ -11,12 +11,22 @@
 
 namespace FoF\Links\Access;
 
+use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
 use FoF\Links\Link;
 
-class LinkPolicy
+class LinkPolicy extends AbstractPolicy
 {
-    public function see(User $actor, Link $link)
+    public function can(User $actor, string $ability, Link $link)
     {
+        if ($link->parent_id !== null && ! $actor->can($ability, $link->parent)) {
+            return $this->deny();
+        }
+
+        if ($link->is_restricted) {
+            $id = $link->id;
+
+            return $actor->hasPermission("link$id.$ability");
+        }
     }
 }

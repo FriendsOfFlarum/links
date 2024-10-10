@@ -9,6 +9,7 @@ import icon from 'flarum/common/helpers/icon';
 import withAttr from 'flarum/common/utils/withAttr';
 import ItemList from 'flarum/common/utils/ItemList';
 import Select from 'flarum/common/components/Select';
+import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
 
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
@@ -184,6 +185,32 @@ export default class EditlinksModal extends Modal {
       ],
       20
     );
+
+    const permissionPriority = 200;
+    if (this.link.exists) {
+      items.add(
+        'visibility-permission',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.permission.label')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.permission.help')}</p>
+            <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
+          </div>,
+        ],
+        permissionPriority
+      );
+    } else {
+      items.add(
+        'visibility-permission-disabled',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.permission.label')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.permission.help-disabled')}</p>
+          </div>
+        ],
+        permissionPriority
+      );
+    }
 
     items.add(
       'actions',
