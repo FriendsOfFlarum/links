@@ -120,7 +120,8 @@ class LinkRepository
      */
     public function getLinks(User $actor): Collection
     {
-        return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getLinksFromDatabase($actor);
+        return $this->getLinksFromDatabase($actor);
+        //return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getLinksFromDatabase($actor);
     }
 
     /**

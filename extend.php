@@ -16,6 +16,7 @@ use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Extend;
 use FoF\Links\Api\Controller;
 use FoF\Links\Api\Serializer\LinkSerializer;
+use FoF\Links\Event\PermissionChanged;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
@@ -32,10 +33,15 @@ return [
         ->post('/links', 'links.create', Controller\CreateLinkController::class)
         ->post('/links/order', 'links.order', Controller\OrderLinksController::class)
         ->patch('/links/{id}', 'links.update', Controller\UpdateLinkController::class)
-        ->delete('/links/{id}', 'links.delete', Controller\DeleteLinkController::class),
+        ->delete('/links/{id}', 'links.delete', Controller\DeleteLinkController::class)
+        ->remove('permission')
+        ->post('/permission', 'permission', Controller\SetPermissionController::class),
 
     (new Extend\ApiSerializer(ForumSerializer::class))
         ->hasMany('links', LinkSerializer::class),
+
+    (new Extend\Event())
+        ->listen(PermissionChanged::class, Listener\LinkPermissionChanged::class),
 
     (new Extend\ApiController(ShowForumController::class))
         ->addInclude(['links', 'links.parent'])

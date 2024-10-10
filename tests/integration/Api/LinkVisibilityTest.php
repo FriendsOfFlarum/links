@@ -11,6 +11,7 @@
 
 namespace FoF\Links\Tests\integration\Api;
 
+use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
@@ -28,22 +29,40 @@ class LinkVisibilityTest extends TestCase
         $this->prepareDatabase([
             'users' => [
                 $this->normalUser(),
+                ['id' => 3, 'username' => 'moderator', 'email' => 'mod@machine.local', 'is_email_confirmed' => true],
+                ['id' => 4, 'username' => 'evelated', 'email' => 'elevated@machine.local', 'is_email_confirmed' => true],
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'visibility' => 'everyone', 'parent_id' => null],
-                ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'visibility' => 'guests'],
-                ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'visibility' => 'members'],
-                ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'visibility' => 'members'],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null, 'is_restricted' => false],
+                ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'is_restricted' => true],
+                ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'is_restricted' => true],
+                ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'is_restricted' => true],
             ],
+            'groups' => [
+                ['id' => 5, 'name_singular' => 'FooBar', 'name_plural' => 'FooBars'],
+            ],
+            'group_user' => [
+                ['user_id' => 3, 'group_id' => Group::MODERATOR_ID],
+                ['user_id' => 4, 'group_id' => 5],
+            ],
+            'group_permission' => [
+                ['permission' => 'link1.view', 'group_id' => Group::GUEST_ID],
+                ['permission' => 'link2.view', 'group_id' => 5],
+                ['permission' => 'link3.view', 'group_id' => Group::MEMBER_ID],
+                ['permission' => 'link4.view', 'group_id' => Group::MODERATOR_ID],
+                ['permission' => 'link4.view', 'group_id' => 5],
+            ]
         ]);
     }
 
     public function forumUsersDataProvider(): array
     {
         return [
-            [null, [1, 2]],
-            [1, [1, 3, 4]],
-            [2, [1, 3, 4]],
+            [null, [1]],
+            [1, [1, 2, 3, 4]],
+            [2, [1, 3]],
+            [3, [1, 3, 4]],
+            [4, [1, 2, 3, 4]],
         ];
     }
 
