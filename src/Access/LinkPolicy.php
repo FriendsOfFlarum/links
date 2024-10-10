@@ -19,7 +19,7 @@ class LinkPolicy extends AbstractPolicy
 {
     public function can(User $actor, string $ability, Link $link)
     {
-        if ($link->parent_id !== null && ! $actor->can($ability, $link->parent)) {
+        if ($link->parent_id !== null && !$actor->can($ability, $link->parent)) {
             return $this->deny();
         }
 
