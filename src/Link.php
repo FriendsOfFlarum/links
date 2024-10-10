@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property int    $parent_id
  * @property Link   $parent
  * @property string $visibility
- * @property bool $is_restricted
+ * @property bool   $is_restricted
  */
 class Link extends AbstractModel
 {
@@ -175,7 +175,7 @@ class Link extends AbstractModel
      */
     public function wasUnrestricted()
     {
-        return ! $this->is_restricted && $this->wasChanged('is_restricted');
+        return !$this->is_restricted && $this->wasChanged('is_restricted');
     }
 
     /**

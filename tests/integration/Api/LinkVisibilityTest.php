@@ -51,7 +51,7 @@ class LinkVisibilityTest extends TestCase
                 ['permission' => 'link3.view', 'group_id' => Group::MEMBER_ID],
                 ['permission' => 'link4.view', 'group_id' => Group::MODERATOR_ID],
                 ['permission' => 'link4.view', 'group_id' => 5],
-            ]
+            ],
         ]);
     }
 

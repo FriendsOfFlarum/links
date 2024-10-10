@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Listener;
 
 use Flarum\Group\Group;
@@ -20,7 +29,7 @@ class LinkPermissionChanged
         if (preg_match('/^link\.(\d+)\.view$/', $permission, $matches)) {
             $linkId = $matches[1];
             $link = Link::findOrFail($linkId);
-            
+
             if ($this->isGuestPermission($groupIds)) {
                 $link->is_restricted = false;
             } else {

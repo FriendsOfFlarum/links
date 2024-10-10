@@ -1,10 +1,12 @@
 <?php
 
 /*
- * This file is part of Flarum.
+ * This file is part of fof/links.
  *
- * For detailed copyright and license information, please view the
- * LICENSE file that was distributed with this source code.
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace FoF\Links\Api\Controller;
@@ -25,12 +27,12 @@ class SetPermissionController implements RequestHandlerInterface
      * @var Dispatcher
      */
     protected $events;
-    
+
     public function __construct(Dispatcher $events)
     {
         $this->events = $events;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -48,7 +50,7 @@ class SetPermissionController implements RequestHandlerInterface
         Permission::insert(array_map(function ($groupId) use ($permission) {
             return [
                 'permission' => $permission,
-                'group_id' => $groupId
+                'group_id'   => $groupId,
             ];
         }, $groupIds));
 
