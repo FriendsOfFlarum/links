@@ -206,7 +206,7 @@ export default class EditlinksModal extends Modal {
           <div className="Form-group">
             <label>{app.translator.trans('fof-links.admin.edit_link.permission.label')}</label>
             <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.permission.help-disabled')}</p>
-          </div>
+          </div>,
         ],
         permissionPriority
       );
