@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Api\Controller\AbstractShowController;
+use Flarum\Foundation\ValidationException;
 use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\EditLink;
@@ -48,6 +49,12 @@ class UpdateLinkController extends AbstractShowController
         $id = Arr::get($request->getQueryParams(), 'id');
         $actor = RequestUtil::getActor($request);
         $data = Arr::get($request->getParsedBody(), 'data');
+
+        if (!$data) {
+            throw new ValidationException([
+                'data' => 'Invalid payload',
+            ]);
+        }
 
         return $this->bus->dispatch(
             new EditLink($id, $actor, $data)

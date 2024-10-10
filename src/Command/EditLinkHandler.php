@@ -95,7 +95,9 @@ class EditLinkHandler
 
         $this->validator->assertValid($link->getDirty());
 
-        $link->save();
+        if ($link->isDirty()) {
+            $link->save();
+        }
 
         return $link;
     }

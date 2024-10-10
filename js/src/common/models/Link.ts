@@ -44,4 +44,8 @@ export default class Link extends Model {
   visibility() {
     return Model.attribute<string>('visibility').call(this);
   }
+
+  isRestricted() {
+    return Model.attribute<boolean>('isRestricted').call(this);
+  }
 }
