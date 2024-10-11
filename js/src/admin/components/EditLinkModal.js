@@ -27,7 +27,6 @@ export default class EditlinksModal extends Modal {
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
     this.useRelMe = Stream(this.link.useRelMe() && true);
-    this.visibility = Stream(this.link.visibility() || 'everyone');
 
     if (this.isInternal()) {
       this.updateInternalUrl();
@@ -171,28 +170,13 @@ export default class EditlinksModal extends Modal {
       40
     );
 
-    items.add(
-      'visibility',
-      [
-        <div className="Form-group">
-          <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
-          {Select.component({
-            value: this.visibility(),
-            onchange: this.visibility,
-            options: this.typeOptions(),
-          })}
-        </div>,
-      ],
-      20
-    );
-
     const permissionPriority = 200;
     if (this.link.exists) {
       items.add(
         'visibility-permission',
         [
           <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
             <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help')}</p>
             <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
           </div>,
@@ -204,7 +188,7 @@ export default class EditlinksModal extends Modal {
         'visibility-permission-disabled',
         [
           <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
             <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}</p>
           </div>,
         ],
@@ -239,16 +223,6 @@ export default class EditlinksModal extends Modal {
     return items;
   }
 
-  typeOptions() {
-    let opts;
-    opts = ['everyone', 'members', 'guests'].reduce((o, key) => {
-      o[key] = app.translator.trans(`fof-links.admin.edit_link.${key}-label`);
-
-      return o;
-    }, {});
-    return opts;
-  }
-
   submitData() {
     return {
       title: this.itemTitle(),
@@ -257,7 +231,6 @@ export default class EditlinksModal extends Modal {
       isInternal: this.isInternal(),
       isNewtab: this.isNewtab(),
       useRelMe: this.useRelMe(),
-      visibility: this.visibility(),
     };
   }
 
