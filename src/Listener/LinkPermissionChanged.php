@@ -27,7 +27,7 @@ class LinkPermissionChanged
         // then we are interested in it.
         // Extract the link ID from the permission name.
         // Example permission name: `link1.view`
-        
+
         if (preg_match('/^link(\d+)\.view$/', $permission, $matches)) {
             $linkId = $matches[1];
             $link = Link::findOrFail($linkId);
