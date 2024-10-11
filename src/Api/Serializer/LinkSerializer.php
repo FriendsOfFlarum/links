@@ -40,7 +40,6 @@ class LinkSerializer extends AbstractSerializer
         if ($this->actor->isAdmin()) {
             $attributes['isRestricted'] = (bool) $link->is_restricted;
             $attributes['guestOnly'] = (bool) $link->guest_only;
-
         }
 
         return $attributes;
