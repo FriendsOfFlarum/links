@@ -17,19 +17,6 @@ use FoF\Links\Link;
 
 class LinkPolicy extends AbstractPolicy
 {
-    // public function can(User $actor, string $ability, Link $link)
-    // {
-    //     if ($link->parent_id !== null && !$actor->can($ability, $link->parent)) {
-    //         return $this->deny();
-    //     }
-
-    //     if ($link->is_restricted) {
-    //         $id = $link->id;
-
-    //         return $actor->hasPermission("link$id.$ability");
-    //     }
-    // }
-
     public function view(User $actor, Link $link)
     {
         if ($link->parent_id !== null && !$actor->can('view', $link->parent)) {

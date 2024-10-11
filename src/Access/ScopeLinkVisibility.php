@@ -14,7 +14,6 @@ namespace FoF\Links\Access;
 use Flarum\User\User;
 use FoF\Links\Link;
 use Illuminate\Database\Eloquent\Builder;
-use Psr\Log\LoggerInterface;
 
 class ScopeLinkVisibility
 {
@@ -24,7 +23,6 @@ class ScopeLinkVisibility
      */
     public function __invoke(User $actor, Builder $query)
     {
-        $logger = resolve(LoggerInterface::class);
         // $query->where('visibility', 'everyone');
 
         // if ($actor->isGuest()) {
@@ -40,6 +38,5 @@ class ScopeLinkVisibility
                     ->whereHasPermission($actor, 'view')
                     ->select('links.id');
         });
-        //$logger->info('ScopeLinkVisibility', ['actor' => $actor->id, 'query' => $query->toSql()]);
     }
 }

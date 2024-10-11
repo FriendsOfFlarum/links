@@ -56,7 +56,7 @@ class Link extends AbstractModel
 
         static::saved(function (self $link) {
             if ($link->wasUnrestricted()) {
-                //$link->deletePermissions();
+                $link->deletePermissions();
             }
         });
 

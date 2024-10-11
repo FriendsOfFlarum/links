@@ -23,11 +23,7 @@ class LinkPermissionChanged
         $permission = $event->permission;
         $groupIds = Arr::get($event->data, 'groupIds');
 
-        // If the permission is of the format `link.` followed by a number, ending with `.view`,
-        // then we are interested in it.
-        // Extract the link ID from the permission name.
         // Example permission name: `link1.view`
-
         if (preg_match('/^link(\d+)\.view$/', $permission, $matches)) {
             $linkId = $matches[1];
             $link = Link::findOrFail($linkId);
