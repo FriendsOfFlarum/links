@@ -87,10 +87,6 @@ class EditLinkHandler
             $link->use_relme = $attributes['useRelMe'];
         }
 
-        if (isset($attributes['visibility'])) {
-            $link->visibility = $attributes['visibility'];
-        }
-
         $this->events->dispatch(new Saving($link, $actor, $data));
 
         $this->validator->assertValid($link->getDirty());

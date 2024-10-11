@@ -33,7 +33,7 @@ class EditLinkTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'visibility' => 'everyone', 'parent_id' => null],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null],
             ],
         ]);
     }
@@ -56,7 +56,6 @@ class EditLinkTest extends TestCase
                             'title'      => 'Facebook',
                             'url'        => 'https://facebook.com',
                             'icon'       => 'fab fa-facebook',
-                            'visibility' => 'members',
                         ],
                     ],
                 ],
@@ -70,14 +69,12 @@ class EditLinkTest extends TestCase
         $this->assertEquals('Facebook', $link['attributes']['title']);
         $this->assertEquals('https://facebook.com', $link['attributes']['url']);
         $this->assertEquals('fab fa-facebook', $link['attributes']['icon']);
-        $this->assertEquals('members', $link['attributes']['visibility']);
 
         $link = Link::find(1);
 
         $this->assertEquals('Facebook', $link->title);
         $this->assertEquals('https://facebook.com', $link->url);
         $this->assertEquals('fab fa-facebook', $link->icon);
-        $this->assertEquals('members', $link->visibility);
     }
 
     /**
@@ -120,7 +117,6 @@ class EditLinkTest extends TestCase
                             'title'      => 'Facebook',
                             'url'        => 'https://facebook.com',
                             'icon'       => 'fab fa-facebook',
-                            'visibility' => 'members',
                         ],
                     ],
                 ],
@@ -158,7 +154,6 @@ class EditLinkTest extends TestCase
                             'title'      => 'Facebook',
                             'url'        => 'https://facebook.com',
                             'icon'       => 'fab fa-facebook',
-                            'visibility' => 'members',
                         ],
                     ],
                 ],
@@ -172,6 +167,5 @@ class EditLinkTest extends TestCase
         $this->assertEquals('Google', $link->title);
         $this->assertEquals('https://google.com', $link->url);
         $this->assertEquals('fab fa-google', $link->icon);
-        $this->assertEquals('everyone', $link->visibility);
     }
 }

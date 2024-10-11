@@ -33,7 +33,7 @@ class CreateLinkTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'visibility' => 'everyone', 'parent_id' => null],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null],
                 ['id' => 2, 'title' => 'Minimal'],
             ],
         ]);
@@ -48,7 +48,6 @@ class CreateLinkTest extends TestCase
                     'title'      => 'Facebook',
                     'url'        => 'https://facebook.com',
                     'icon'       => 'fab fa-facebook',
-                    'visibility' => 'everyone',
                     'position'   => 0,
                     'isInternal' => true,
                     'isNewtab'   => true,
@@ -67,7 +66,6 @@ class CreateLinkTest extends TestCase
                     'title'      => 'Facebook',
                     'url'        => 'https://facebook.com',
                     'icon'       => 'fab fa-facebook',
-                    'visibility' => 'everyone',
                 ],
             ],
         ];
@@ -116,7 +114,6 @@ class CreateLinkTest extends TestCase
         $this->assertArrayHasKey('id', $response['data']);
         $this->assertEquals('Facebook', $response['data']['attributes']['title']);
         $this->assertEquals('https://facebook.com', $response['data']['attributes']['url']);
-        $this->assertEquals('everyone', $response['data']['attributes']['visibility']);
         $this->assertEquals('fab fa-facebook', $response['data']['attributes']['icon']);
         $this->assertEquals(0, $response['data']['attributes']['position']);
         $this->assertTrue($response['data']['attributes']['isInternal']);
@@ -131,7 +128,6 @@ class CreateLinkTest extends TestCase
         $this->assertNotNull($link);
         $this->assertEquals('Facebook', $link->title);
         $this->assertEquals('https://facebook.com', $link->url);
-        $this->assertEquals('everyone', $link->visibility);
         $this->assertEquals('fab fa-facebook', $link->icon);
         $this->assertEquals(0, $link->position);
         $this->assertTrue($link->is_internal);
@@ -161,7 +157,6 @@ class CreateLinkTest extends TestCase
         $this->assertArrayHasKey('id', $response['data']);
         $this->assertEquals('Facebook', $response['data']['attributes']['title']);
         $this->assertEquals('https://facebook.com', $response['data']['attributes']['url']);
-        $this->assertEquals('everyone', $response['data']['attributes']['visibility']);
         $this->assertEquals('fab fa-facebook', $response['data']['attributes']['icon']);
 
         $id = $response['data']['id'];
@@ -171,7 +166,6 @@ class CreateLinkTest extends TestCase
         $this->assertNotNull($link);
         $this->assertEquals('Facebook', $link->title);
         $this->assertEquals('https://facebook.com', $link->url);
-        $this->assertEquals('everyone', $link->visibility);
         $this->assertEquals('fab fa-facebook', $link->icon);
         $this->assertFalse($response['data']['attributes']['isChild']);
 

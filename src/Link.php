@@ -28,8 +28,8 @@ use Illuminate\Database\Eloquent\Builder;
  * @property bool   $use_relme
  * @property int    $parent_id
  * @property Link   $parent
- * @property string $visibility
  * @property bool   $is_restricted
+ * @property bool   $guest_only
  */
 class Link extends AbstractModel
 {
@@ -76,7 +76,7 @@ class Link extends AbstractModel
      *
      * @return static
      */
-    public static function build($name, $icon, $url, $isInternal, $isNewtab, $visibility, $useRelMe = false)
+    public static function build($name, $icon, $url, $isInternal, $isNewtab, $useRelMe = false)
     {
         $link = new static();
 
@@ -86,7 +86,6 @@ class Link extends AbstractModel
         $link->is_internal = (bool) $isInternal;
         $link->is_newtab = (bool) $isNewtab;
         $link->use_relme = (bool) $useRelMe;
-        $link->visibility = $visibility;
 
         return $link;
     }

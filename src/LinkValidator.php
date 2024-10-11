@@ -22,6 +22,5 @@ class LinkValidator extends AbstractValidator
         'title'      => ['required', 'string', 'max:50'],
         'url'        => ['string', 'max:255'],
         'icon'       => ['string', 'max:100'],
-        'visibility' => ['string', 'in:everyone,guests,members'],
     ];
 }

@@ -26,7 +26,12 @@ class LinkVisibilityTest extends TestCase
 
         $this->extension('fof-links');
 
-        $this->prepareDatabase([
+        $this->prepareDatabase($this->dbData());
+    }
+
+    protected function dbData(): array
+    {
+        return [
             'users' => [
                 $this->normalUser(),
                 ['id' => 3, 'username' => 'moderator', 'email' => 'mod@machine.local', 'is_email_confirmed' => true],
@@ -41,6 +46,8 @@ class LinkVisibilityTest extends TestCase
                 ['id' => 5, 'title' => 'FooBar', 'url' => 'https://foobar.com', 'is_restricted' => true],
                 ['id' => 6, 'title' => 'BazQux', 'url' => 'https://bazqux.com', 'is_restricted' => true, 'parent_id' => 5, 'position' => 0],
                 ['id' => 7, 'title' => 'QuuxQuuz', 'url' => 'https://quuxquuz.com', 'is_restricted' => true, 'parent_id' => 5, 'position' => 1],
+                ['id' => 8, 'title' => 'GuestOnly', 'url' => 'https://guestonly.com', 'is_restricted' => false, 'guest_only' => true],
+
             ],
             'groups' => [
                 ['id' => 5, 'name_singular' => 'FooBar', 'name_plural' => 'FooBars'],
@@ -65,14 +72,16 @@ class LinkVisibilityTest extends TestCase
                 ['permission' => 'link6.view', 'group_id' => 5],
                 ['permission' => 'link6.view', 'group_id' => 6],
                 ['permission' => 'link7.view', 'group_id' => 6],
+                // Guest only
+                ['permission' => 'link8.view', 'group_id' => Group::GUEST_ID],
             ],
-        ]);
+        ];
     }
 
     public function forumUsersDataProvider(): array
     {
         return [
-            [null, [1]],
+            [null, [1, 8]],
             [1, [1, 2, 3, 4, 5, 6, 7]],
             [2, [1, 3]],
             [3, [1, 3, 4, 5]],

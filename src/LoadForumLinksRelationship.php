@@ -50,7 +50,16 @@ class LoadForumLinksRelationship
             return $data['links'] = Link::all();
         }
 
-        $data['links'] = $this->links->getLinks($actor);
+        $links = $this->links->getLinks($actor);
+
+        if (!$actor->isGuest()) {
+            // If the user is not a guest, and link that has the valued `guests_only` = true should be removed.
+            $links = $links->reject(function ($link) {
+                return $link->guest_only;
+            });
+        }
+
+        $data['links'] = $links;
     }
 
     private function isAdminPath(ServerRequestInterface $request): bool
