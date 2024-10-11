@@ -27,6 +27,7 @@ export default class EditlinksModal extends Modal {
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
     this.useRelMe = Stream(this.link.useRelMe() && true);
+    this.guestOnly = Stream(this.link.guestOnly() && false);
 
     if (this.isInternal()) {
       this.updateInternalUrl();
@@ -67,6 +68,39 @@ export default class EditlinksModal extends Modal {
 
   items() {
     const items = new ItemList();
+
+    const permissionPriority = 200;
+    if (this.link.exists) {
+      items.add(
+        'visibility-permission',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help')}</p>
+            <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
+          </div>,
+          <div className="Form-group">
+            <label className="checkbox">
+              <input type="checkbox" value="1" bidi={this.guestOnly} />
+              {app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.label')}
+            </label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.help')}</p>
+          </div>,
+        ],
+        permissionPriority
+      );
+    } else {
+      items.add(
+        'visibility-permission-disabled',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}</p>
+          </div>,
+        ],
+        permissionPriority
+      );
+    }
 
     items.add(
       'title',
@@ -170,32 +204,6 @@ export default class EditlinksModal extends Modal {
       40
     );
 
-    const permissionPriority = 200;
-    if (this.link.exists) {
-      items.add(
-        'visibility-permission',
-        [
-          <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
-            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help')}</p>
-            <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
-          </div>,
-        ],
-        permissionPriority
-      );
-    } else {
-      items.add(
-        'visibility-permission-disabled',
-        [
-          <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
-            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}</p>
-          </div>,
-        ],
-        permissionPriority
-      );
-    }
-
     items.add(
       'actions',
       [
@@ -231,6 +239,7 @@ export default class EditlinksModal extends Modal {
       isInternal: this.isInternal(),
       isNewtab: this.isNewtab(),
       useRelMe: this.useRelMe(),
+      guestOnly: this.guestOnly(),
     };
   }
 

@@ -48,6 +48,7 @@ class Link extends AbstractModel
         'is_newtab'             => 'boolean',
         'use_relme'             => 'boolean',
         'is_restricted'         => 'boolean',
+        'guest_only'            => 'boolean',
     ];
 
     public static function boot()
@@ -76,7 +77,7 @@ class Link extends AbstractModel
      *
      * @return static
      */
-    public static function build($name, $icon, $url, $isInternal, $isNewtab, $useRelMe = false)
+    public static function build($name, $icon, $url, $isInternal, $isNewtab, $useRelMe = false, $guestOnly = false)
     {
         $link = new static();
 
@@ -86,6 +87,7 @@ class Link extends AbstractModel
         $link->is_internal = (bool) $isInternal;
         $link->is_newtab = (bool) $isNewtab;
         $link->use_relme = (bool) $useRelMe;
+        $link->guest_only = (bool) $guestOnly;
 
         return $link;
     }

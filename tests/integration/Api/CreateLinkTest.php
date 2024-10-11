@@ -33,7 +33,7 @@ class CreateLinkTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null, 'is_restricted' => false, 'guest_only' => false],
                 ['id' => 2, 'title' => 'Minimal'],
             ],
         ]);
@@ -52,6 +52,7 @@ class CreateLinkTest extends TestCase
                     'isInternal' => true,
                     'isNewtab'   => true,
                     'useRelMe'   => true,
+                    'guestOnly'  => true,
                 ],
             ],
         ];
@@ -120,6 +121,8 @@ class CreateLinkTest extends TestCase
         $this->assertTrue($response['data']['attributes']['isNewtab']);
         $this->assertTrue($response['data']['attributes']['useRelMe']);
         $this->assertFalse($response['data']['attributes']['isChild']);
+        $this->assertTrue($response['data']['attributes']['guestOnly']);
+        $this->assertFalse($response['data']['attributes']['isRestricted']);
 
         $id = $response['data']['id'];
 
@@ -133,6 +136,8 @@ class CreateLinkTest extends TestCase
         $this->assertTrue($link->is_internal);
         $this->assertTrue($link->is_newtab);
         $this->assertTrue($link->use_relme);
+        $this->assertFalse($link->is_restricted);
+        $this->assertTrue($link->guest_only);
     }
 
     /**
@@ -158,6 +163,8 @@ class CreateLinkTest extends TestCase
         $this->assertEquals('Facebook', $response['data']['attributes']['title']);
         $this->assertEquals('https://facebook.com', $response['data']['attributes']['url']);
         $this->assertEquals('fab fa-facebook', $response['data']['attributes']['icon']);
+        $this->assertFalse($response['data']['attributes']['isRestricted']);
+        $this->assertFalse($response['data']['attributes']['guestOnly']);
 
         $id = $response['data']['id'];
 
@@ -175,6 +182,8 @@ class CreateLinkTest extends TestCase
         $this->assertFalse($link->use_relme);
         $this->assertNull($link->parent_id);
         $this->assertNull($link->position);
+        $this->assertFalse($link->is_restricted);
+        $this->assertFalse($link->guest_only);
     }
 
     /**

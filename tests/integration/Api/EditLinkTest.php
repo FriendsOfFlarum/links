@@ -33,7 +33,7 @@ class EditLinkTest extends TestCase
                 $this->normalUser(),
             ],
             'links' => [
-                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null],
+                ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null, 'is_restricted' => false, 'guest_only' => false],
             ],
         ]);
     }
@@ -56,6 +56,7 @@ class EditLinkTest extends TestCase
                             'title'      => 'Facebook',
                             'url'        => 'https://facebook.com',
                             'icon'       => 'fab fa-facebook',
+                            'guestOnly'  => true,
                         ],
                     ],
                 ],
@@ -69,12 +70,14 @@ class EditLinkTest extends TestCase
         $this->assertEquals('Facebook', $link['attributes']['title']);
         $this->assertEquals('https://facebook.com', $link['attributes']['url']);
         $this->assertEquals('fab fa-facebook', $link['attributes']['icon']);
+        $this->assertTrue($link['attributes']['guestOnly']);
 
         $link = Link::find(1);
 
         $this->assertEquals('Facebook', $link->title);
         $this->assertEquals('https://facebook.com', $link->url);
         $this->assertEquals('fab fa-facebook', $link->icon);
+        $this->assertTrue($link->guest_only);
     }
 
     /**

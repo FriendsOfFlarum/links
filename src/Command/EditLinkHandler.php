@@ -87,6 +87,10 @@ class EditLinkHandler
             $link->use_relme = $attributes['useRelMe'];
         }
 
+        if (isset($attributes['guestOnly'])) {
+            $link->guest_only = $attributes['guestOnly'];
+        }
+
         $this->events->dispatch(new Saving($link, $actor, $data));
 
         $this->validator->assertValid($link->getDirty());

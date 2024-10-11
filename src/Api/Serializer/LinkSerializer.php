@@ -35,6 +35,7 @@ class LinkSerializer extends AbstractSerializer
             'isNewtab'            => $link->is_newtab,
             'useRelMe'            => $link->use_relme,
             'isChild'             => (bool) $link->parent_id,
+            'guestOnly'           => (bool) $link->guest_only,
         ];
 
         if ($this->actor->isAdmin()) {

@@ -44,4 +44,8 @@ export default class Link extends Model {
   isRestricted() {
     return Model.attribute<boolean>('isRestricted').call(this);
   }
+
+  guestOnly() {
+    return Model.attribute<boolean>('guestOnly').call(this);
+  }
 }
