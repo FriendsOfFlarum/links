@@ -12,8 +12,14 @@ export default function extendHeader() {
   extend(HeaderPrimary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
     const allLinks = app.store.all<Link>('links');
     const links = allLinks.filter((link) => !link.isChild());
+
     const addLink = (parent: Link | null | undefined) => {
       const hasChildren = allLinks.some((link) => link.parent() == parent);
+
+      // If the link has no URL and no children, do not display it.
+      if (!parent?.url() && !hasChildren) {
+        return;
+      }
 
       items.add(`link${parent?.id()}`, hasChildren ? LinkDropdown.component({ link: parent }) : LinkItem.component({ link: parent }));
     };

@@ -129,8 +129,6 @@ class Link extends AbstractModel
             })
             ->values();
 
-        resolve('log')->info('linkIdsWithPermission', $linkIdsWithPermission->toArray());
-
         return $query
             ->where(function ($query) use ($isAdmin, $linkIdsWithPermission) {
                 $query

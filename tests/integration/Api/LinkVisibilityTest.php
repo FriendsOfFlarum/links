@@ -31,26 +31,40 @@ class LinkVisibilityTest extends TestCase
                 $this->normalUser(),
                 ['id' => 3, 'username' => 'moderator', 'email' => 'mod@machine.local', 'is_email_confirmed' => true],
                 ['id' => 4, 'username' => 'evelated', 'email' => 'elevated@machine.local', 'is_email_confirmed' => true],
+                ['id' => 5, 'username' => 'elevatedplus', 'email' => 'elevatedplus@machine.local', 'is_email_confirmed' => true],
             ],
             'links' => [
                 ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null, 'is_restricted' => false],
                 ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'is_restricted' => true],
                 ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'is_restricted' => true],
                 ['id' => 4, 'title' => 'Reddit', 'url' => 'https://reddit.com', 'is_restricted' => true],
+                ['id' => 5, 'title' => 'FooBar', 'url' => 'https://foobar.com', 'is_restricted' => true],
+                ['id' => 6, 'title' => 'BazQux', 'url' => 'https://bazqux.com', 'is_restricted' => true, 'parent_id' => 5, 'position' => 0],
+                ['id' => 7, 'title' => 'QuuxQuuz', 'url' => 'https://quuxquuz.com', 'is_restricted' => true, 'parent_id' => 5, 'position' => 1],
             ],
             'groups' => [
                 ['id' => 5, 'name_singular' => 'FooBar', 'name_plural' => 'FooBars'],
+                ['id' => 6, 'name_singular' => 'BazQux', 'name_plural' => 'BazQuux'],
             ],
             'group_user' => [
                 ['user_id' => 3, 'group_id' => Group::MODERATOR_ID],
                 ['user_id' => 4, 'group_id' => 5],
+                ['user_id' => 5, 'group_id' => 6],
             ],
             'group_permission' => [
                 ['permission' => 'link1.view', 'group_id' => Group::GUEST_ID],
                 ['permission' => 'link2.view', 'group_id' => 5],
+                ['permission' => 'link2.view', 'group_id' => 6],
                 ['permission' => 'link3.view', 'group_id' => Group::MEMBER_ID],
                 ['permission' => 'link4.view', 'group_id' => Group::MODERATOR_ID],
                 ['permission' => 'link4.view', 'group_id' => 5],
+                // Parent & child scenarios
+                ['permission' => 'link5.view', 'group_id' => 4],
+                ['permission' => 'link5.view', 'group_id' => 5],
+                ['permission' => 'link5.view', 'group_id' => 6],
+                ['permission' => 'link6.view', 'group_id' => 5],
+                ['permission' => 'link6.view', 'group_id' => 6],
+                ['permission' => 'link7.view', 'group_id' => 6],
             ],
         ]);
     }
@@ -59,10 +73,11 @@ class LinkVisibilityTest extends TestCase
     {
         return [
             [null, [1]],
-            [1, [1, 2, 3, 4]],
+            [1, [1, 2, 3, 4, 5, 6, 7]],
             [2, [1, 3]],
-            [3, [1, 3, 4]],
-            [4, [1, 2, 3, 4]],
+            [3, [1, 3, 4, 5]],
+            [4, [1, 2, 3, 4, 5, 6]],
+            [5, [1, 2, 3, 5, 6, 7]]
         ];
     }
 
@@ -108,17 +123,25 @@ class LinkVisibilityTest extends TestCase
 
         $data = json_decode($response->getBody(), true);
 
+        // Extract links from response data
         $links = $this->extractLinksFromIncluded($data);
 
-        $this->assertEquals(count($expectedLinks), count($links));
+        // Extract IDs from the links array
+        $linkIds = array_column($links, 'id');
 
+        // Sort both arrays to ensure order doesn't matter
+        sort($linkIds);
+        sort($expectedLinks);
+
+        // Ensure the arrays contain exactly the same IDs
+        $this->assertEquals($expectedLinks, $linkIds);
+
+        // Now check for each individual link's data
         foreach ($expectedLinks as $expectedLink) {
             $link = $this->getLinkById($expectedLink, $links);
-
             $this->assertNotNull($link);
 
             $dbLink = Link::find($expectedLink);
-
             $this->assertNotNull($dbLink);
 
             $this->assertEquals($dbLink->title, $link['attributes']['title']);

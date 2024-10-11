@@ -192,8 +192,8 @@ export default class EditlinksModal extends Modal {
         'visibility-permission',
         [
           <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.permission.label')}</label>
-            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.permission.help')}</p>
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help')}</p>
             <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
           </div>,
         ],
@@ -204,8 +204,8 @@ export default class EditlinksModal extends Modal {
         'visibility-permission-disabled',
         [
           <div className="Form-group">
-            <label>{app.translator.trans('fof-links.admin.edit_link.permission.label')}</label>
-            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.permission.help-disabled')}</p>
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}</p>
           </div>,
         ],
         permissionPriority
