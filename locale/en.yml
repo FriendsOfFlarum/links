@@ -28,6 +28,9 @@ fof-links:
         help: Links by default are visible to everyone (including guests). You can restrict visibility to specific groups.
         help-disabled: Save the link before changing visibility settings.
         label: Link visibility
+        guest-only:
+          label: Guests only?
+          help: "Only guests can see this link. The permission above should be set to 'Everyone'."
 
     # These strings are used in the Links page.
     links:

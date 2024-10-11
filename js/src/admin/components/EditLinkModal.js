@@ -27,7 +27,7 @@ export default class EditlinksModal extends Modal {
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
     this.useRelMe = Stream(this.link.useRelMe() && true);
-    this.guestOnly = Stream(this.link.guestOnly() && false);
+    this.guestOnly = Stream(this.link.guestOnly() && true);
 
     if (this.isInternal()) {
       this.updateInternalUrl();
