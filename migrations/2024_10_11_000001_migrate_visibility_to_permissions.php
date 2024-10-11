@@ -10,9 +10,8 @@
  */
 
 use Carbon\Carbon;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
 use Flarum\Group\Group;
+use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
@@ -26,7 +25,6 @@ return [
         // - `everyone` -> ['group_id' = Group::GUEST_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
         // - `members` -> ['group_id' = Group::MEMBER_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
         // - `guests` -> ['group_id' = Group::GUEST_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
-
 
         foreach ($links as $link) {
             $permission = 'link'.$link->id.'.view';
@@ -59,13 +57,13 @@ return [
                     // Also add to the link row the `is_restricted` = true and `guest_only` = true.
                     $connection->table('links')->where('id', $link->id)->update([
                         'is_restricted' => false,
-                        'guest_only' => true,
+                        'guest_only'    => true,
                     ]);
                     break;
             }
         }
     },
-    
+
     'down' => function (Builder $schema) {
         $connection = $schema->getConnection();
 
@@ -80,7 +78,7 @@ return [
             // Reverse the changes to `is_restricted` and `guest_only`.
             $connection->table('links')->where('id', $link->id)->update([
                 'is_restricted' => false,
-                'guest_only' => false,
+                'guest_only'    => false,
             ]);
         }
     },
