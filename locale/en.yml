@@ -25,12 +25,12 @@ fof-links:
       url_placeholder: => fof-links.ref.url
       use_rel_me: Add <code>rel="me"</code> attribute for identity verification on other sites
       visibility:
-        help: Links by default are visible to only <code>admin</code> users. Adjust the permissions to specify who can see this link.
+        help: Links by default are visible to only <code>{admin}</code> users. Adjust the permissions to specify who can see this link.
         help-disabled: Save the link before changing visibility settings.
         label: Link visibility
         guest-only:
-          label: Guests only?
-          help: "Only guests can see this link. The permission above should be set to 'Everyone'."
+          label: "{guest} only?"
+          help: "Only {guest} can see this link. The permission above should be set to '{everyone}'."
 
     # These strings are used in the Links page.
     links:
