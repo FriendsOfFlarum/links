@@ -9,7 +9,7 @@ import icon from 'flarum/common/helpers/icon';
 import withAttr from 'flarum/common/utils/withAttr';
 import ItemList from 'flarum/common/utils/ItemList';
 import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
-
+import Alert from 'flarum/common/components/Alert';
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
  * to create or edit a link.
