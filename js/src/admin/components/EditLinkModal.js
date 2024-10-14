@@ -8,8 +8,10 @@ import Stream from 'flarum/common/utils/Stream';
 import icon from 'flarum/common/helpers/icon';
 import withAttr from 'flarum/common/utils/withAttr';
 import ItemList from 'flarum/common/utils/ItemList';
-import Select from 'flarum/common/components/Select';
-
+import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
+import Alert from 'flarum/common/components/Alert';
+import Group from 'flarum/common/models/Group';
+import Link from 'flarum/common/components/Link';
 /**
  * The `EditlinksModal` component shows a modal dialog which allows the user
  * to create or edit a link.
@@ -26,7 +28,7 @@ export default class EditlinksModal extends Modal {
     this.isInternal = Stream(this.link.isInternal() && true);
     this.isNewtab = Stream(this.link.isNewtab() && true);
     this.useRelMe = Stream(this.link.useRelMe() && true);
-    this.visibility = Stream(this.link.visibility() || 'everyone');
+    this.guestOnly = Stream(this.link.guestOnly() && true);
 
     if (this.isInternal()) {
       this.updateInternalUrl();
@@ -65,8 +67,53 @@ export default class EditlinksModal extends Modal {
     );
   }
 
+  getGroup(id) {
+    return app.store.getById('groups', id);
+  }
+
   items() {
     const items = new ItemList();
+
+    const permissionPriority = 200;
+    if (this.link.exists) {
+      const adminLabel = this.getGroup(Group.ADMINISTRATOR_ID).nameSingular();
+      const guestLabel = this.getGroup(Group.GUEST_ID).namePlural();
+      const everyoneLabel = app.translator.trans('core.admin.permissions_controls.everyone_button');
+
+      items.add(
+        'visibility-permission',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
+            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help', { admin: adminLabel })}</p>
+            <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
+          </div>,
+          <div className="Form-group">
+            <label className="checkbox">
+              <input type="checkbox" value="1" bidi={this.guestOnly} />
+              {app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.label', { guest: guestLabel })}
+            </label>
+            <p className="helpText">
+              {app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.help', { guest: guestLabel, everyone: everyoneLabel })}
+            </p>
+          </div>,
+        ],
+        permissionPriority
+      );
+    } else {
+      items.add(
+        'visibility-permission-disabled',
+        [
+          <div className="Form-group">
+            <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
+            <Alert dismissible={false} type="warning">
+              {app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}
+            </Alert>
+          </div>,
+        ],
+        permissionPriority
+      );
+    }
 
     items.add(
       'title',
@@ -86,7 +133,9 @@ export default class EditlinksModal extends Modal {
           <label>{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
           <div className="helpText">
             {app.translator.trans('fof-links.admin.edit_link.icon_text', {
-              a: <a href="https://fontawesome.com/v5/search?o=r&m=free" tabindex="-1" />,
+              a: (
+                <Link className="Button--link" href={app.refs.fontawesome} tabindex="-1" external={true} target="_blank" rel="noopener noreferrer" />
+              ),
             })}
             <br />
             {app.translator.trans('fof-links.admin.edit_link.icon_additional_text')}
@@ -171,21 +220,6 @@ export default class EditlinksModal extends Modal {
     );
 
     items.add(
-      'visibility',
-      [
-        <div className="Form-group">
-          <label>{app.translator.trans('fof-links.admin.edit_link.visibility')}</label>
-          {Select.component({
-            value: this.visibility(),
-            onchange: this.visibility,
-            options: this.typeOptions(),
-          })}
-        </div>,
-      ],
-      20
-    );
-
-    items.add(
       'actions',
       [
         <div className="Form-group">
@@ -212,16 +246,6 @@ export default class EditlinksModal extends Modal {
     return items;
   }
 
-  typeOptions() {
-    let opts;
-    opts = ['everyone', 'members', 'guests'].reduce((o, key) => {
-      o[key] = app.translator.trans(`fof-links.admin.edit_link.${key}-label`);
-
-      return o;
-    }, {});
-    return opts;
-  }
-
   submitData() {
     return {
       title: this.itemTitle(),
@@ -230,7 +254,7 @@ export default class EditlinksModal extends Modal {
       isInternal: this.isInternal(),
       isNewtab: this.isNewtab(),
       useRelMe: this.useRelMe(),
-      visibility: this.visibility(),
+      guestOnly: this.guestOnly(),
     };
   }
 

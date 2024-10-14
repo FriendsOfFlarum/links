@@ -43,14 +43,29 @@ class LoadForumLinksRelationship
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
     {
         $actor = RequestUtil::getActor($request);
-        $adminPath = Arr::get($this->config, 'paths.admin');
 
         // So that admins don't have to see guest only items but can manage them in admin panel,
         // we only serialize all links if we're visiting the admin panel
-        if ($actor->isAdmin() && $request->getServerParams()['REQUEST_URI'] === "/$adminPath") {
+        if ($actor->isAdmin() && $this->isAdminPath($request)) {
             return $data['links'] = Link::all();
         }
 
-        $data['links'] = $this->links->getLinks($actor);
+        $links = $this->links->getLinks($actor);
+
+        if (!$actor->isGuest()) {
+            // If the user is not a guest, and link that has the valued `guests_only` = true should be removed.
+            $links = $links->reject(function ($link) {
+                return $link->guest_only;
+            });
+        }
+
+        $data['links'] = $links;
+    }
+
+    private function isAdminPath(ServerRequestInterface $request): bool
+    {
+        $adminPath = Arr::get($this->config, 'paths.admin');
+
+        return Arr::get($request->getServerParams(), 'REQUEST_URI') === "/$adminPath";
     }
 }

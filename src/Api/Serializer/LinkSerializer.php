@@ -25,7 +25,7 @@ class LinkSerializer extends AbstractSerializer
      */
     protected function getDefaultAttributes($link)
     {
-        return [
+        $attributes = [
             'id'                  => $link->id,
             'title'               => $link->title,
             'icon'                => $link->icon,
@@ -35,8 +35,14 @@ class LinkSerializer extends AbstractSerializer
             'isNewtab'            => $link->is_newtab,
             'useRelMe'            => $link->use_relme,
             'isChild'             => (bool) $link->parent_id,
-            'visibility'          => $link->visibility,
         ];
+
+        if ($this->actor->isAdmin()) {
+            $attributes['isRestricted'] = (bool) $link->is_restricted;
+            $attributes['guestOnly'] = (bool) $link->guest_only;
+        }
+
+        return $attributes;
     }
 
     /**

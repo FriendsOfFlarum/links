@@ -13,13 +13,13 @@ namespace FoF\Links;
 
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class LinkRepository
 {
     protected static $cacheKeyPrefix = 'fof-links.links.';
     protected static $cacheGuestLinksKey = 'guest';
-    protected static $cacheMemberLinksKey = 'member';
 
     /**
      * @var Cache
@@ -29,6 +29,21 @@ class LinkRepository
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
+    }
+
+    /**
+     * Get a new query builder for the links table.
+     *
+     * @return Builder
+     */
+    public function query()
+    {
+        return Link::query();
+    }
+
+    public function queryVisibleTo(?User $actor = null): Builder
+    {
+        return $this->scopeVisibleTo($this->query(), $actor);
     }
 
     /**
@@ -43,19 +58,45 @@ class LinkRepository
      */
     public function findOrFail($id, User $actor = null)
     {
-        return Link::where('id', $id)->firstOrFail();
+        $query = Link::where('id', $id);
+
+        return $this->scopeVisibleTo($query, $actor)->firstOrFail();
     }
 
     /**
-     * Get all links.
+     * Get all links, optionally making sure they are visible to a
+     * certain user.
+     *
+     * @param User|null $user
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<Link>
      */
-    public function all()
+    public function all(User $user = null)
     {
-        return Link::query()->get();
+        $query = Link::query();
+
+        return $this->scopeVisibleTo($query, $user)->get();
     }
 
     /**
-     * Gets the cache key for the appropriate links for the given user.
+     * Scope a query to only include records that are visible to a user.
+     *
+     * @param Builder<Link> $query
+     * @param User|null     $user
+     *
+     * @return Builder<Link>
+     */
+    protected function scopeVisibleTo(Builder $query, ?User $user = null)
+    {
+        if ($user !== null) {
+            $query->whereVisibleTo($user);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Gets the cache key for the appropriate links for the given user. Only applicable for guests.
      *
      * @param User $actor
      *
@@ -63,7 +104,11 @@ class LinkRepository
      */
     public function cacheKey(User $actor): string
     {
-        return self::$cacheKeyPrefix.($actor->isGuest() ? self::$cacheGuestLinksKey : self::$cacheMemberLinksKey);
+        if ($actor->isGuest()) {
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+        } else {
+            throw new \InvalidArgumentException('Only guests can have cached links at this time.');
+        }
     }
 
     /**
@@ -75,7 +120,8 @@ class LinkRepository
      */
     public function getLinks(User $actor): Collection
     {
-        return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getMemberLinks($actor);
+        return $this->getLinksFromDatabase($actor);
+        //return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getLinksFromDatabase($actor);
     }
 
     /**
@@ -92,7 +138,7 @@ class LinkRepository
         if ($links = $this->cache->get($this->cacheKey($actor))) {
             return $links;
         } else {
-            $links = $this->getGuestLinksFromDatabase();
+            $links = $this->getLinksFromDatabase($actor);
             $this->cache->forever($this->cacheKey($actor), $links);
 
             return $links;
@@ -104,48 +150,11 @@ class LinkRepository
      *
      * @return Collection
      */
-    protected function getGuestLinksFromDatabase(): Collection
+    protected function getLinksFromDatabase(User $actor): Collection
     {
         return Link::query()
-            ->where('visibility', 'guests')
-            ->orWhere('visibility', 'everyone')
-            ->get();
-    }
-
-    /**
-     * Get the links for members.
-     *
-     * If the links are cached, they will be returned from the cache, else the cache will be populated from the database.
-     *
-     * @param User $actor
-     *
-     * @return Collection
-     */
-    public function getMemberLinks(User $actor): Collection
-    {
-        if ($links = $this->cache->get($this->cacheKey($actor))) {
-            return $links;
-        } else {
-            $links = $this->getMemberLinksFromDatabase($actor);
-            $this->cache->forever($this->cacheKey($actor), $links);
-
-            return $links;
-        }
-    }
-
-    /**
-     * Get the links for members from the database.
-     *
-     * @param User $actor
-     *
-     * @return Collection
-     */
-    protected function getMemberLinksFromDatabase(User $actor): Collection
-    {
-        return Link::query()
-            ->where('visibility', 'members')
-            ->orWhere('visibility', 'everyone')
-            ->get();
+        ->whereVisibleTo($actor)
+        ->get();
     }
 
     /**
@@ -154,6 +163,5 @@ class LinkRepository
     public function clearLinksCache(): void
     {
         $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
-        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheMemberLinksKey);
     }
 }

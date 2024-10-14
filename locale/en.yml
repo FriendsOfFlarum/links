@@ -11,10 +11,7 @@ fof-links:
     edit_link:
       delete_link_button: Delete Link
       delete_link_confirmation: "Are you sure you want to delete this link?"
-      everyone-label: Everyone
-      guests-label: Guests
       internal_link: "Is it an internal link?"
-      members-label: Registered users
       open_newtab: "Open link in new tab"
       submit_button: => core.ref.save_changes
       title: => fof-links.ref.create_link
@@ -27,7 +24,13 @@ fof-links:
       url_label: => fof-links.ref.url
       url_placeholder: => fof-links.ref.url
       use_rel_me: Add <code>rel="me"</code> attribute for identity verification on other sites
-      visibility: Link visibility
+      visibility:
+        help: Links by default are visible to only <code>{admin}</code> users. Adjust the permissions to specify who can see this link.
+        help-disabled: Save the link before changing visibility settings.
+        label: Link visibility
+        guest-only:
+          label: "{guest} only?"
+          help: "Only {guest} can see this link. The permission above should be set to '{everyone}'."
 
     # These strings are used in the Links page.
     links:

@@ -25,6 +25,10 @@ return [
         });
     },
     'down' => function (Builder $schema) {
+        if (!$schema->hasColumn('links', 'parent_id')) {
+            return;
+        }
+
         $schema->table('links', function (Blueprint $table) {
             $table->dropForeign(['parent_id']);
 

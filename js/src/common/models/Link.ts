@@ -41,7 +41,11 @@ export default class Link extends Model {
     return Model.hasOne<Link>('parent').call(this);
   }
 
-  visibility() {
-    return Model.attribute<string>('visibility').call(this);
+  isRestricted() {
+    return Model.attribute<boolean>('isRestricted').call(this);
+  }
+
+  guestOnly() {
+    return Model.attribute<boolean>('guestOnly').call(this);
   }
 }
