@@ -8,7 +8,6 @@ import Stream from 'flarum/common/utils/Stream';
 import icon from 'flarum/common/helpers/icon';
 import withAttr from 'flarum/common/utils/withAttr';
 import ItemList from 'flarum/common/utils/ItemList';
-import Select from 'flarum/common/components/Select';
 import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
 
 /**
