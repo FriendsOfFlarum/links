@@ -17,6 +17,7 @@ use Flarum\Extend;
 use FoF\Links\Api\Controller;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Event\PermissionChanged;
+use FoF\Links\Extend\LinksOverride;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
@@ -57,4 +58,19 @@ return [
 
     (new Extend\Policy())
         ->modelPolicy(Link::class, Access\LinkPolicy::class),
+
+    (new Extend\ServiceProvider())
+        ->register(Provider\LinksProvider::class),
+
+    // (new LinksOverride())
+    //     ->addLink(new LinkDefinition(
+    //         1,
+    //         'Override Home',
+    //         'https://example.com',
+    //         'fas fa-home',
+    //         false,
+    //         true,
+    //         false,
+    //         false
+    //     ))
 ];

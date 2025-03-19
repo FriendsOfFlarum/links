@@ -1,20 +1,11 @@
 <?php
 
-/*
- * This file is part of fof/links.
- *
- * Copyright (c) FriendsOfFlarum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FoF\Links;
 
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class LinkRepository
 {
@@ -25,6 +16,13 @@ class LinkRepository
      * @var Cache
      */
     protected $cache;
+
+    /**
+     * Optional programmatic override links.
+     *
+     * @var LinkDefinition[]|null
+     */
+    protected $overrideLinks = null;
 
     public function __construct(Cache $cache)
     {
@@ -69,7 +67,7 @@ class LinkRepository
      *
      * @param User|null $user
      *
-     * @return \Illuminate\Database\Eloquent\Collection<Link>
+     * @return EloquentCollection<Link>
      */
     public function all(User $user = null)
     {
@@ -81,10 +79,10 @@ class LinkRepository
     /**
      * Scope a query to only include records that are visible to a user.
      *
-     * @param Builder<Link> $query
-     * @param User|null     $user
+     * @param Builder  $query
+     * @param User|null $user
      *
-     * @return Builder<Link>
+     * @return Builder
      */
     protected function scopeVisibleTo(Builder $query, ?User $user = null)
     {
@@ -96,7 +94,9 @@ class LinkRepository
     }
 
     /**
-     * Gets the cache key for the appropriate links for the given user. Only applicable for guests.
+     * Gets the cache key for the appropriate links for the given user.
+     *
+     * Only applicable for guests.
      *
      * @param User $actor
      *
@@ -105,7 +105,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -116,12 +116,26 @@ class LinkRepository
      *
      * @param User $actor
      *
-     * @return Collection
+     * @return EloquentCollection<Link>
      */
-    public function getLinks(User $actor): Collection
+    public function getLinks(User $actor): EloquentCollection
     {
+        if ($this->overrideLinks !== null) {
+            $links = collect($this->overrideLinks)
+                ->map(function (LinkDefinition $definition) {
+                    return $this->buildLinkFromDefinition($definition);
+                });
+
+            if (!$actor->isGuest()) {
+                $links = $links->reject(function ($link) {
+                    return $link->guest_only;
+                });
+            }
+
+            return new EloquentCollection($links->all());
+        }
+
         return $this->getLinksFromDatabase($actor);
-        //return $actor->isGuest() ? $this->getGuestLinks($actor) : $this->getLinksFromDatabase($actor);
     }
 
     /**
@@ -131,10 +145,20 @@ class LinkRepository
      *
      * @param User $actor
      *
-     * @return Collection
+     * @return EloquentCollection<Link>
      */
-    public function getGuestLinks(User $actor): Collection
+    public function getGuestLinks(User $actor): EloquentCollection
     {
+        if ($this->overrideLinks !== null) {
+            return new EloquentCollection(
+                collect($this->overrideLinks)
+                    ->map(function (LinkDefinition $definition) {
+                        return $this->buildLinkFromDefinition($definition);
+                    })
+                    ->all()
+            );
+        }
+
         if ($links = $this->cache->get($this->cacheKey($actor))) {
             return $links;
         } else {
@@ -148,13 +172,14 @@ class LinkRepository
     /**
      * Get the links for guests from the database.
      *
-     * @return Collection
+     * @param User $actor
+     * @return EloquentCollection<Link>
      */
-    protected function getLinksFromDatabase(User $actor): Collection
+    protected function getLinksFromDatabase(User $actor): EloquentCollection
     {
         return Link::query()
-        ->whereVisibleTo($actor)
-        ->get();
+            ->whereVisibleTo($actor)
+            ->get();
     }
 
     /**
@@ -162,6 +187,42 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
+    }
+
+    /**
+     * Set the programmatic override links.
+     *
+     * @param LinkDefinition[] $links
+     */
+    public function setOverrideLinks(array $links): void
+    {
+        $this->overrideLinks = $links;
+    }
+
+    /**
+     * Build a Link model instance from a LinkDefinition.
+     *
+     * @param LinkDefinition $definition
+     * @return Link
+     */
+    protected function buildLinkFromDefinition(LinkDefinition $definition): Link
+    {
+        $link = new Link();
+        // If the definition includes an ID, set it on the Link model.
+        if ($definition->id !== null) {
+            $link->forceFill(['id' => $definition->id]);
+        }
+        $link->forceFill([
+            'title'       => $definition->title,
+            'url'         => $definition->url,
+            'icon'        => $definition->icon,
+            'is_internal' => $definition->isInternal,
+            'is_newtab'   => $definition->isNewtab,
+            'use_relme'   => $definition->useRelme,
+            'guest_only'  => $definition->guestOnly,
+            'parent_id'   => $definition->parentId,
+        ]);
+        return $link;
     }
 }
