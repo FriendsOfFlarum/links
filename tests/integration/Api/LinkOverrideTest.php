@@ -100,7 +100,6 @@ class LinkOverrideTest extends TestCase
         ];
     }
 
-
     /**
      * Helper: Extracts links from the API response.
      *

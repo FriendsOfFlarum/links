@@ -121,7 +121,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -204,7 +204,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
     }
 
     /**
@@ -253,6 +253,7 @@ class LinkRepository
         $link->syncOriginal();
         // Ensure the 'id' is visible in serialization.
         $link->makeVisible('id');
+
         return $link;
     }
 }
