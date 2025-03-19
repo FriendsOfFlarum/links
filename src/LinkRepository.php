@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links;
 
 use Flarum\Locale\Translator;
@@ -54,7 +63,7 @@ class LinkRepository
     /**
      * Find a link by ID.
      *
-     * @param int $id
+     * @param int       $id
      * @param User|null $actor
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
@@ -66,6 +75,7 @@ class LinkRepository
         $query = Link::where('id', $id);
         /** @var Link $link */
         $link = $this->scopeVisibleTo($query, $actor)->firstOrFail();
+
         return $link;
     }
 
@@ -81,13 +91,14 @@ class LinkRepository
         $query = Link::query();
         /** @var EloquentCollection<Link> $links */
         $links = $this->scopeVisibleTo($query, $user)->get();
+
         return $links;
     }
 
     /**
      * Scope a query to only include records that are visible to a user.
      *
-     * @param Builder $query
+     * @param Builder   $query
      * @param User|null $user
      *
      * @return Builder
@@ -97,6 +108,7 @@ class LinkRepository
         if ($user !== null) {
             $query->whereVisibleTo($user);
         }
+
         return $query;
     }
 
@@ -112,7 +124,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -137,8 +149,10 @@ class LinkRepository
                     return $link->guest_only;
                 });
             }
+
             return new EloquentCollection($links->all());
         }
+
         return $this->getLinksFromDatabase($actor);
     }
 
@@ -167,6 +181,7 @@ class LinkRepository
         } else {
             $links = $this->getLinksFromDatabase($actor);
             $this->cache->forever($this->cacheKey($actor), $links);
+
             return $links;
         }
     }
@@ -190,7 +205,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
     }
 
     /**
@@ -233,6 +248,7 @@ class LinkRepository
         $link->exists = true;
         $link->syncOriginal();
         $link->makeVisible('id');
+
         return $link;
     }
 }
