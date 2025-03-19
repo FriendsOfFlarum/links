@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
@@ -21,16 +30,16 @@ class LinkOverrideTest extends TestCase
             ],
             'links' => [
                 [
-                    'id' => 1,
-                    'title' => 'Google',
-                    'icon' => 'fab fa-google',
-                    'url' => 'https://google.com',
-                    'position' => null,
-                    'is_internal' => false,
-                    'is_newtab' => true,
-                    'use_relme' => false,
-                    'parent_id' => null,
-                    'is_restricted' => false
+                    'id'            => 1,
+                    'title'         => 'Google',
+                    'icon'          => 'fab fa-google',
+                    'url'           => 'https://google.com',
+                    'position'      => null,
+                    'is_internal'   => false,
+                    'is_newtab'     => true,
+                    'use_relme'     => false,
+                    'parent_id'     => null,
+                    'is_restricted' => false,
                 ],
             ],
         ]);
@@ -98,6 +107,7 @@ class LinkOverrideTest extends TestCase
      * Helper: Extracts links from the API response.
      *
      * @param array $data
+     *
      * @return array
      */
     protected function getLinksFromResponse(array $data): array
@@ -106,6 +116,7 @@ class LinkOverrideTest extends TestCase
         $links = array_filter($data['included'], function ($item) {
             return $item['type'] === 'links';
         });
+
         return array_values($links);
     }
 

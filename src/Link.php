@@ -1,12 +1,21 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links;
 
 use Flarum\Database\AbstractModel;
 use Flarum\Database\ScopeVisibilityTrait;
-use FoF\Links\Concerns\HasLinkAttributes; // Added trait for shared attribute definitions
-use Flarum\Group\Permission;
+use Flarum\Group\Permission; // Added trait for shared attribute definitions
 use Flarum\User\User;
+use FoF\Links\Concerns\HasLinkAttributes;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -120,6 +129,7 @@ class Link extends AbstractModel
             })
             ->map(function ($permission) {
                 $scopeFragment = explode('.', $permission, 2)[0];
+
                 return substr($scopeFragment, 4);
             })
             ->values();

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links;
 
 use FoF\Links\Concerns\HasLinkAttributes;
@@ -49,14 +58,14 @@ class LinkDefinition
         ?int $parentId = null
     ) {
         $defaults = self::getDefaultAttributes();
-        $this->id         = $id;
-        $this->title      = $title       ?? $defaults['title'];
-        $this->url        = $url         ?? $defaults['url'];
-        $this->icon       = $icon        ?? $defaults['icon'];
-        $this->isInternal = $isInternal  ?? $defaults['is_internal'];
-        $this->isNewtab   = $isNewtab    ?? $defaults['is_newtab'];
-        $this->useRelme   = $useRelme    ?? $defaults['use_relme'];
-        $this->guestOnly  = $guestOnly   ?? $defaults['guest_only'];
-        $this->parentId   = $parentId    ?? $defaults['parent_id'];
+        $this->id = $id;
+        $this->title = $title ?? $defaults['title'];
+        $this->url = $url ?? $defaults['url'];
+        $this->icon = $icon ?? $defaults['icon'];
+        $this->isInternal = $isInternal ?? $defaults['is_internal'];
+        $this->isNewtab = $isNewtab ?? $defaults['is_newtab'];
+        $this->useRelme = $useRelme ?? $defaults['use_relme'];
+        $this->guestOnly = $guestOnly ?? $defaults['guest_only'];
+        $this->parentId = $parentId ?? $defaults['parent_id'];
     }
 }

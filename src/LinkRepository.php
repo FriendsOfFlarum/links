@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links;
 
 use Flarum\User\User;
@@ -79,7 +88,7 @@ class LinkRepository
     /**
      * Scope a query to only include records that are visible to a user.
      *
-     * @param Builder  $query
+     * @param Builder   $query
      * @param User|null $user
      *
      * @return Builder
@@ -105,7 +114,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -173,6 +182,7 @@ class LinkRepository
      * Get the links for guests from the database.
      *
      * @param User $actor
+     *
      * @return EloquentCollection<Link>
      */
     protected function getLinksFromDatabase(User $actor): EloquentCollection
@@ -187,7 +197,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
     }
 
     /**
@@ -204,6 +214,7 @@ class LinkRepository
      * Build a Link model instance from a LinkDefinition.
      *
      * @param LinkDefinition $definition
+     *
      * @return Link
      */
     protected function buildLinkFromDefinition(LinkDefinition $definition): Link
@@ -223,6 +234,7 @@ class LinkRepository
             'guest_only'  => $definition->guestOnly,
             'parent_id'   => $definition->parentId,
         ]);
+
         return $link;
     }
 }
