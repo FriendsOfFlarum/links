@@ -11,6 +11,7 @@
 
 namespace FoF\Links;
 
+use Flarum\Locale\Translator;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,15 +28,21 @@ class LinkRepository
     protected $cache;
 
     /**
+     * @var Translator
+     */
+    protected $translator;
+
+    /**
      * Optional programmatic override links.
      *
      * @var LinkDefinition[]|null
      */
     protected $overrideLinks = null;
 
-    public function __construct(Cache $cache)
+    public function __construct(Cache $cache, Translator $translator)
     {
         $this->cache = $cache;
+        $this->translator = $translator;
     }
 
     /**
@@ -225,7 +232,7 @@ class LinkRepository
             $link->forceFill(['id' => $definition->id]);
         }
         $link->forceFill([
-            'title'       => $definition->title,
+            'title'       => $this->translator->trans($definition->translationKey),
             'url'         => $definition->url,
             'icon'        => $definition->icon,
             'is_internal' => $definition->isInternal,

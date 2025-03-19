@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of fof/links.
- *
- * Copyright (c) FriendsOfFlarum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FoF\Links;
 
 use FoF\Links\Concerns\HasLinkAttributes;
@@ -19,12 +10,16 @@ class LinkDefinition
 
     /**
      * Optional ID for the link.
-     *
-     * If provided, this will be used when building the Link model.
      */
     public ?int $id;
 
-    public string $title;
+    /**
+     * The translation key for the link title.
+     *
+     * @var string
+     */
+    public string $translationKey;
+
     public string $url;
     public string $icon;
     public bool $isInternal;
@@ -37,7 +32,7 @@ class LinkDefinition
      * Constructor.
      *
      * @param int|null    $id
-     * @param string|null $title
+     * @param string      $translationKey   The translation key for the title.
      * @param string|null $url
      * @param string|null $icon
      * @param bool|null   $isInternal
@@ -47,8 +42,8 @@ class LinkDefinition
      * @param int|null    $parentId
      */
     public function __construct(
-        ?int $id = null,
-        ?string $title = null,
+        ?int $id,
+        string $translationKey,
         ?string $url = null,
         ?string $icon = null,
         ?bool $isInternal = null,
@@ -58,14 +53,14 @@ class LinkDefinition
         ?int $parentId = null
     ) {
         $defaults = self::getDefaultAttributes();
-        $this->id = $id;
-        $this->title = $title ?? $defaults['title'];
-        $this->url = $url ?? $defaults['url'];
-        $this->icon = $icon ?? $defaults['icon'];
-        $this->isInternal = $isInternal ?? $defaults['is_internal'];
-        $this->isNewtab = $isNewtab ?? $defaults['is_newtab'];
-        $this->useRelme = $useRelme ?? $defaults['use_relme'];
-        $this->guestOnly = $guestOnly ?? $defaults['guest_only'];
-        $this->parentId = $parentId ?? $defaults['parent_id'];
+        $this->id             = $id;
+        $this->translationKey = $translationKey;
+        $this->url            = $url         ?? $defaults['url'];
+        $this->icon           = $icon        ?? $defaults['icon'];
+        $this->isInternal     = $isInternal  ?? $defaults['is_internal'];
+        $this->isNewtab       = $isNewtab    ?? $defaults['is_newtab'];
+        $this->useRelme       = $useRelme    ?? $defaults['use_relme'];
+        $this->guestOnly      = $guestOnly   ?? $defaults['guest_only'];
+        $this->parentId       = $parentId    ?? $defaults['parent_id'];
     }
 }

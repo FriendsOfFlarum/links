@@ -67,7 +67,7 @@ class LinkOverrideTest extends TestCase
             // Override link that does not restrict to guests.
             new LinkDefinition(
                 101,                        // id
-                'Override Link 1',          // title
+                'fof-links.override.override1',          // translation key
                 'https://override1.com',    // url
                 'fas fa-override1',         // icon
                 false,                      // isInternal
@@ -79,7 +79,7 @@ class LinkOverrideTest extends TestCase
             // Override link that is guest-only.
             new LinkDefinition(
                 102,
-                'Override Guest Link',
+                'fof-links.override.override2',
                 'https://overrideguest.com',
                 'fas fa-overrideguest',
                 false,
@@ -91,7 +91,7 @@ class LinkOverrideTest extends TestCase
             // Override link that conflicts with the DB link (id=1); should override it.
             new LinkDefinition(
                 1,
-                'Override Google',
+                'fof-links.override.overridegoogle',
                 'https://overridegoogle.com',
                 'fas fa-overridegoogle',
                 false,
@@ -148,7 +148,7 @@ class LinkOverrideTest extends TestCase
         // Verify that the override has replaced the DB link for id=1.
         foreach ($links as $link) {
             if ($link['id'] == 1) {
-                $this->assertEquals('Override Google', $link['attributes']['title']);
+                $this->assertEquals('fof-links.override.overridegoogle', $link['attributes']['title']);
             }
         }
     }
@@ -210,6 +210,6 @@ class LinkOverrideTest extends TestCase
             }
         }
         $this->assertNotNull($overrideGoogle);
-        $this->assertEquals('Override Google', $overrideGoogle['attributes']['title']);
+        $this->assertEquals('fof-links.override.overridegoogle', $overrideGoogle['attributes']['title']);
     }
 }
