@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of fof/links.
- *
- * Copyright (c) FriendsOfFlarum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FoF\Links;
 
 use FoF\Links\Concerns\HasLinkAttributes;
@@ -17,18 +8,8 @@ class LinkDefinition
 {
     use HasLinkAttributes;
 
-    /**
-     * Optional ID for the link.
-     */
     public ?int $id;
-
-    /**
-     * The translation key for the link title.
-     *
-     * @var string
-     */
     public string $translationKey;
-
     public string $url;
     public string $icon;
     public bool $isInternal;
@@ -40,36 +21,84 @@ class LinkDefinition
     /**
      * Constructor.
      *
-     * @param int|null    $id
-     * @param string      $translationKey The translation key for the title.
-     * @param string|null $url
-     * @param string|null $icon
-     * @param bool|null   $isInternal
-     * @param bool|null   $isNewtab
-     * @param bool|null   $useRelme
-     * @param bool|null   $guestOnly
-     * @param int|null    $parentId
+     * Initializes properties using default values from the HasLinkAttributes trait.
      */
-    public function __construct(
-        ?int $id,
-        string $translationKey,
-        ?string $url = null,
-        ?string $icon = null,
-        ?bool $isInternal = null,
-        ?bool $isNewtab = null,
-        ?bool $useRelme = null,
-        ?bool $guestOnly = null,
-        ?int $parentId = null
-    ) {
+    public function __construct()
+    {
         $defaults = self::getDefaultAttributes();
+
+        $this->id = null;
+        $this->translationKey = '';
+        $this->url = $defaults['url'];
+        $this->icon = $defaults['icon'];
+        $this->isInternal = $defaults['is_internal'];
+        $this->isNewtab = $defaults['is_newtab'];
+        $this->useRelme = $defaults['use_relme'];
+        $this->guestOnly = $defaults['guest_only'];
+        $this->parentId = $defaults['parent_id'];
+    }
+
+    /**
+     * Factory method for convenience.
+     *
+     * @return self
+     */
+    public static function make(): self
+    {
+        return new self();
+    }
+
+    public function withId(?int $id): self
+    {
         $this->id = $id;
+        return $this;
+    }
+
+    public function withTranslationKey(string $translationKey): self
+    {
         $this->translationKey = $translationKey;
-        $this->url = $url ?? $defaults['url'];
-        $this->icon = $icon ?? $defaults['icon'];
-        $this->isInternal = $isInternal ?? $defaults['is_internal'];
-        $this->isNewtab = $isNewtab ?? $defaults['is_newtab'];
-        $this->useRelme = $useRelme ?? $defaults['use_relme'];
-        $this->guestOnly = $guestOnly ?? $defaults['guest_only'];
-        $this->parentId = $parentId ?? $defaults['parent_id'];
+        return $this;
+    }
+
+    public function withUrl(string $url): self
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    public function withIcon(string $icon): self
+    {
+        $this->icon = $icon;
+        return $this;
+    }
+
+    public function withIsInternal(bool $isInternal): self
+    {
+        $this->isInternal = $isInternal;
+        return $this;
+    }
+
+    public function withIsNewtab(bool $isNewtab): self
+    {
+        $this->isNewtab = $isNewtab;
+        return $this;
+    }
+
+    public function withUseRelme(bool $useRelme): self
+    {
+        $this->useRelme = $useRelme;
+        return $this;
+    }
+
+    public function withGuestOnly(bool $guestOnly): self
+    {
+        $this->guestOnly = $guestOnly;
+        return $this;
+    }
+
+    public function withParentId(?int $parentId): self
+    {
+        $this->parentId = $parentId;
+        return $this;
     }
 }

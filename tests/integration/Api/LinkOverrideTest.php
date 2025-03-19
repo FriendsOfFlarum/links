@@ -65,43 +65,41 @@ class LinkOverrideTest extends TestCase
     {
         return [
             // Override link that does not restrict to guests.
-            new LinkDefinition(
-                101,                        // id
-                'fof-links.override.override1',          // translation key
-                'https://override1.com',    // url
-                'fas fa-override1',         // icon
-                false,                      // isInternal
-                true,                       // isNewtab
-                false,                      // useRelme
-                false,                      // guestOnly
-                null                        // parentId
-            ),
+            LinkDefinition::make()
+                ->withId(101)
+                ->withTranslationKey('fof-links.override.override1')
+                ->withUrl('https://override1.com')
+                ->withIcon('fas fa-override1')
+                ->withIsInternal(false)
+                ->withIsNewtab(true)
+                ->withUseRelme(false)
+                ->withGuestOnly(false)
+                ->withParentId(null),
             // Override link that is guest-only.
-            new LinkDefinition(
-                102,
-                'fof-links.override.override2',
-                'https://overrideguest.com',
-                'fas fa-overrideguest',
-                false,
-                true,
-                false,
-                true,
-                null
-            ),
+            LinkDefinition::make()
+                ->withId(102)
+                ->withTranslationKey('fof-links.override.override2')
+                ->withUrl('https://overrideguest.com')
+                ->withIcon('fas fa-overrideguest')
+                ->withIsInternal(false)
+                ->withIsNewtab(true)
+                ->withUseRelme(false)
+                ->withGuestOnly(true)
+                ->withParentId(null),
             // Override link that conflicts with the DB link (id=1); should override it.
-            new LinkDefinition(
-                1,
-                'fof-links.override.overridegoogle',
-                'https://overridegoogle.com',
-                'fas fa-overridegoogle',
-                false,
-                false,
-                false,
-                false,
-                null
-            ),
+            LinkDefinition::make()
+                ->withId(1)
+                ->withTranslationKey('fof-links.override.overridegoogle')
+                ->withUrl('https://overridegoogle.com')
+                ->withIcon('fas fa-overridegoogle')
+                ->withIsInternal(false)
+                ->withIsNewtab(false)
+                ->withUseRelme(false)
+                ->withGuestOnly(false)
+                ->withParentId(null),
         ];
     }
+
 
     /**
      * Helper: Extracts links from the API response.

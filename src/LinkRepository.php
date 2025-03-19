@@ -121,7 +121,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -204,7 +204,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
     }
 
     /**
@@ -226,12 +226,7 @@ class LinkRepository
      */
     protected function buildLinkFromDefinition(LinkDefinition $definition): Link
     {
-        $link = new Link();
-        // If the definition includes an ID, set it on the Link model.
-        if ($definition->id !== null) {
-            $link->forceFill(['id' => $definition->id]);
-        }
-        $link->forceFill([
+        $attributes = [
             'title'       => $this->translator->trans($definition->translationKey),
             'url'         => $definition->url,
             'icon'        => $definition->icon,
@@ -240,8 +235,24 @@ class LinkRepository
             'use_relme'   => $definition->useRelme,
             'guest_only'  => $definition->guestOnly,
             'parent_id'   => $definition->parentId,
-        ]);
+        ];
 
+        if ($definition->id !== null) {
+            $attributes['id'] = $definition->id;
+        }
+
+        $link = new Link();
+        // Set all attributes at once.
+        $link->setRawAttributes($attributes, true);
+        // Explicitly assign the primary key.
+        if ($definition->id !== null) {
+            $link->setAttribute('id', $definition->id);
+        }
+        // Mark the model as existing so it's treated as persisted.
+        $link->exists = true;
+        $link->syncOriginal();
+        // Ensure the 'id' is visible in serialization.
+        $link->makeVisible('id');
         return $link;
     }
 }
