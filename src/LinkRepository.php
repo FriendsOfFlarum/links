@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of fof/links.
- *
- * Copyright (c) FriendsOfFlarum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FoF\Links;
 
 use Flarum\Locale\Translator;
@@ -50,7 +41,7 @@ class LinkRepository
      *
      * @return Builder
      */
-    public function query()
+    public function query(): Builder
     {
         return Link::query();
     }
@@ -63,49 +54,49 @@ class LinkRepository
     /**
      * Find a link by ID.
      *
-     * @param int  $id
-     * @param User $actor
+     * @param int $id
+     * @param User|null $actor
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      *
      * @return Link
      */
-    public function findOrFail($id, User $actor = null)
+    public function findOrFail($id, ?User $actor = null): Link
     {
         $query = Link::where('id', $id);
-
-        return $this->scopeVisibleTo($query, $actor)->firstOrFail();
+        /** @var Link $link */
+        $link = $this->scopeVisibleTo($query, $actor)->firstOrFail();
+        return $link;
     }
 
     /**
-     * Get all links, optionally making sure they are visible to a
-     * certain user.
+     * Get all links, optionally making sure they are visible to a certain user.
      *
      * @param User|null $user
      *
      * @return EloquentCollection<Link>
      */
-    public function all(User $user = null)
+    public function all(?User $user = null): EloquentCollection
     {
         $query = Link::query();
-
-        return $this->scopeVisibleTo($query, $user)->get();
+        /** @var EloquentCollection<Link> $links */
+        $links = $this->scopeVisibleTo($query, $user)->get();
+        return $links;
     }
 
     /**
      * Scope a query to only include records that are visible to a user.
      *
-     * @param Builder   $query
+     * @param Builder $query
      * @param User|null $user
      *
      * @return Builder
      */
-    protected function scopeVisibleTo(Builder $query, ?User $user = null)
+    protected function scopeVisibleTo(Builder $query, ?User $user = null): Builder
     {
         if ($user !== null) {
             $query->whereVisibleTo($user);
         }
-
         return $query;
     }
 
@@ -121,7 +112,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -141,16 +132,13 @@ class LinkRepository
                 ->map(function (LinkDefinition $definition) {
                     return $this->buildLinkFromDefinition($definition);
                 });
-
             if (!$actor->isGuest()) {
                 $links = $links->reject(function ($link) {
                     return $link->guest_only;
                 });
             }
-
             return new EloquentCollection($links->all());
         }
-
         return $this->getLinksFromDatabase($actor);
     }
 
@@ -174,13 +162,11 @@ class LinkRepository
                     ->all()
             );
         }
-
         if ($links = $this->cache->get($this->cacheKey($actor))) {
             return $links;
         } else {
             $links = $this->getLinksFromDatabase($actor);
             $this->cache->forever($this->cacheKey($actor), $links);
-
             return $links;
         }
     }
@@ -204,7 +190,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
     }
 
     /**
@@ -236,24 +222,17 @@ class LinkRepository
             'guest_only'  => $definition->guestOnly,
             'parent_id'   => $definition->parentId,
         ];
-
         if ($definition->id !== null) {
             $attributes['id'] = $definition->id;
         }
-
         $link = new Link();
-        // Set all attributes at once.
         $link->setRawAttributes($attributes, true);
-        // Explicitly assign the primary key.
         if ($definition->id !== null) {
             $link->setAttribute('id', $definition->id);
         }
-        // Mark the model as existing so it's treated as persisted.
         $link->exists = true;
         $link->syncOriginal();
-        // Ensure the 'id' is visible in serialization.
         $link->makeVisible('id');
-
         return $link;
     }
 }
