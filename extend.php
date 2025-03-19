@@ -20,15 +20,15 @@ use FoF\Links\Event\PermissionChanged;
 use FoF\Links\Extend\LinksOverride;
 
 return [
-    new Extend\Locales(__DIR__.'/locale'),
+    new Extend\Locales(__DIR__ . '/locale'),
 
     (new Extend\Frontend('forum'))
-        ->js(__DIR__.'/js/dist/forum.js')
-        ->css(__DIR__.'/less/forum.less'),
+        ->js(__DIR__ . '/js/dist/forum.js')
+        ->css(__DIR__ . '/less/forum.less'),
 
     (new Extend\Frontend('admin'))
-        ->js(__DIR__.'/js/dist/admin.js')
-        ->css(__DIR__.'/less/admin.less'),
+        ->js(__DIR__ . '/js/dist/admin.js')
+        ->css(__DIR__ . '/less/admin.less'),
 
     (new Extend\Routes('api'))
         ->post('/links', 'links.create', Controller\CreateLinkController::class)
@@ -63,14 +63,5 @@ return [
         ->register(Provider\LinksProvider::class),
 
     // (new LinksOverride())
-    //     ->addLink(new LinkDefinition(
-    //         1,
-    //         'Override Home',
-    //         'https://example.com',
-    //         'fas fa-home',
-    //         false,
-    //         true,
-    //         false,
-    //         false
-    //     ))
+    //     ->addLinks(OverrideLinks::class)
 ];

@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of fof/links.
- *
- * Copyright (c) FriendsOfFlarum.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FoF\Links\Extend;
 
 use Flarum\Extend\ExtenderInterface;
@@ -22,9 +13,10 @@ class LinksOverride implements ExtenderInterface
     /**
      * @var LinkDefinition[]|string
      *
-     * This can either be an array of LinkDefinition objects or an invokable class string that returns such an array.
+     * This can either be an array of LinkDefinition objects or
+     * an invokable class string that returns such an array.
      */
-    protected array|string $links = [];
+    protected $links = [];
 
     /**
      * Set override links.
@@ -33,32 +25,22 @@ class LinksOverride implements ExtenderInterface
      * that will return an array of LinkDefinition objects.
      *
      * @param LinkDefinition[]|string $links
-     *
      * @return $this
      */
-    public function addLinks(array|string $links): self
+    public function addLinks($links): self
     {
-        $this->links = $links;
-
-        return $this;
-    }
-
-    /**
-     * Add a single link.
-     *
-     * @param LinkDefinition $link
-     *
-     * @return $this
-     */
-    public function addLink(LinkDefinition $link): self
-    {
-        if (is_array($this->links)) {
-            $this->links[] = $link;
+        if (!is_array($this->links)) {
+            // If $this->links is not already an array, just assign it.
+            $this->links = $links;
         } else {
-            // If a class string was already provided, override it with an array.
-            $this->links = [$link];
+            // If $this->links is already an array and $links is an array, merge them.
+            if (is_array($links)) {
+                $this->links = array_merge($this->links, $links);
+            } else {
+                // Otherwise, if $links is not an array (i.e. it's a string) we override.
+                $this->links = $links;
+            }
         }
-
         return $this;
     }
 
@@ -67,7 +49,7 @@ class LinksOverride implements ExtenderInterface
      *
      * This binds the override links into the LinkRepository.
      *
-     * @param Container      $container
+     * @param Container $container
      * @param Extension|null $extension
      */
     public function extend(Container $container, ?Extension $extension = null): void
@@ -81,8 +63,10 @@ class LinksOverride implements ExtenderInterface
             $links = $this->links;
         }
 
-        $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
-            $repository->setOverrideLinks($links);
-        });
+        if (!empty($this->links)) {
+            $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
+                $repository->setOverrideLinks($links);
+            });
+        }
     }
 }
