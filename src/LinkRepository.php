@@ -136,10 +136,14 @@ class LinkRepository
         $links = [];
 
         foreach ($definitions as $definition) {
-            $links[] = $this->buildLinkFromDefinition($definition);
+            $link = $this->buildLinkFromDefinition($definition);
+            $links[] = $link;
 
             foreach ($definition->getChildren() as $childDefinition) {
-                $links[] = $this->buildLinkFromDefinition($childDefinition);
+                $childLink = $this->buildLinkFromDefinition($childDefinition);
+                $childLink->parent_id = $link->id;
+                $childLink->setRelation('parent', $link);
+                $links[] = $childLink;
             }
         }
 
@@ -174,14 +178,9 @@ class LinkRepository
     public function getGuestLinks(User $actor): EloquentCollection
     {
         if ($this->overrideLinks !== null) {
-            return new EloquentCollection(
-                collect($this->overrideLinks)
-                    ->map(function (LinkDefinition $definition) {
-                        return $this->buildLinkFromDefinition($definition);
-                    })
-                    ->all()
-            );
+            return new EloquentCollection($this->getFlattenedLinks($this->overrideLinks));
         }
+        
         if ($links = $this->cache->get($this->cacheKey($actor))) {
             return $links;
         } else {
@@ -259,12 +258,7 @@ class LinkRepository
         $link->syncOriginal();
         $link->makeVisible('id');
 
-        // foreach ($definition->getChildren() as $index => $childDefinition) {
-        //     $child = $this->buildLinkFromDefinition($childDefinition);
-        //     $child->parent_id = $link->id; // ✅ Assign parent_id
-        //     $child->position = $index;
-        //     $child->setRelation('parent', $link); // ✅ Ensure proper parent relationship
-        // }
+        // Child links are handled in getFlattenedLinks
 
         return $link;
     }
@@ -274,17 +268,11 @@ class LinkRepository
     /**
      * Recursively flatten a link and its children.
      *
-     * @param Link $link
-     * @return array<Link>
-     */
-    /**
-     * Recursively flatten a link and its children.
-     *
      * @param Link $link The processed parent link
      * @param array<LinkDefinition> $children The child link definitions
      * @return array<Link>
      */
-    protected function flattenLinks(Link $link, ?array $children = []): array
+    protected function flattenLinks(Link $link, array $children = []): array
     {
         $flattened = [$link]; // Start with the parent link
 
@@ -293,8 +281,16 @@ class LinkRepository
             foreach ($children as $index => $childDefinition) {
                 $child = $this->buildLinkFromDefinition($childDefinition);
                 $child->parent_id = $link->id;
-                $child->position = $index; // ✅ Ensure correct positioning
-                $flattened = array_merge($flattened, $this->flattenLinks($child, $childDefinition->getChildren() ?? []));
+                $child->position = $index;
+                $child->setRelation('parent', $link);
+                $flattened[] = $child;
+                
+                // Process any nested children
+                if (!empty($childDefinition->getChildren())) {
+                    $nestedChildren = $this->flattenLinks($child, $childDefinition->getChildren());
+                    // Skip the first element as it's already included
+                    $flattened = array_merge($flattened, array_slice($nestedChildren, 1));
+                }
             }
         }
 
