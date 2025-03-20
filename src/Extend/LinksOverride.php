@@ -78,6 +78,9 @@ class LinksOverride implements ExtenderInterface
             $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
                 $repository->setOverrideLinks($links);
             });
+            $container->extend('fof-links.override', function () {
+                return true;
+            });
         }
     }
 }

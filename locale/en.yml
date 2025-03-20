@@ -36,6 +36,7 @@ fof-links:
     links:
       create_button: => fof-links.ref.create_link
       links: => fof-links.ref.links
+      preconfigured: The links on this forum have been preconfigured and cannot be edited here.
 
     settings:
       show_icons_only_on_tablet: Show icons only on tablet screens
