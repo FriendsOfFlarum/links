@@ -50,12 +50,8 @@ class LinkSerializer extends AbstractSerializer
      * Define the parent relationship.
      *
      * This ensures overridden links also include their parent in the API response.
-     *
-     * @param Link $link
-     *
-     * @return Relationship
      */
-    protected function parent($link)
+    protected function parent($link): ?Relationship
     {
         if ($link->parent_id !== null) {
             return $this->hasOne($link, self::class);
