@@ -17,7 +17,6 @@ use Flarum\Extend;
 use FoF\Links\Api\Controller;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Event\PermissionChanged;
-use FoF\Links\Extend\LinksOverride;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
