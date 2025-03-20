@@ -74,7 +74,7 @@ class LinksOverride implements ExtenderInterface
             $links = $this->links;
         }
 
-        if (!empty($this->links)) {
+        if (!empty($links)) {
             $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
                 $repository->setOverrideLinks($links);
             });
