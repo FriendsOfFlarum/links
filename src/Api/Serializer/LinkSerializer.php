@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Serializer;
 
 use Flarum\Api\Serializer\AbstractSerializer;
+use Tobscure\JsonApi\Relationship;
 
 class LinkSerializer extends AbstractSerializer
 {
@@ -42,16 +43,24 @@ class LinkSerializer extends AbstractSerializer
             $attributes['guestOnly'] = (bool) $link->guest_only;
         }
 
+
         return $attributes;
     }
 
     /**
-     * @param \FoF\Links\Link $link
+     * Define the parent relationship.
      *
-     * @return \Tobscure\JsonApi\Relationship
+     * This ensures overridden links also include their parent in the API response.
+     *
+     * @param Link $link
+     * @return Relationship
      */
     protected function parent($link)
     {
-        return $this->hasOne($link, self::class);
+        if ($link->parent_id !== null) {
+            return $this->hasOne($link, self::class);
+        }
+
+        return null;
     }
 }

@@ -2,3 +2,4 @@ node_modules
 composer.lock
 vendor
 .phpunit.result.cache
+.aider*
