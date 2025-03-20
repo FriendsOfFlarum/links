@@ -43,7 +43,6 @@ class LinkSerializer extends AbstractSerializer
             $attributes['guestOnly'] = (bool) $link->guest_only;
         }
 
-
         return $attributes;
     }
 
@@ -53,6 +52,7 @@ class LinkSerializer extends AbstractSerializer
      * This ensures overridden links also include their parent in the API response.
      *
      * @param Link $link
+     *
      * @return Relationship
      */
     protected function parent($link)

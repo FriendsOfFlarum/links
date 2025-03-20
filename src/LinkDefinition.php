@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links;
 
 use FoF\Links\Concerns\HasLinkAttributes;
@@ -70,60 +79,70 @@ class LinkDefinition
     public function withId(int $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
     public function withTranslationKey(string $translationKey): self
     {
         $this->translationKey = $translationKey;
+
         return $this;
     }
 
     public function withUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
     public function withIcon(string $icon): self
     {
         $this->icon = $icon;
+
         return $this;
     }
 
     public function withIsInternal(bool $isInternal): self
     {
         $this->isInternal = $isInternal;
+
         return $this;
     }
 
     public function withIsNewtab(bool $isNewtab): self
     {
         $this->isNewtab = $isNewtab;
+
         return $this;
     }
 
     public function withUseRelme(bool $useRelme): self
     {
         $this->useRelme = $useRelme;
+
         return $this;
     }
 
     public function withGuestOnly(bool $guestOnly): self
     {
         $this->guestOnly = $guestOnly;
+
         return $this;
     }
 
     public function withParentId(?int $parentId): self
     {
         $this->parentId = $parentId;
+
         return $this;
     }
 
     public function withPosition(int $position): self
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -131,12 +150,14 @@ class LinkDefinition
      * Add a child link.
      *
      * @param LinkDefinition $child
+     *
      * @return self
      */
     public function addChild(LinkDefinition $child): self
     {
         $child->parentId = $this->id;
         $this->children[] = $child;
+
         return $this;
     }
 

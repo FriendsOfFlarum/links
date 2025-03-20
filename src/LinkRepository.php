@@ -16,7 +16,6 @@ use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Arr;
 
 class LinkRepository
 {
@@ -125,7 +124,7 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
@@ -156,7 +155,7 @@ class LinkRepository
             $links = collect($this->getFlattenedLinks($this->overrideLinks));
 
             if (!$actor->isGuest()) {
-                $links = $links->reject(fn(Link $link) => $link->guest_only);
+                $links = $links->reject(fn (Link $link) => $link->guest_only);
             }
 
             return new EloquentCollection($links->all());
@@ -164,7 +163,6 @@ class LinkRepository
 
         return $this->getLinksFromDatabase($actor);
     }
-
 
     /**
      * Get the links for guests.
@@ -180,7 +178,7 @@ class LinkRepository
         if ($this->overrideLinks !== null) {
             return new EloquentCollection($this->getFlattenedLinks($this->overrideLinks));
         }
-        
+
         if ($links = $this->cache->get($this->cacheKey($actor))) {
             return $links;
         } else {
@@ -210,7 +208,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
     }
 
     /**
@@ -263,13 +261,12 @@ class LinkRepository
         return $link;
     }
 
-
-
     /**
      * Recursively flatten a link and its children.
      *
-     * @param Link $link The processed parent link
+     * @param Link                  $link     The processed parent link
      * @param array<LinkDefinition> $children The child link definitions
+     *
      * @return array<Link>
      */
     protected function flattenLinks(Link $link, array $children = []): array
@@ -284,7 +281,7 @@ class LinkRepository
                 $child->position = $index;
                 $child->setRelation('parent', $link);
                 $flattened[] = $child;
-                
+
                 // Process any nested children
                 if (!empty($childDefinition->getChildren())) {
                     $nestedChildren = $this->flattenLinks($child, $childDefinition->getChildren());
