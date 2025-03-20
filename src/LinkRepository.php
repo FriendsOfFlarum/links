@@ -16,6 +16,7 @@ use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
 
 class LinkRepository
 {
@@ -124,30 +125,34 @@ class LinkRepository
     public function cacheKey(User $actor): string
     {
         if ($actor->isGuest()) {
-            return self::$cacheKeyPrefix.self::$cacheGuestLinksKey;
+            return self::$cacheKeyPrefix . self::$cacheGuestLinksKey;
         } else {
             throw new \InvalidArgumentException('Only guests can have cached links at this time.');
         }
     }
 
-    /**
-     * Get the links for the given user.
-     *
-     * @param User $actor
-     *
-     * @return EloquentCollection<Link>
-     */
+    protected function getFlattenedLinks(array $definitions): array
+    {
+        $links = [];
+
+        foreach ($definitions as $definition) {
+            $links[] = $this->buildLinkFromDefinition($definition);
+
+            foreach ($definition->getChildren() as $childDefinition) {
+                $links[] = $this->buildLinkFromDefinition($childDefinition);
+            }
+        }
+
+        return $links;
+    }
+
     public function getLinks(User $actor): EloquentCollection
     {
         if ($this->overrideLinks !== null) {
-            $links = collect($this->overrideLinks)
-                ->map(function (LinkDefinition $definition) {
-                    return $this->buildLinkFromDefinition($definition);
-                });
+            $links = collect($this->getFlattenedLinks($this->overrideLinks));
+
             if (!$actor->isGuest()) {
-                $links = $links->reject(function ($link) {
-                    return $link->guest_only;
-                });
+                $links = $links->reject(fn(Link $link) => $link->guest_only);
             }
 
             return new EloquentCollection($links->all());
@@ -155,6 +160,7 @@ class LinkRepository
 
         return $this->getLinksFromDatabase($actor);
     }
+
 
     /**
      * Get the links for guests.
@@ -205,7 +211,7 @@ class LinkRepository
      */
     public function clearLinksCache(): void
     {
-        $this->cache->forget(self::$cacheKeyPrefix.self::$cacheGuestLinksKey);
+        $this->cache->forget(self::$cacheKeyPrefix . self::$cacheGuestLinksKey);
     }
 
     /**
@@ -236,19 +242,62 @@ class LinkRepository
             'use_relme'   => $definition->useRelme,
             'guest_only'  => $definition->guestOnly,
             'parent_id'   => $definition->parentId,
+            'position'    => $definition->position,
         ];
+
         if ($definition->id !== null) {
             $attributes['id'] = $definition->id;
         }
+
         $link = new Link();
         $link->setRawAttributes($attributes, true);
         if ($definition->id !== null) {
             $link->setAttribute('id', $definition->id);
         }
+
         $link->exists = true;
         $link->syncOriginal();
         $link->makeVisible('id');
 
+        // foreach ($definition->getChildren() as $index => $childDefinition) {
+        //     $child = $this->buildLinkFromDefinition($childDefinition);
+        //     $child->parent_id = $link->id; // ✅ Assign parent_id
+        //     $child->position = $index;
+        //     $child->setRelation('parent', $link); // ✅ Ensure proper parent relationship
+        // }
+
         return $link;
+    }
+
+
+
+    /**
+     * Recursively flatten a link and its children.
+     *
+     * @param Link $link
+     * @return array<Link>
+     */
+    /**
+     * Recursively flatten a link and its children.
+     *
+     * @param Link $link The processed parent link
+     * @param array<LinkDefinition> $children The child link definitions
+     * @return array<Link>
+     */
+    protected function flattenLinks(Link $link, ?array $children = []): array
+    {
+        $flattened = [$link]; // Start with the parent link
+
+        // Ensure children exist before processing
+        if (!empty($children)) {
+            foreach ($children as $index => $childDefinition) {
+                $child = $this->buildLinkFromDefinition($childDefinition);
+                $child->parent_id = $link->id;
+                $child->position = $index; // ✅ Ensure correct positioning
+                $flattened = array_merge($flattened, $this->flattenLinks($child, $childDefinition->getChildren() ?? []));
+            }
+        }
+
+        return $flattened;
     }
 }
