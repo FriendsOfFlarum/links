@@ -58,10 +58,4 @@ return [
 
     (new Extend\Policy())
         ->modelPolicy(Link::class, Access\LinkPolicy::class),
-
-    (new Extend\ServiceProvider())
-        ->register(Provider\LinksProvider::class),
-
-    // (new LinksOverride())
-    //     ->addLinks(OverrideLinks::class)
 ];
