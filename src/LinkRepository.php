@@ -134,6 +134,7 @@ class LinkRepository
      * Convert an array of LinkDefinition objects to Link models, preserving hierarchy.
      *
      * @param array<LinkDefinition> $definitions
+     *
      * @return array<Link>
      */
     protected function getFlattenedLinks(array $definitions): array
@@ -143,7 +144,7 @@ class LinkRepository
         foreach ($definitions as $definition) {
             $link = $this->buildLinkFromDefinition($definition);
             $links[] = $link;
-            
+
             if (!empty($definition->getChildren())) {
                 $childLinks = $this->processChildDefinitions($link, $definition->getChildren());
                 $links = array_merge($links, $childLinks);
@@ -152,31 +153,32 @@ class LinkRepository
 
         return $links;
     }
-    
+
     /**
      * Process child definitions and convert them to Link models.
      *
-     * @param Link $parentLink
+     * @param Link                  $parentLink
      * @param array<LinkDefinition> $childDefinitions
+     *
      * @return array<Link>
      */
     protected function processChildDefinitions(Link $parentLink, array $childDefinitions): array
     {
         $childLinks = [];
-        
+
         foreach ($childDefinitions as $index => $childDefinition) {
             $childLink = $this->buildLinkFromDefinition($childDefinition);
             $childLink->parent_id = $parentLink->id;
             $childLink->position = $index;
             $childLink->setRelation('parent', $parentLink);
             $childLinks[] = $childLink;
-            
+
             if (!empty($childDefinition->getChildren())) {
                 $nestedLinks = $this->processChildDefinitions($childLink, $childDefinition->getChildren());
                 $childLinks = array_merge($childLinks, $nestedLinks);
             }
         }
-        
+
         return $childLinks;
     }
 
@@ -291,5 +293,4 @@ class LinkRepository
 
         return $link;
     }
-
 }
