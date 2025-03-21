@@ -13,8 +13,9 @@ namespace FoF\Links;
 
 use Flarum\Database\AbstractModel;
 use Flarum\Database\ScopeVisibilityTrait;
-use Flarum\Group\Permission;
+use Flarum\Group\Permission; // Added trait for shared attribute definitions
 use Flarum\User\User;
+use FoF\Links\Concerns\HasLinkAttributes;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -34,6 +35,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Link extends AbstractModel
 {
     use ScopeVisibilityTrait;
+    use HasLinkAttributes; // Use the centralized attribute definitions
 
     /**
      * {@inheritdoc}
@@ -44,11 +46,11 @@ class Link extends AbstractModel
      * @var array
      */
     protected $casts = [
-        'is_internal'           => 'boolean',
-        'is_newtab'             => 'boolean',
-        'use_relme'             => 'boolean',
-        'is_restricted'         => 'boolean',
-        'guest_only'            => 'boolean',
+        'is_internal'   => 'boolean',
+        'is_newtab'     => 'boolean',
+        'use_relme'     => 'boolean',
+        'is_restricted' => 'boolean',
+        'guest_only'    => 'boolean',
     ];
 
     public static function boot()
@@ -74,6 +76,8 @@ class Link extends AbstractModel
      * @param string $url
      * @param bool   $isInternal
      * @param bool   $isNewtab
+     * @param bool   $useRelMe
+     * @param bool   $guestOnly
      *
      * @return static
      */
@@ -130,38 +134,28 @@ class Link extends AbstractModel
             })
             ->values();
 
-        return $query
-            ->where(function ($query) use ($isAdmin, $linkIdsWithPermission) {
-                $query
-                    ->whereIn('links.id', function ($query) use ($isAdmin, $linkIdsWithPermission) {
-                        static::buildPermissionSubquery($query, $isAdmin, $linkIdsWithPermission);
-                    })
-                    ->where(function ($query) use ($isAdmin, $linkIdsWithPermission) {
-                        $query
-                            ->whereIn('links.parent_id', function ($query) use ($isAdmin, $linkIdsWithPermission) {
-                                static::buildPermissionSubquery($query, $isAdmin, $linkIdsWithPermission);
-                            })
-                            ->orWhere('links.parent_id', null);
-                    });
+        return $query->where(function ($query) use ($isAdmin, $linkIdsWithPermission) {
+            $query->whereIn('links.id', function ($query) use ($isAdmin, $linkIdsWithPermission) {
+                static::buildPermissionSubquery($query, $isAdmin, $linkIdsWithPermission);
+            })->where(function ($query) use ($isAdmin, $linkIdsWithPermission) {
+                $query->whereIn('links.parent_id', function ($query) use ($isAdmin, $linkIdsWithPermission) {
+                    static::buildPermissionSubquery($query, $isAdmin, $linkIdsWithPermission);
+                })->orWhere('links.parent_id', null);
             });
+        });
     }
 
     protected static function buildPermissionSubquery($base, $isAdmin, $linkIdsWithPermission)
     {
-        $base
-            ->from('links as perm_links')
-            ->select('perm_links.id');
+        $base->from('links as perm_links')->select('perm_links.id');
 
-        // This needs to be a special case, as `linkIdsWithPermissions`
-        // won't include admin perms (which are all perms by default).
         if ($isAdmin) {
             return;
         }
 
         $base->where(function ($query) use ($linkIdsWithPermission) {
-            $query
-                ->where('perm_links.is_restricted', true)
-                ->whereIn('perm_links.id', $linkIdsWithPermission);
+            $query->where('perm_links.is_restricted', true)
+                  ->whereIn('perm_links.id', $linkIdsWithPermission);
         });
 
         $base->orWhere('perm_links.is_restricted', false);

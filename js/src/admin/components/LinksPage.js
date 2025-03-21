@@ -3,7 +3,7 @@ import app from 'flarum/admin/app';
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import Button from 'flarum/common/components/Button';
 import icon from 'flarum/common/helpers/icon';
-
+import Placeholder from 'flarum/common/components/Placeholder';
 import sortable from 'sortablejs';
 
 import EditLinkModal from './EditLinkModal';
@@ -58,6 +58,22 @@ export default class LinksPage extends ExtensionPage {
             <h2 className="ExtensionTitle">{app.translator.trans('fof-links.admin.links.links')}</h2>
           </div>
         </div>
+        {app.forum.attribute('links.set') ? this.linksPreset() : this.linksContent()}
+      </div>
+    );
+  }
+
+  linksPreset() {
+    return (
+      <>
+        <Placeholder text={app.translator.trans('fof-links.admin.links.preconfigured')} />
+      </>
+    );
+  }
+
+  linksContent() {
+    return (
+      <>
         <div className="container">
           {Button.component(
             {
@@ -80,7 +96,7 @@ export default class LinksPage extends ExtensionPage {
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 

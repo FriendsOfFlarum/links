@@ -38,6 +38,7 @@ return [
         ->post('/permission', 'permission', Controller\SetPermissionController::class),
 
     (new Extend\ApiSerializer(ForumSerializer::class))
+        ->attributes(Api\ForumAttributes::class)
         ->hasMany('links', LinkSerializer::class),
 
     (new Extend\Event())
@@ -57,4 +58,7 @@ return [
 
     (new Extend\Policy())
         ->modelPolicy(Link::class, Access\LinkPolicy::class),
+
+    (new Extend\ServiceProvider())
+        ->register(Provider\LinksProvider::class),
 ];
