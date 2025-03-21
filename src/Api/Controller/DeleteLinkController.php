@@ -14,12 +14,15 @@ namespace FoF\Links\Api\Controller;
 use Flarum\Api\Controller\AbstractDeleteController;
 use Flarum\Http\RequestUtil;
 use FoF\Links\Command\DeleteLink;
+use FoF\Links\Concerns\ChecksOverride;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ServerRequestInterface;
 
 class DeleteLinkController extends AbstractDeleteController
 {
+    use ChecksOverride;
+    
     /**
      * @var Dispatcher
      */
@@ -38,6 +41,10 @@ class DeleteLinkController extends AbstractDeleteController
      */
     protected function delete(ServerRequestInterface $request)
     {
+        if ($this->linksAreOverridden()) {
+            $this->notValid();
+        }
+
         $this->bus->dispatch(
             new DeleteLink(Arr::get($request->getQueryParams(), 'id'), RequestUtil::getActor($request))
         );

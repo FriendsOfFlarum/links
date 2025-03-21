@@ -16,6 +16,7 @@ use Flarum\Foundation\ValidationException;
 use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\CreateLink;
+use FoF\Links\Concerns\ChecksOverride;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,8 @@ use Tobscure\JsonApi\Document;
 
 class CreateLinkController extends AbstractCreateController
 {
+    use ChecksOverride;
+
     /**
      * {@inheritdoc}
      */
@@ -48,6 +51,10 @@ class CreateLinkController extends AbstractCreateController
     {
         $actor = RequestUtil::getActor($request);
         $actor->assertAdmin();
+
+        if ($this->linksAreOverridden()) {
+            $this->notValid();
+        }
 
         $data = Arr::get($request->getParsedBody(), 'data');
 

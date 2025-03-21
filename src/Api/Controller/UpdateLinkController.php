@@ -16,6 +16,7 @@ use Flarum\Foundation\ValidationException;
 use Flarum\Http\RequestUtil;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Command\EditLink;
+use FoF\Links\Concerns\ChecksOverride;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,8 @@ use Tobscure\JsonApi\Document;
 
 class UpdateLinkController extends AbstractShowController
 {
+    use ChecksOverride;
+
     /**
      * {@inheritdoc}
      */
@@ -49,6 +52,10 @@ class UpdateLinkController extends AbstractShowController
         $id = Arr::get($request->getQueryParams(), 'id');
         $actor = RequestUtil::getActor($request);
         $data = Arr::get($request->getParsedBody(), 'data');
+
+        if ($this->linksAreOverridden()) {
+            $this->notValid();
+        }
 
         if (!$data) {
             throw new ValidationException([

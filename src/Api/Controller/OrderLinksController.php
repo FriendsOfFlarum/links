@@ -12,6 +12,7 @@
 namespace FoF\Links\Api\Controller;
 
 use Flarum\Http\RequestUtil;
+use FoF\Links\Concerns\ChecksOverride;
 use FoF\Links\Link;
 use Illuminate\Support\Arr;
 use Laminas\Diactoros\Response\EmptyResponse;
@@ -21,12 +22,19 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class OrderLinksController implements RequestHandlerInterface
 {
+    use ChecksOverride;
+
     /**
      * {@inheritdoc}
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         RequestUtil::getActor($request)->assertAdmin();
+
+        if ($this->linksAreOverridden()) {
+            $this->notValid();
+        }
+
         $order = Arr::get($request->getParsedBody(), 'order');
 
         if ($order === null) {
