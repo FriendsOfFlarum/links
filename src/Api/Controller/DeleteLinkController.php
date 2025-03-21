@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class DeleteLinkController extends AbstractDeleteController
 {
     use ChecksOverride;
-    
+
     /**
      * @var Dispatcher
      */
