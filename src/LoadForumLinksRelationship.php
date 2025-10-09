@@ -19,20 +19,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class LoadForumLinksRelationship
 {
-    /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * @var LinkRepository
-     */
-    protected $links;
-
-    public function __construct(Config $config, LinkRepository $links)
+    public function __construct(protected Config $config, protected LinkRepository $links)
     {
-        $this->config = $config;
-        $this->links = $links;
     }
 
     /**

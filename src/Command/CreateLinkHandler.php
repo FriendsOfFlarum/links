@@ -20,23 +20,8 @@ use Illuminate\Support\Arr;
 
 class CreateLinkHandler
 {
-    /**
-     * @var LinkValidator
-     */
-    protected $validator;
-
-    /**
-     * @var Dispatcher
-     */
-    protected $events;
-
-    /**
-     * @param LinkValidator $validator
-     */
-    public function __construct(LinkValidator $validator, Dispatcher $events)
+    public function __construct(protected LinkValidator $validator, protected Dispatcher $events)
     {
-        $this->validator = $validator;
-        $this->events = $events;
     }
 
     /**

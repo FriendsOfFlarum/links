@@ -23,26 +23,14 @@ class LinkRepository
     protected static $cacheGuestLinksKey = 'guest';
 
     /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var Translator
-     */
-    protected $translator;
-
-    /**
      * Optional programmatic override links.
      *
      * @var LinkDefinition[]|null
      */
     protected $overrideLinks = null;
 
-    public function __construct(Cache $cache, Translator $translator)
+    public function __construct(protected Cache $cache, protected Translator $translator)
     {
-        $this->cache = $cache;
-        $this->translator = $translator;
     }
 
     /**

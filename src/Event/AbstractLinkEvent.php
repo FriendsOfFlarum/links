@@ -16,30 +16,7 @@ use FoF\Links\Link;
 
 abstract class AbstractLinkEvent
 {
-    /**
-     * @var Link
-     */
-    public $link;
-
-    /**
-     * @var User
-     */
-    public $actor;
-
-    /**
-     * @var array
-     */
-    public $data;
-
-    /**
-     * @param Link  $link
-     * @param User  $actor
-     * @param array $data
-     */
-    public function __construct(Link $link, User $actor, array $data)
+    public function __construct(public Link $link, public User $actor, public array $data)
     {
-        $this->link = $link;
-        $this->actor = $actor;
-        $this->data = $data;
     }
 }
