@@ -17,6 +17,10 @@ use Flarum\Extend;
 use FoF\Links\Api\Controller;
 use FoF\Links\Api\Serializer\LinkSerializer;
 use FoF\Links\Event\PermissionChanged;
+use Flarum\Api\Context;
+use Flarum\Api\Endpoint;
+use Flarum\Api\Resource;
+use Flarum\Api\Schema;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
@@ -37,6 +41,7 @@ return [
         ->remove('permission')
         ->post('/permission', 'permission', Controller\SetPermissionController::class),
 
+    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
     (new Extend\ApiSerializer(ForumSerializer::class))
         ->attributes(Api\ForumAttributes::class)
         ->hasMany('links', LinkSerializer::class),
@@ -44,6 +49,7 @@ return [
     (new Extend\Event())
         ->listen(PermissionChanged::class, Listener\LinkPermissionChanged::class),
 
+    // @TODO: Replace with the new implementation https://docs.flarum.org/2.x/extend/api#extending-api-resources
     (new Extend\ApiController(ShowForumController::class))
         ->addInclude(['links', 'links.parent'])
         ->prepareDataForSerialization(LoadForumLinksRelationship::class),
@@ -61,4 +67,5 @@ return [
 
     (new Extend\ServiceProvider())
         ->register(Provider\LinksProvider::class),
+    new Extend\ApiResource(Api\Resource\LinkResource::class),
 ];
