@@ -15,6 +15,8 @@ use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class LinkVisibilityTest extends TestCase
 {
@@ -78,7 +80,7 @@ class LinkVisibilityTest extends TestCase
         ];
     }
 
-    public function forumUsersDataProvider(): array
+    public static function forumUsersDataProvider(): array
     {
         return [
             [null, [1, 8]],
@@ -113,13 +115,13 @@ class LinkVisibilityTest extends TestCase
     }
 
     /**
-     * @test
      *
      * @param int|null   $userId
      * @param array<int> $expectedLinks
      *
-     * @dataProvider forumUsersDataProvider
      */
+    #[Test]
+    #[DataProvider('forumUsersDataProvider')]
     public function user_type_sees_expected_links(?int $userId, array $expectedLinks)
     {
         $response = $this->send(

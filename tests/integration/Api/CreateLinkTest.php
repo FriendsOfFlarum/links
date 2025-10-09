@@ -16,6 +16,9 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Flarum\User\User;
 
 class CreateLinkTest extends TestCase
 {
@@ -29,7 +32,7 @@ class CreateLinkTest extends TestCase
         $this->extension('fof-links');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [
@@ -72,11 +75,8 @@ class CreateLinkTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_create_link_with_no_data(int $userId)
     {
         $response = $this->send(
@@ -93,11 +93,8 @@ class CreateLinkTest extends TestCase
         $this->assertArrayHasKey('errors', $response);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_create_link(int $userId)
     {
         $response = $this->send(
@@ -140,11 +137,8 @@ class CreateLinkTest extends TestCase
         $this->assertTrue($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_create_link_with_minimal_data(int $userId)
     {
         $response = $this->send(
@@ -186,11 +180,8 @@ class CreateLinkTest extends TestCase
         $this->assertFalse($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_cannot_create_link(?int $userId)
     {
         if (!$userId) {

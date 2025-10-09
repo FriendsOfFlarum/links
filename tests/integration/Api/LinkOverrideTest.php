@@ -14,6 +14,7 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\LinkDefinition;
+use Flarum\User\User;
 
 class LinkOverrideTest extends TestCase
 {
@@ -25,7 +26,7 @@ class LinkOverrideTest extends TestCase
 
         $this->extension('fof-links');
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [

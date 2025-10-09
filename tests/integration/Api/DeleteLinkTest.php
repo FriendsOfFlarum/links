@@ -16,6 +16,9 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Flarum\User\User;
 
 class DeleteLinkTest extends TestCase
 {
@@ -29,7 +32,7 @@ class DeleteLinkTest extends TestCase
         $this->extension('fof-links');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [
@@ -38,11 +41,8 @@ class DeleteLinkTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_delete_link(int $userId)
     {
         $response = $this->send(
@@ -57,11 +57,8 @@ class DeleteLinkTest extends TestCase
         $this->assertEquals(0, Link::count());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_delete_nonexistent_link(int $userId)
     {
         $response = $this->send(
@@ -76,11 +73,8 @@ class DeleteLinkTest extends TestCase
         $this->assertEquals(1, Link::count());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_user_cannot_delete_link(?int $userId)
     {
         if (!$userId) {
@@ -102,11 +96,8 @@ class DeleteLinkTest extends TestCase
         $this->assertEquals(1, Link::count());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_user_cannot_delete_nonexistent_link(?int $userId)
     {
         if (!$userId) {

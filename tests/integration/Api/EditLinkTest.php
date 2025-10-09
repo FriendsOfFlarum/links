@@ -16,6 +16,9 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Flarum\User\User;
 
 class EditLinkTest extends TestCase
 {
@@ -29,7 +32,7 @@ class EditLinkTest extends TestCase
         $this->extension('fof-links');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [
@@ -38,11 +41,8 @@ class EditLinkTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_edit_link(int $userId)
     {
         $response = $this->send(
@@ -80,11 +80,8 @@ class EditLinkTest extends TestCase
         $this->assertTrue($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_edit_link_with_no_data(int $userId)
     {
         $response = $this->send(
@@ -102,11 +99,8 @@ class EditLinkTest extends TestCase
         $this->assertCount(1, $response['errors']);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_edit_nonexistent_link(int $userId)
     {
         $response = $this->send(
@@ -132,11 +126,8 @@ class EditLinkTest extends TestCase
         $this->assertEquals(1, Link::count());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_user_cannot_edit_link(?int $userId)
     {
         if (!$userId) {
