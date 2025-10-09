@@ -19,8 +19,8 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "flarum/core": "^1.8.6"
+        "php": "^8.2",
+        "flarum/core": "^2.0.0-beta"
     },
     "authors": [
         {
@@ -58,9 +58,9 @@
         }
     },
     "require-dev": {
-        "flarum/phpstan": "*",
+        "flarum/phpstan": "^2.0.0-beta",
         "flarum/tags": "*",
-        "flarum/testing": "^1.0.0"
+        "flarum/testing": "^2.0.0-beta"
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",
