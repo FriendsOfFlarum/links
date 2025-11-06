@@ -17,7 +17,8 @@ return [
         $connection = $schema->getConnection();
         $prefix = $connection->getTablePrefix();
 
-        $connection->statement("UPDATE {$prefix}links SET visibility = 'members' WHERE registered_users_only = 1");
+        // Use true instead of 1 for PostgreSQL compatibility (boolean type)
+        $connection->statement("UPDATE {$prefix}links SET visibility = 'members' WHERE registered_users_only = true");
 
         if ($schema->hasColumn('links', 'registered_users_only')) {
             $schema->table('links', function (Blueprint $table) {
