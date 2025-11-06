@@ -20,9 +20,10 @@ return [
             // We wrap this in try-catch because the index might not exist in test environments
             try {
                 $schema->table('links', function (Blueprint $table) {
-                    $table->dropIndex('links_visibility_index');
+                    // Drop using column name array, same way it was created
+                    $table->dropIndex(['visibility']);
                 });
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // Index doesn't exist, continue
             }
 
