@@ -9,16 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace FoF\Links\Command;
+namespace FoF\Links\Access;
 
+use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
 
-class EditLink
+class GlobalPolicy extends AbstractPolicy
 {
-    /**
-     * @param int $linkId The ID of the link to edit.
-     */
-    public function __construct(public $linkId, public User $actor, public array $data)
+    public function createLink(User $actor): bool
     {
+        return $actor->isAdmin();
     }
 }

@@ -18,23 +18,8 @@ use Illuminate\Contracts\Events\Dispatcher;
 
 class DeleteLinkHandler
 {
-    /**
-     * @var LinkRepository
-     */
-    protected $links;
-
-    /**
-     * @var Dispatcher
-     */
-    protected $events;
-
-    /**
-     * @param LinkRepository $links
-     */
-    public function __construct(LinkRepository $links, Dispatcher $events)
+    public function __construct(protected LinkRepository $links, protected Dispatcher $events)
     {
-        $this->links = $links;
-        $this->events = $events;
     }
 
     /**

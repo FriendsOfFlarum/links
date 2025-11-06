@@ -8,7 +8,7 @@ export * from '../common/models';
 export { default as extend } from './extend';
 
 app.initializers.add('fof-links', () => {
-  app.extensionData
+  app.registry
     .for('fof-links')
     .registerPage(LinksPage)
     .registerSetting({

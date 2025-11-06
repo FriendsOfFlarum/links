@@ -2,7 +2,7 @@ import app from 'flarum/forum/app';
 
 import SplitDropdown from 'flarum/common/components/SplitDropdown';
 import ItemList from 'flarum/common/utils/ItemList';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import classList from 'flarum/common/utils/classList';
 
 import LinkItem from './LinkItem';
@@ -32,7 +32,7 @@ export default class LinkDropdown extends SplitDropdown {
     return [
       firstChild,
       <button className={classList('Dropdown-toggle', 'Button', 'Button--icon', this.attrs.buttonClassName)} data-toggle="dropdown">
-        {icon('fas fa-caret-down', { className: 'Button-caret' })}
+        <Icon name="fas fa-caret-down" className="Button-caret" />
       </button>,
     ];
   }

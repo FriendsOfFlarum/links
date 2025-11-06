@@ -14,8 +14,11 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Extend;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class EditLinkTest extends TestCase
 {
@@ -29,7 +32,7 @@ class EditLinkTest extends TestCase
         $this->extension('fof-links');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [
@@ -38,11 +41,8 @@ class EditLinkTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_edit_link(int $userId)
     {
         $response = $this->send(
@@ -80,11 +80,8 @@ class EditLinkTest extends TestCase
         $this->assertTrue($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_edit_link_with_no_data(int $userId)
     {
         $response = $this->send(
@@ -94,7 +91,8 @@ class EditLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(422, $response->getStatusCode());
+        // Empty JSON body returns 400 (Bad Request) in Flarum 2.0
+        $this->assertEquals(400, $response->getStatusCode());
 
         $response = json_decode($response->getBody()->getContents(), true);
 
@@ -102,11 +100,8 @@ class EditLinkTest extends TestCase
         $this->assertCount(1, $response['errors']);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_edit_nonexistent_link(int $userId)
     {
         $response = $this->send(
@@ -132,11 +127,8 @@ class EditLinkTest extends TestCase
         $this->assertEquals(1, Link::count());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_user_cannot_edit_link(?int $userId)
     {
         if (!$userId) {
@@ -163,7 +155,9 @@ class EditLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(403, $response->getStatusCode());
+        // Guests get 401 (unauthenticated), authenticated users get 403 (forbidden)
+        $expectedCode = $userId === null ? 401 : 403;
+        $this->assertEquals($expectedCode, $response->getStatusCode());
 
         $link = Link::find(1);
 

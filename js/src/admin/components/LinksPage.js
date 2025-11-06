@@ -2,7 +2,7 @@ import app from 'flarum/admin/app';
 
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import Button from 'flarum/common/components/Button';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import Placeholder from 'flarum/common/components/Placeholder';
 import sortable from 'sortablejs';
 
@@ -13,7 +13,13 @@ function linkItem(link) {
   return (
     <li data-id={link.id()}>
       <div className="LinkListItem-info">
-        {link.icon() ? <span className="LinkListItem-icon">{icon(link.icon())} </span> : ''}
+        {link.icon() ? (
+          <span className="LinkListItem-icon">
+            <Icon name={link.icon()} />{' '}
+          </span>
+        ) : (
+          ''
+        )}
         <span className="LinkListItem-name">{link.title()}</span>
         {Button.component({
           className: 'Button Button--link',
@@ -21,7 +27,6 @@ function linkItem(link) {
           onclick: () => app.modal.show(EditLinkModal, { link }),
         })}
       </div>
-
       {!link.isChild() && (
         <ol className="LinkListItem-children LinkList">
           {sortLinks(app.store.all('links'))

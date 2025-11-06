@@ -13,14 +13,14 @@ namespace FoF\Links\Tests\fixtures;
 
 trait LinkUsersTrait
 {
-    public function authorizedUsers(): array
+    public static function authorizedUsers(): array
     {
         return [
             [1],
         ];
     }
 
-    public function unauthorizedUsers(): array
+    public static function unauthorizedUsers(): array
     {
         return [
             [null],

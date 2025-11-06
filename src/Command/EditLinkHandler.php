@@ -19,30 +19,8 @@ use Illuminate\Support\Arr;
 
 class EditLinkHandler
 {
-    /**
-     * @var LinkRepository
-     */
-    protected $links;
-
-    /**
-     * @var LinkValidator
-     */
-    protected $validator;
-
-    /**
-     * @var Dispatcher
-     */
-    protected $events;
-
-    /**
-     * @param LinkRepository $links
-     * @param LinkValidator  $validator
-     */
-    public function __construct(LinkRepository $links, LinkValidator $validator, Dispatcher $events)
+    public function __construct(protected LinkRepository $links, protected LinkValidator $validator, protected Dispatcher $events)
     {
-        $this->links = $links;
-        $this->validator = $validator;
-        $this->events = $events;
     }
 
     /**

@@ -1,11 +1,12 @@
+import Form from 'flarum/common/components/Form';
 /* global m*/
 /* global confirm*/
 
 import app from 'flarum/admin/app';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import withAttr from 'flarum/common/utils/withAttr';
 import ItemList from 'flarum/common/utils/ItemList';
 import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
@@ -16,7 +17,7 @@ import Link from 'flarum/common/components/Link';
  * The `EditlinksModal` component shows a modal dialog which allows the user
  * to create or edit a link.
  */
-export default class EditlinksModal extends Modal {
+export default class EditlinksModal extends FormModal {
   oninit(vnode) {
     super.oninit(vnode);
 
@@ -51,7 +52,7 @@ export default class EditlinksModal extends Modal {
     if (iconClass) {
       return (
         <>
-          {icon(iconClass)} {title}
+          <Icon name={iconClass} /> {title}
         </>
       );
     }
@@ -62,7 +63,7 @@ export default class EditlinksModal extends Modal {
   content() {
     return (
       <div className="Modal-body">
-        <div className="Form">{this.items().toArray()}</div>
+        <Form>{this.items().toArray()}</Form>
       </div>
     );
   }

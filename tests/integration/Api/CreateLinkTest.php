@@ -14,8 +14,11 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Extend;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class CreateLinkTest extends TestCase
 {
@@ -29,7 +32,7 @@ class CreateLinkTest extends TestCase
         $this->extension('fof-links');
 
         $this->prepareDatabase([
-            'users' => [
+            User::class => [
                 $this->normalUser(),
             ],
             'links' => [
@@ -48,7 +51,6 @@ class CreateLinkTest extends TestCase
                     'title'      => 'Facebook',
                     'url'        => 'https://facebook.com',
                     'icon'       => 'fab fa-facebook',
-                    'position'   => 0,
                     'isInternal' => true,
                     'isNewtab'   => true,
                     'useRelMe'   => true,
@@ -72,17 +74,16 @@ class CreateLinkTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_cannot_create_link_with_no_data(int $userId)
     {
         $response = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => $userId,
-                'json'            => [],
+                'json'            => [
+                    'data' => [],
+                ],
             ])
         );
 
@@ -93,11 +94,8 @@ class CreateLinkTest extends TestCase
         $this->assertArrayHasKey('errors', $response);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_create_link(int $userId)
     {
         $response = $this->send(
@@ -140,11 +138,8 @@ class CreateLinkTest extends TestCase
         $this->assertTrue($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider authorizedUsers
-     */
+    #[Test]
+    #[DataProvider('authorizedUsers')]
     public function authorized_user_can_create_link_with_minimal_data(int $userId)
     {
         $response = $this->send(
@@ -186,11 +181,8 @@ class CreateLinkTest extends TestCase
         $this->assertFalse($link->guest_only);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider unauthorizedUsers
-     */
+    #[Test]
+    #[DataProvider('unauthorizedUsers')]
     public function unauthorized_cannot_create_link(?int $userId)
     {
         if (!$userId) {
@@ -207,7 +199,9 @@ class CreateLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(403, $response->getStatusCode());
+        // Guests get 401 (unauthenticated), authenticated users get 403 (forbidden)
+        $expectedCode = $userId === null ? 401 : 403;
+        $this->assertEquals($expectedCode, $response->getStatusCode());
 
         $link = Link::where('title', 'Facebook')->first();
 

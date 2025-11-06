@@ -11,75 +11,74 @@
 
 use Carbon\Carbon;
 use Flarum\Group\Group;
+use Flarum\Group\Permission;
+use FoF\Links\Link;
 use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
-        $connection = $schema->getConnection();
-
-        // Fetch all links and map the `visibility` column to permissions.
-        $links = $connection->table('links')->get();
-
-        // Look over each row, and check the `visibility` column. Map the following values and create entries on the `group_permission` table:
-        // `X` is a placeholder for the link ID.
-        // - `everyone` -> ['group_id' = Group::GUEST_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
-        // - `members` -> ['group_id' = Group::MEMBER_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
-        // - `guests` -> ['group_id' = Group::GUEST_ID, 'permission' = 'linkX.view', 'createdAt' = Carbon::now()]
+        // Fetch all links using the ORM
+        $links = Link::all();
 
         foreach ($links as $link) {
-            $permission = 'link'.$link->id.'.view';
+            $permissionName = "link{$link->id}.view";
             $createdAt = Carbon::now();
 
             switch ($link->visibility) {
                 case 'everyone':
-                    $connection->table('group_permission')->insert([
-                        ['group_id' => Group::GUEST_ID, 'permission' => $permission, 'created_at' => $createdAt],
+                    // Everyone can see it - add permission for guests (which includes members)
+                    Permission::create([
+                        'group_id'   => Group::GUEST_ID,
+                        'permission' => $permissionName,
+                        'created_at' => $createdAt,
                     ]);
-                    $connection->table('links')->where('id', $link->id)->update([
-                        'is_restricted' => false,
-                    ]);
+
+                    $link->is_restricted = false;
+                    $link->save();
                     break;
 
                 case 'members':
-                    $connection->table('group_permission')->insert([
-                        ['group_id' => Group::MEMBER_ID, 'permission' => $permission, 'created_at' => $createdAt],
+                    // Only members can see it
+                    Permission::create([
+                        'group_id'   => Group::MEMBER_ID,
+                        'permission' => $permissionName,
+                        'created_at' => $createdAt,
                     ]);
-                    // Also add to the link row the `is_restricted` = true.
-                    $connection->table('links')->where('id', $link->id)->update([
-                        'is_restricted' => true,
-                    ]);
+
+                    $link->is_restricted = true;
+                    $link->save();
                     break;
 
                 case 'guests':
-                    $connection->table('group_permission')->insert([
-                        ['group_id' => Group::GUEST_ID, 'permission' => $permission, 'created_at' => $createdAt],
+                    // Only guests can see it
+                    Permission::create([
+                        'group_id'   => Group::GUEST_ID,
+                        'permission' => $permissionName,
+                        'created_at' => $createdAt,
                     ]);
-                    // Also add to the link row the `is_restricted` = true and `guest_only` = true.
-                    $connection->table('links')->where('id', $link->id)->update([
-                        'is_restricted' => false,
-                        'guest_only'    => true,
-                    ]);
+
+                    $link->is_restricted = false;
+                    $link->guest_only = true;
+                    $link->save();
                     break;
             }
         }
     },
 
     'down' => function (Builder $schema) {
-        $connection = $schema->getConnection();
-
-        // Remove all entries from `group_permission` that were added in the `up` function.
-        $links = $connection->table('links')->get();
+        // Fetch all links using the ORM
+        $links = Link::all();
 
         foreach ($links as $link) {
-            $permission = 'link'.$link->id.'.view';
+            $permissionName = "link{$link->id}.view";
 
-            $connection->table('group_permission')->where('permission', $permission)->delete();
+            // Remove permissions using ORM
+            Permission::where('permission', $permissionName)->delete();
 
-            // Reverse the changes to `is_restricted` and `guest_only`.
-            $connection->table('links')->where('id', $link->id)->update([
-                'is_restricted' => false,
-                'guest_only'    => false,
-            ]);
+            // Reverse the changes to is_restricted and guest_only
+            $link->is_restricted = false;
+            $link->guest_only = false;
+            $link->save();
         }
     },
 ];

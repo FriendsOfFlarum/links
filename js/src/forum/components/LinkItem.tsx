@@ -4,7 +4,7 @@ import app from 'flarum/forum/app';
 import Link from 'flarum/common/components/Link';
 import LinkModel from '../../common/models/Link';
 import LinkButton from 'flarum/common/components/LinkButton';
-import icon from 'flarum/common/helpers/icon';
+import Icon from 'flarum/common/components/Icon';
 import Separator from 'flarum/common/components/Separator';
 import classList from 'flarum/common/utils/classList';
 import type { IButtonAttrs } from 'flarum/common/components/Button';
@@ -99,7 +99,7 @@ export default class LinkItem extends LinkButton {
     const iconClass = link.icon();
 
     if (iconClass) {
-      return icon(iconClass, { className: 'Button-icon LinksButton-icon' });
+      return <Icon name={iconClass} className="Button-icon LinksButton-icon" />;
     }
 
     return null;

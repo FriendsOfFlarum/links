@@ -14,7 +14,10 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
 use FoF\Links\Link;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class LinkVisibilityTest extends TestCase
 {
@@ -32,13 +35,13 @@ class LinkVisibilityTest extends TestCase
     protected function dbData(): array
     {
         return [
-            'users' => [
+            User::class => [
                 $this->normalUser(),
-                ['id' => 3, 'username' => 'moderator', 'email' => 'mod@machine.local', 'is_email_confirmed' => true],
-                ['id' => 4, 'username' => 'evelated', 'email' => 'elevated@machine.local', 'is_email_confirmed' => true],
-                ['id' => 5, 'username' => 'elevatedplus', 'email' => 'elevatedplus@machine.local', 'is_email_confirmed' => true],
+                ['id' => 3, 'username' => 'moderator', 'email' => 'mod@machine.local', 'is_email_confirmed' => true, 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim'],
+                ['id' => 4, 'username' => 'evelated', 'email' => 'elevated@machine.local', 'is_email_confirmed' => true, 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim'],
+                ['id' => 5, 'username' => 'elevatedplus', 'email' => 'elevatedplus@machine.local', 'is_email_confirmed' => true, 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim'],
             ],
-            'links' => [
+            Link::class => [
                 ['id' => 1, 'title' => 'Google', 'icon' => 'fab fa-google', 'url' => 'https://google.com', 'position' => null, 'is_internal' => false, 'is_newtab' => true, 'use_relme' => false, 'parent_id' => null, 'is_restricted' => false],
                 ['id' => 2, 'title' => 'Facebook', 'url' => 'https://facebook.com', 'is_restricted' => true],
                 ['id' => 3, 'title' => 'Twitter', 'url' => 'https://twitter.com', 'is_restricted' => true],
@@ -49,7 +52,7 @@ class LinkVisibilityTest extends TestCase
                 ['id' => 8, 'title' => 'GuestOnly', 'url' => 'https://guestonly.com', 'is_restricted' => false, 'guest_only' => true],
 
             ],
-            'groups' => [
+            Group::class => [
                 ['id' => 5, 'name_singular' => 'FooBar', 'name_plural' => 'FooBars'],
                 ['id' => 6, 'name_singular' => 'BazQux', 'name_plural' => 'BazQuux'],
             ],
@@ -78,7 +81,7 @@ class LinkVisibilityTest extends TestCase
         ];
     }
 
-    public function forumUsersDataProvider(): array
+    public static function forumUsersDataProvider(): array
     {
         return [
             [null, [1, 8]],
@@ -103,7 +106,7 @@ class LinkVisibilityTest extends TestCase
     public function getLinkById(int $id, array $links): array
     {
         $result = array_filter($links, function ($link) use ($id) {
-            return $link['attributes']['id'] === $id;
+            return $link['id'] == $id;
         });
 
         $this->assertCount(1, $result);
@@ -113,13 +116,11 @@ class LinkVisibilityTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @param int|null   $userId
      * @param array<int> $expectedLinks
-     *
-     * @dataProvider forumUsersDataProvider
      */
+    #[Test]
+    #[DataProvider('forumUsersDataProvider')]
     public function user_type_sees_expected_links(?int $userId, array $expectedLinks)
     {
         $response = $this->send(
