@@ -16,10 +16,15 @@ return [
     'up' => function (Builder $schema) {
         // Only drop the column if it exists
         if ($schema->hasColumn('links', 'visibility')) {
-            $schema->table('links', function (Blueprint $table) {
-                // Drop the index first (SQLite requirement)
-                $table->dropIndex('links_visibility_index');
-            });
+            // Try to drop the index first (SQLite requirement)
+            // We wrap this in try-catch because the index might not exist in test environments
+            try {
+                $schema->table('links', function (Blueprint $table) {
+                    $table->dropIndex('links_visibility_index');
+                });
+            } catch (\Exception $e) {
+                // Index doesn't exist, continue
+            }
 
             $schema->table('links', function (Blueprint $table) {
                 // Then drop the column
