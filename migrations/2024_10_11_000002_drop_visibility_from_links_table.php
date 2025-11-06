@@ -20,7 +20,7 @@ return [
                 // Drop the index first (SQLite requirement)
                 $table->dropIndex('links_visibility_index');
             });
-            
+
             $schema->table('links', function (Blueprint $table) {
                 // Then drop the column
                 $table->dropColumn('visibility');

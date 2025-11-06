@@ -16,8 +16,8 @@ use Flarum\User\User;
 class DeleteLink
 {
     /**
-     * @param int   $linkId The ID of the link to delete.
-     *                      is unused by default, but may be used by extensions.
+     * @param int $linkId The ID of the link to delete.
+     *                    is unused by default, but may be used by extensions.
      */
     public function __construct(public $linkId, public User $actor, public array $data = [])
     {

@@ -14,11 +14,11 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Extend;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
 use FoF\Links\Link;
 use FoF\Links\Tests\fixtures\LinkUsersTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use Flarum\User\User;
 
 class DeleteLinkTest extends TestCase
 {

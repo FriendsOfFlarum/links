@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of fof/links.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace FoF\Links\Api\Resource;
 
 use Flarum\Api\Context;
@@ -7,7 +16,6 @@ use Flarum\Api\Endpoint;
 use Flarum\Api\Resource;
 use Flarum\Api\Schema;
 use Flarum\Api\Sort\SortColumn;
-use Flarum\Foundation\ValidationException;
 use FoF\Links\Concerns\ChecksOverride;
 use FoF\Links\Event\Created;
 use FoF\Links\Event\Creating;
@@ -18,8 +26,6 @@ use FoF\Links\Link;
 use FoF\Links\LinkValidator;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
-use Laminas\Diactoros\Response\EmptyResponse;
 use Tobyz\JsonApiServer\Context as OriginalContext;
 
 /**
@@ -62,7 +68,7 @@ class LinkResource extends Resource\AbstractDatabaseResource
                         $this->notValid();
                     }
                 }),
-            
+
             Endpoint\Update::make()
                 ->authenticated()
                 ->can('update')
@@ -71,14 +77,14 @@ class LinkResource extends Resource\AbstractDatabaseResource
                         $this->notValid();
                     }
                 }),
-            
+
             Endpoint\Delete::make()
                 ->authenticated()
                 ->can('delete'),
-            
+
             Endpoint\Index::make()
                 ->defaultInclude(['parent']),
-            
+
             Endpoint\Show::make()
                 ->defaultInclude(['parent']),
         ];

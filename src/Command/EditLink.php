@@ -16,7 +16,7 @@ use Flarum\User\User;
 class EditLink
 {
     /**
-     * @param int   $linkId The ID of the link to edit.
+     * @param int $linkId The ID of the link to edit.
      */
     public function __construct(public $linkId, public User $actor, public array $data)
     {

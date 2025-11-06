@@ -13,8 +13,8 @@ namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
-use FoF\Links\LinkDefinition;
 use Flarum\User\User;
+use FoF\Links\LinkDefinition;
 
 class LinkOverrideTest extends TestCase
 {

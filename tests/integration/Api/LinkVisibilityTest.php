@@ -116,10 +116,8 @@ class LinkVisibilityTest extends TestCase
     }
 
     /**
-     *
      * @param int|null   $userId
      * @param array<int> $expectedLinks
-     *
      */
     #[Test]
     #[DataProvider('forumUsersDataProvider')]

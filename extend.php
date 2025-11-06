@@ -46,7 +46,7 @@ return [
                     return resolve('fof-links.override') ?: null;
                 })
                 ->nullable(),
-            
+
             // Add links as a relationship that returns Link models
             Schema\Relationship\ToMany::make('links')
                 ->type('links')
@@ -76,7 +76,7 @@ return [
 
                     // Filter out guest-only links for logged-in users
                     if (!$actor->isGuest()) {
-                        $links = $links->reject(fn(Link $link) => $link->guest_only);
+                        $links = $links->reject(fn (Link $link) => $link->guest_only);
                     }
 
                     // Return array of model instances
@@ -106,6 +106,6 @@ return [
 
     (new Extend\ServiceProvider())
         ->register(Provider\LinksProvider::class),
-        
+
     new Extend\ApiResource(Api\Resource\LinkResource::class),
 ];

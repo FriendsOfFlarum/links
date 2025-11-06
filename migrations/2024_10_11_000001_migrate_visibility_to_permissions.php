@@ -28,11 +28,11 @@ return [
                 case 'everyone':
                     // Everyone can see it - add permission for guests (which includes members)
                     Permission::create([
-                        'group_id' => Group::GUEST_ID,
+                        'group_id'   => Group::GUEST_ID,
                         'permission' => $permissionName,
                         'created_at' => $createdAt,
                     ]);
-                    
+
                     $link->is_restricted = false;
                     $link->save();
                     break;
@@ -40,11 +40,11 @@ return [
                 case 'members':
                     // Only members can see it
                     Permission::create([
-                        'group_id' => Group::MEMBER_ID,
+                        'group_id'   => Group::MEMBER_ID,
                         'permission' => $permissionName,
                         'created_at' => $createdAt,
                     ]);
-                    
+
                     $link->is_restricted = true;
                     $link->save();
                     break;
@@ -52,11 +52,11 @@ return [
                 case 'guests':
                     // Only guests can see it
                     Permission::create([
-                        'group_id' => Group::GUEST_ID,
+                        'group_id'   => Group::GUEST_ID,
                         'permission' => $permissionName,
                         'created_at' => $createdAt,
                     ]);
-                    
+
                     $link->is_restricted = false;
                     $link->guest_only = true;
                     $link->save();
