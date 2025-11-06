@@ -139,7 +139,8 @@ class LinkOverrideTest extends TestCase
         // For a guest, all override links should be visible.
         $linkIds = array_column($links, 'id');
         sort($linkIds);
-        $expectedIds = [1, 101, 102]; // Note: id=1 is from the override, not the DB.
+        // JSON:API returns IDs as strings
+        $expectedIds = ['1', '101', '102']; // Note: id=1 is from the override, not the DB.
         sort($expectedIds);
         $this->assertEquals($expectedIds, $linkIds);
 
@@ -171,7 +172,8 @@ class LinkOverrideTest extends TestCase
         $linkIds = array_column($links, 'id');
         sort($linkIds);
         // For an authenticated user, the guest-only link (id 102) should be filtered out.
-        $expectedIds = [1, 101];
+        // JSON:API returns IDs as strings
+        $expectedIds = ['1', '101'];
         sort($expectedIds);
         $this->assertEquals($expectedIds, $linkIds);
     }
@@ -196,7 +198,8 @@ class LinkOverrideTest extends TestCase
         // The only links present should be those from the override.
         $linkIds = array_column($links, 'id');
         sort($linkIds);
-        $expectedIds = [1, 101, 102];
+        // JSON:API returns IDs as strings
+        $expectedIds = ['1', '101', '102'];
         sort($expectedIds);
         $this->assertEquals($expectedIds, $linkIds);
 

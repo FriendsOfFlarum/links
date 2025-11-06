@@ -51,7 +51,6 @@ class CreateLinkTest extends TestCase
                     'title'      => 'Facebook',
                     'url'        => 'https://facebook.com',
                     'icon'       => 'fab fa-facebook',
-                    'position'   => 0,
                     'isInternal' => true,
                     'isNewtab'   => true,
                     'useRelMe'   => true,
@@ -82,7 +81,9 @@ class CreateLinkTest extends TestCase
         $response = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => $userId,
-                'json'            => [],
+                'json'            => [
+                    'data' => [],
+                ],
             ])
         );
 
@@ -198,7 +199,9 @@ class CreateLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(403, $response->getStatusCode());
+        // Guests get 401 (unauthenticated), authenticated users get 403 (forbidden)
+        $expectedCode = $userId === null ? 401 : 403;
+        $this->assertEquals($expectedCode, $response->getStatusCode());
 
         $link = Link::where('title', 'Facebook')->first();
 

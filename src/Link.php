@@ -19,18 +19,18 @@ use FoF\Links\Concerns\HasLinkAttributes;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @property int    $id
- * @property string $title
- * @property string $icon
- * @property string $url
- * @property int    $position
- * @property bool   $is_internal
- * @property bool   $is_newtab
- * @property bool   $use_relme
- * @property int    $parent_id
- * @property Link   $parent
- * @property bool   $is_restricted
- * @property bool   $guest_only
+ * @property int         $id
+ * @property string      $title
+ * @property string|null $icon
+ * @property string|null $url
+ * @property int|null    $position
+ * @property bool        $is_internal
+ * @property bool        $is_newtab
+ * @property bool        $use_relme
+ * @property int|null    $parent_id
+ * @property Link|null   $parent
+ * @property bool        $is_restricted
+ * @property bool        $guest_only
  */
 class Link extends AbstractModel
 {
@@ -43,7 +43,7 @@ class Link extends AbstractModel
     protected $table = 'links';
 
     /**
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'is_internal'   => 'boolean',

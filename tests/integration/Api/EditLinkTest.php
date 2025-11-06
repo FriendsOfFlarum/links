@@ -91,7 +91,8 @@ class EditLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(422, $response->getStatusCode());
+        // Empty JSON body returns 400 (Bad Request) in Flarum 2.0
+        $this->assertEquals(400, $response->getStatusCode());
 
         $response = json_decode($response->getBody()->getContents(), true);
 
@@ -154,7 +155,9 @@ class EditLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(403, $response->getStatusCode());
+        // Guests get 401 (unauthenticated), authenticated users get 403 (forbidden)
+        $expectedCode = $userId === null ? 401 : 403;
+        $this->assertEquals($expectedCode, $response->getStatusCode());
 
         $link = Link::find(1);
 

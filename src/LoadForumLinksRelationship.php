@@ -38,11 +38,12 @@ class LoadForumLinksRelationship
             return $data['links'] = Link::all();
         }
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Link> $links */
         $links = $this->links->getLinks($actor);
 
         if (!$actor->isGuest()) {
             // If the user is not a guest, and link that has the valued `guests_only` = true should be removed.
-            $links = $links->reject(function ($link) {
+            $links = $links->reject(function (Link $link) {
                 return $link->guest_only;
             });
         }

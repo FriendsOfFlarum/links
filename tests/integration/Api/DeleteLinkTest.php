@@ -90,7 +90,9 @@ class DeleteLinkTest extends TestCase
             ])
         );
 
-        $this->assertEquals(403, $response->getStatusCode());
+        // Guests get 401 (unauthenticated), authenticated users get 403 (forbidden)
+        $expectedCode = $userId === null ? 401 : 403;
+        $this->assertEquals($expectedCode, $response->getStatusCode());
 
         $this->assertNotNull(Link::find(1));
         $this->assertEquals(1, Link::count());

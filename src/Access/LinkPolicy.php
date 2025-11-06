@@ -29,4 +29,19 @@ class LinkPolicy extends AbstractPolicy
             return $actor->hasPermission("link$id.view");
         }
     }
+
+    public function update(User $actor, Link $link)
+    {
+        return $actor->isAdmin();
+    }
+
+    public function delete(User $actor, Link $link)
+    {
+        return $actor->isAdmin();
+    }
+
+    public function moderate(User $actor)
+    {
+        return $actor->isAdmin();
+    }
 }
