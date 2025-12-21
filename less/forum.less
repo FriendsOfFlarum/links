@@ -102,3 +102,13 @@
 .LinkDropdown .Dropdown-menu > li > a .Button-icon {
   margin-left: 0;
 }
+
+// Ensure links in header maintain proper styling
+#header-primary .LinksButton {
+  color: var(--header-control-color);
+  text-decoration: none;
+
+  &.active {
+    color: var(--header-color);
+  }
+}
