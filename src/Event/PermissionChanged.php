@@ -15,7 +15,7 @@ use Flarum\User\User;
 
 class PermissionChanged
 {
-    public function __construct(public string $permission, public User $actor, public $data)
+    public function __construct(public string $permission, public User $actor, public mixed $data)
     {
     }
 }

@@ -17,7 +17,7 @@ use FoF\Links\Link;
 
 class LinkPolicy extends AbstractPolicy
 {
-    public function view(User $actor, Link $link)
+    public function view(User $actor, Link $link): string|bool|null
     {
         if ($link->parent_id !== null && !$actor->can('view', $link->parent)) {
             return $this->deny();
@@ -28,19 +28,21 @@ class LinkPolicy extends AbstractPolicy
 
             return $actor->hasPermission("link$id.view");
         }
+
+        return null;
     }
 
-    public function update(User $actor, Link $link)
+    public function update(User $actor, Link $link): ?bool
     {
         return $actor->isAdmin();
     }
 
-    public function delete(User $actor, Link $link)
+    public function delete(User $actor, Link $link): ?bool
     {
         return $actor->isAdmin();
     }
 
-    public function moderate(User $actor)
+    public function moderate(User $actor): ?bool
     {
         return $actor->isAdmin();
     }

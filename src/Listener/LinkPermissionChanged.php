@@ -18,7 +18,7 @@ use Illuminate\Support\Arr;
 
 class LinkPermissionChanged
 {
-    public function handle(PermissionChanged $event)
+    public function handle(PermissionChanged $event): void
     {
         $permission = $event->permission;
         $groupIds = Arr::get($event->data, 'groupIds');

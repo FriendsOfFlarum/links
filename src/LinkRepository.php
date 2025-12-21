@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class LinkRepository
 {
-    protected static $cacheKeyPrefix = 'fof-links.links.';
-    protected static $cacheGuestLinksKey = 'guest';
+    protected static string $cacheKeyPrefix = 'fof-links.links.';
+    protected static string $cacheGuestLinksKey = 'guest';
 
     /**
      * Optional programmatic override links.

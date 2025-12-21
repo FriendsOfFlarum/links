@@ -20,7 +20,7 @@ trait ChecksOverride
         return resolve('fof-links.override');
     }
 
-    public function notValid()
+    public function notValid(): never
     {
         throw new ValidationException([
             'links' => 'Links are overridden',

@@ -25,17 +25,19 @@ class LoadForumLinksRelationship
 
     /**
      * @param ShowForumController    $controller
-     * @param                        $data
+     * @param mixed                  $data
      * @param ServerRequestInterface $request
      */
-    public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
+    public function __invoke(ShowForumController $controller, mixed &$data, ServerRequestInterface $request): void
     {
         $actor = RequestUtil::getActor($request);
 
         // So that admins don't have to see guest only items but can manage them in admin panel,
         // we only serialize all links if we're visiting the admin panel
         if ($actor->isAdmin() && $this->isAdminPath($request)) {
-            return $data['links'] = Link::all();
+            $data['links'] = Link::all();
+
+            return;
         }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, Link> $links */
