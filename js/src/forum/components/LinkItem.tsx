@@ -138,9 +138,13 @@ export default class LinkItem extends LinkButton {
     const linkUrl = new URL(this.linkHref, base);
     const linkPath = linkUrl.href.replace(base, '');
 
-    // The link is active if the current path starts with the link path.
-    // Except if it's the base url, in which case only an exact match is considered active
-    return currentPath.indexOf(linkPath) === 0 && (currentPath === '/' || linkPath !== '/');
+    // For exact match or root path
+    if (currentPath === linkPath) return true;
+    if (linkPath === '/') return false;
+
+    // The link is active if the current path starts with the link path followed by a path boundary
+    // This prevents false matches like '/t' matching '/tags'
+    return currentPath.startsWith(linkPath) && /^[/?#]/.test(currentPath.charAt(linkPath.length));
   }
 
   get linkTarget(): string | undefined {
