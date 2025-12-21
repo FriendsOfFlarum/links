@@ -96,7 +96,7 @@ class Link extends AbstractModel
         return $link;
     }
 
-    public function parent()
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(self::class);
     }
@@ -145,7 +145,7 @@ class Link extends AbstractModel
         });
     }
 
-    protected static function buildPermissionSubquery($base, $isAdmin, $linkIdsWithPermission)
+    protected static function buildPermissionSubquery(\Illuminate\Database\Query\Builder $base, bool $isAdmin, \Illuminate\Support\Collection $linkIdsWithPermission): void
     {
         $base->from('links as perm_links')->select('perm_links.id');
 
@@ -174,7 +174,7 @@ class Link extends AbstractModel
     /**
      * Delete all permissions belonging to this link.
      */
-    public function deletePermissions()
+    public function deletePermissions(): void
     {
         Permission::where('permission', 'like', "link{$this->id}.%")->delete();
     }

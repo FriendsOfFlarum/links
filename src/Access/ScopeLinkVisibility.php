@@ -21,7 +21,7 @@ class ScopeLinkVisibility
      * @param User    $actor
      * @param Builder $query
      */
-    public function __invoke(User $actor, Builder $query)
+    public function __invoke(User $actor, Builder $query): void
     {
         $query->whereIn('id', function ($query) use ($actor) {
             Link::query()

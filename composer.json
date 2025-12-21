@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "flarum/core": "^2.0.0-beta"
+        "flarum/core": "^2.0.0"
     },
     "authors": [
         {
@@ -57,9 +57,9 @@
         }
     },
     "require-dev": {
-        "flarum/phpstan": "^2.0.0-beta",
-        "flarum/tags": "^2.0.0-beta",
-        "flarum/testing": "^2.0.0-beta"
+        "flarum/phpstan": "^2.0.0",
+        "flarum/tags": "^2.0.0",
+        "flarum/testing": "^2.0.0"
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",
@@ -83,5 +83,7 @@
         "psr-4": {
             "FoF\\Links\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
