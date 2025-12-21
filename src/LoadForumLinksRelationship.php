@@ -36,6 +36,7 @@ class LoadForumLinksRelationship
         // we only serialize all links if we're visiting the admin panel
         if ($actor->isAdmin() && $this->isAdminPath($request)) {
             $data['links'] = Link::all();
+
             return;
         }
 
