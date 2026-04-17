@@ -117,7 +117,7 @@ export default class LinkItem extends LinkButton {
   }
 
   get class(): string {
-    return classList('LinksButton', this.attrs.className || 'Button Button--link', {
+    return classList('LinksButton', 'Button Button--link', this.attrs.className, {
       'LinksButton--inDropdown': this.attrs.inDropdown,
       active: this.isLinkCurrentPage,
     });

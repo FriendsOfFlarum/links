@@ -1,35 +1,38 @@
 import app from 'flarum/admin/app';
 
-import ExtensionPage from 'flarum/admin/components/ExtensionPage';
+import ExtensionPage, { ExtensionPageAttrs } from 'flarum/admin/components/ExtensionPage';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import Placeholder from 'flarum/common/components/Placeholder';
+import ItemList from 'flarum/common/utils/ItemList';
 import sortable from 'sortablejs';
+import type Mithril from 'mithril';
 
-import EditLinkModal from './EditLinkModal';
 import sortLinks from '../../common/utils/sortLinks';
+import type Link from '../../common/models/Link';
 
-function linkItem(link) {
+interface LinkOrder {
+  id: string;
+  children: string[];
+}
+
+function linkItem(link: Link): Mithril.Children {
+  const icon = link.icon();
+
   return (
     <li data-id={link.id()}>
       <div className="LinkListItem-info">
-        {link.icon() ? (
+        {icon && (
           <span className="LinkListItem-icon">
-            <Icon name={link.icon()} />{' '}
+            <Icon name={icon} />{' '}
           </span>
-        ) : (
-          ''
         )}
         <span className="LinkListItem-name">{link.title()}</span>
-        {Button.component({
-          className: 'Button Button--link',
-          icon: 'fas fa-pencil-alt',
-          onclick: () => app.modal.show(EditLinkModal, { link }),
-        })}
+        <Button className="Button Button--link" icon="fas fa-pencil-alt" onclick={() => app.modal.show(() => import('./EditLinkModal'), { link })} />
       </div>
       {!link.isChild() && (
         <ol className="LinkListItem-children LinkList">
-          {sortLinks(app.store.all('links'))
+          {sortLinks(app.store.all<Link>('links'))
             .filter((child) => child.parent() === link)
             .map(linkItem)}
         </ol>
@@ -39,23 +42,18 @@ function linkItem(link) {
 }
 
 export default class LinksPage extends ExtensionPage {
-  oninit(vnode) {
-    super.oninit(vnode);
+  forcedRefreshKey = 0;
 
-    this.forcedRefreshKey = 0;
-  }
-
-  sections() {
-    const items = super.sections();
+  sections(vnode: Mithril.VnodeDOM<ExtensionPageAttrs, this>): ItemList<unknown> {
+    const items = super.sections(vnode);
 
     items.setPriority('content', 100);
-
     items.add('links', this.links(), 80);
 
     return items;
   }
 
-  links() {
+  links(): Mithril.Children {
     return (
       <div className="LinksPage">
         <div className="ExtensionPage-permissions-header">
@@ -68,33 +66,24 @@ export default class LinksPage extends ExtensionPage {
     );
   }
 
-  linksPreset() {
-    return (
-      <>
-        <Placeholder text={app.translator.trans('fof-links.admin.links.preconfigured')} />
-      </>
-    );
+  linksPreset(): Mithril.Children {
+    return <Placeholder text={app.translator.trans('fof-links.admin.links.preconfigured')} />;
   }
 
-  linksContent() {
+  linksContent(): Mithril.Children {
     return (
       <>
         <div className="container">
-          {Button.component(
-            {
-              className: 'Button Button--primary',
-              icon: 'fas fa-plus',
-              onclick: () => app.modal.show(EditLinkModal),
-            },
-            app.translator.trans('fof-links.admin.links.create_button')
-          )}
+          <Button className="Button Button--primary" icon="fas fa-plus" onclick={() => app.modal.show(() => import('./EditLinkModal'))}>
+            {app.translator.trans('fof-links.admin.links.create_button')}
+          </Button>
         </div>
         <div className="LinksPage-list">
           <div className="container" key={this.forcedRefreshKey} oncreate={this.onListOnCreate.bind(this)}>
             <div className="LinkItems">
               <label>{app.translator.trans('fof-links.admin.links.links')}</label>
               <ol className="LinkList LinkList--primary">
-                {sortLinks(app.store.all('links'))
+                {sortLinks(app.store.all<Link>('links'))
                   .filter((link) => !link.isChild())
                   .map(linkItem)}
               </ol>
@@ -105,34 +94,33 @@ export default class LinksPage extends ExtensionPage {
     );
   }
 
-  onListOnCreate(vnode) {
-    this.$('.LinkList')
-      .get()
-      .map((e) => {
-        sortable.create(e, {
-          group: 'links',
-          animation: 150,
-          swapThreshold: 0.65,
-          dragClass: 'sortable-dragging',
-          ghostClass: 'sortable-placeholder',
-          onSort: (e) => this.onSortUpdate(e),
-        });
+  onListOnCreate(vnode: Mithril.VnodeDOM): void {
+    vnode.dom.querySelectorAll<HTMLOListElement>('.LinkList').forEach((el) => {
+      sortable.create(el, {
+        group: 'links',
+        animation: 150,
+        swapThreshold: 0.65,
+        dragClass: 'sortable-dragging',
+        ghostClass: 'sortable-placeholder',
+        onSort: () => this.onSortUpdate(),
       });
+    });
   }
 
-  onSortUpdate(e) {
-    const order = this.$('.LinkList--primary > li')
-      .map((i, el) => ({
-        id: $(el).data('id'),
-        children: $(el)
-          .find('li')
-          .map((i, el) => $(el).data('id'))
-          .get(),
-      }))
-      .get();
+  onSortUpdate(): void {
+    const root = this.element?.querySelector<HTMLOListElement>('.LinkList--primary');
+
+    if (!root) return;
+
+    const order: LinkOrder[] = Array.from(root.querySelectorAll<HTMLLIElement>(':scope > li')).map((el) => ({
+      id: String(el.dataset.id),
+      children: Array.from(el.querySelectorAll<HTMLLIElement>('li')).map((child) => String(child.dataset.id)),
+    }));
 
     order.forEach((link, i) => {
-      const parent = app.store.getById('links', link.id);
+      const parent = app.store.getById<Link>('links', link.id);
+
+      if (!parent) return;
 
       parent.pushData({
         attributes: {
@@ -142,8 +130,8 @@ export default class LinksPage extends ExtensionPage {
         relationships: { parent: null },
       });
 
-      link.children.forEach((child, j) => {
-        app.store.getById('links', child).pushData({
+      link.children.forEach((childId, j) => {
+        app.store.getById<Link>('links', childId)?.pushData({
           attributes: {
             position: j,
             isChild: true,

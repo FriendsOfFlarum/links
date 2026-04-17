@@ -94,8 +94,13 @@
 }
 
 @media @phone {
-  .SplitDropdown-button {
-    width: calc(100% - 8.75px) !important;
+  // Let the main dropdown button size to its content so the caret sits next to
+  // it rather than being stranded at the far right of the drawer row.
+  .LinkDropdown {
+    .SplitDropdown-button {
+      width: auto !important;
+      flex: 0 1 auto;
+    }
   }
 }
 

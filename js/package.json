@@ -9,6 +9,7 @@
   "devDependencies": {
     "prettier": "^3.0.2",
     "@flarum/prettier-config": "^1.0.0",
+    "@types/sortablejs": "^1.15.9",
     "flarum-tsconfig": "^2.0.0",
     "flarum-webpack-config": "^3.0.0",
     "webpack": "^5.65.0",
