@@ -1,12 +1,12 @@
-export default class LinksPage extends ExtensionPage<import("flarum/admin/components/ExtensionPage").ExtensionPageAttrs> {
-    constructor();
-    oninit(vnode: any): void;
-    forcedRefreshKey: number | undefined;
-    sections(): import("flarum/common/utils/ItemList").default<unknown>;
-    links(): JSX.Element;
-    linksPreset(): JSX.Element;
-    linksContent(): JSX.Element;
-    onListOnCreate(vnode: any): void;
-    onSortUpdate(e: any): void;
+import ExtensionPage, { ExtensionPageAttrs } from 'flarum/admin/components/ExtensionPage';
+import ItemList from 'flarum/common/utils/ItemList';
+import type Mithril from 'mithril';
+export default class LinksPage extends ExtensionPage {
+    forcedRefreshKey: number;
+    sections(vnode: Mithril.VnodeDOM<ExtensionPageAttrs, this>): ItemList<unknown>;
+    links(): Mithril.Children;
+    linksPreset(): Mithril.Children;
+    linksContent(): Mithril.Children;
+    onListOnCreate(vnode: Mithril.VnodeDOM): void;
+    onSortUpdate(): void;
 }
-import ExtensionPage from "flarum/admin/components/ExtensionPage";

@@ -1,1 +1,2 @@
-export default function sortLinks(links: any): any;
+import type Link from '../models/Link';
+export default function sortLinks(links: Link[]): Link[];
