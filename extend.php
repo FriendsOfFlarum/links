@@ -30,7 +30,8 @@ return [
 
     (new Extend\Frontend('admin'))
         ->js(__DIR__.'/js/dist/admin.js')
-        ->css(__DIR__.'/less/admin.less'),
+        ->css(__DIR__.'/less/admin.less')
+        ->jsDirectory(__DIR__.'/js/dist/admin'),
 
     // Custom permission endpoint (keep this as-is since it's custom logic)
     (new Extend\Routes('api'))
