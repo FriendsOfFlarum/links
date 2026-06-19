@@ -13,14 +13,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 return [
-    'up' => function (Builder $schema) {
+    'up' => static function (Builder $schema) {
         $connection = $schema->getConnection();
-        $prefix = $connection->getTablePrefix();
-
-        // Use true instead of 1 for PostgreSQL compatibility (boolean type)
-        $connection->statement("UPDATE {$prefix}links SET visibility = 'members' WHERE registered_users_only = true");
 
         if ($schema->hasColumn('links', 'registered_users_only')) {
+            $connection->table('links')
+                ->where('registered_users_only', true)
+                ->update(['visibility' => 'members']);
+
             $schema->table('links', function (Blueprint $table) {
                 $table->dropIndex(['registered_users_only']);
                 $table->dropColumn('registered_users_only');

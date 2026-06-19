@@ -13,7 +13,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 return [
-    'up' => function (Builder $schema) {
+    'up' => static function (Builder $schema) {
         if ($schema->hasColumn('links', 'visibility')) {
             return;
         }
@@ -24,9 +24,15 @@ return [
         });
     },
 
-    'down' => function (Builder $schema) {
-        $schema->table('links', function (Blueprint $table) {
-            $table->dropIndex(['visibility']);
+    'down' => static function (Builder $schema) {
+        $indices = $schema->getIndexListing('links');
+
+        // A previous version of down migrations hardcoded the index name, which broke this when a prefix was in use.
+        // The ideal behavior is to let Laravel determine the index name, so we check in case the old hardcoded name exists.
+        $hasHardcodedIndex = in_array('links_visibility_index', $indices, true);
+
+        $schema->table('links', function (Blueprint $table) use ($hasHardcodedIndex) {
+            $table->dropIndex($hasHardcodedIndex ? 'links_visibility_index' : ['visibility']);
             $table->dropColumn('visibility');
         });
     },

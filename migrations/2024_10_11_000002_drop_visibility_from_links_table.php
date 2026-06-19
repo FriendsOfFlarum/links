@@ -39,7 +39,7 @@ return [
         if (!$schema->hasColumn('links', 'visibility')) {
             $schema->table('links', function (Blueprint $table) {
                 $table->enum('visibility', ['everyone', 'members', 'guests'])->default('everyone');
-                $table->index('visibility', 'links_visibility_index');
+                $table->index(['visibility']);
             });
         }
     },
