@@ -182,7 +182,15 @@ class LinkRepository
             return new EloquentCollection($links->all());
         }
 
-        return $this->getLinksFromDatabase($actor);
+        if ($actor->isGuest()) {
+            return $this->getGuestLinks($actor);
+        }
+
+        $links = $this->getLinksFromDatabase($actor)
+            ->reject(fn (Link $link) => $link->guest_only)
+            ->values();
+
+        return $this->wireParents($links);
     }
 
     /**
@@ -200,14 +208,55 @@ class LinkRepository
             return new EloquentCollection($this->getFlattenedLinks($this->overrideLinks));
         }
 
-        if ($links = $this->cache->get($this->cacheKey($actor))) {
-            return $links;
+        $cached = $this->cache->get($this->cacheKey($actor));
+
+        // The cache holds plain attribute arrays, not serialized models:
+        // models silently break when the schema or the class changes between
+        // write and read, while attribute arrays rehydrate through the model
+        // exactly like a fresh query. Anything else (including the serialized
+        // collections older versions stored) is treated as a miss and
+        // replaced.
+        if (is_array($cached)) {
+            $links = Link::hydrate($cached);
         } else {
             $links = $this->getLinksFromDatabase($actor);
-            $this->cache->forever($this->cacheKey($actor), $links);
-
-            return $links;
+            $this->cache->forever(
+                $this->cacheKey($actor),
+                $links->map(fn (Link $link) => $link->getAttributes())->all()
+            );
         }
+
+        return $this->wireParents($links);
+    }
+
+    /**
+     * Point each link's parent relation at the model already in the set.
+     *
+     * The visible set contains every visible parent, so serializing the
+     * links.parent include must reuse those models — otherwise each parent
+     * is fetched again by id, with the whole visibility subquery attached.
+     *
+     * @param EloquentCollection<int, Link> $links
+     *
+     * @return EloquentCollection<int, Link>
+     */
+    protected function wireParents(EloquentCollection $links): EloquentCollection
+    {
+        $byId = $links->keyBy('id');
+
+        foreach ($links as $link) {
+            // Set the relation on every link — null for roots. A link with no
+            // loaded parent relation triggers the relationship buffer, and
+            // the buffer reloads the relation for ALL buffered links at once,
+            // undoing this wiring and costing the refetch query anyway.
+            //
+            // A parent that is not in the visible set resolves to null too:
+            // the set contains every link the actor may see, so anything
+            // missing from it must not be serialized for them either.
+            $link->setRelation('parent', $link->parent_id !== null ? $byId->get($link->parent_id) : null);
+        }
+
+        return $links;
     }
 
     /**
@@ -215,7 +264,7 @@ class LinkRepository
      *
      * @param User $actor
      *
-     * @return EloquentCollection<Link>
+     * @return EloquentCollection<int, Link>
      */
     protected function getLinksFromDatabase(User $actor): EloquentCollection
     {
