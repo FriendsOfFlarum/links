@@ -30,27 +30,35 @@ export default class LinkItem extends LinkButton {
 
   labelView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
     const link = this.attrs.link;
+    const title = <span className="LinksButton-title">{link.title()}</span>;
 
-    const LinkLabelNode = this.attrs.inDropdown ? 'span' : Button;
-
-    return (
-      <>
-        {this.attrs.inDropdown && <Separator />}
-        <LinkLabelNode
-          class={classList(this.class, 'LinksButton--label')}
-          onclick={(e: MouseEvent) => {
-            if (this.attrs.inDropdown) {
+    if (this.attrs.inDropdown) {
+      return (
+        <>
+          <Separator />
+          <span
+            class={classList(this.class, 'LinksButton--label')}
+            onclick={(e: MouseEvent) => {
               // don't close dropdown when clicking label
               e.stopPropagation();
-            }
-          }}
-          data-toggle={this.attrs.isDropdownButton ? 'dropdown' : undefined}
-        >
-          {this.icon}
-          <span className="LinksButton-title">{link.title()}</span>
-        </LinkLabelNode>
-        {this.attrs.inDropdown && <Separator />}
-      </>
+            }}
+          >
+            {this.icon}
+            {title}
+          </span>
+          <Separator />
+        </>
+      );
+    }
+
+    // Pass the icon to Button as an attr rather than a child: children are
+    // wrapped in .Button-labelText, one level below where the button's flex
+    // gap separates icon from label, so an icon passed as a child sits flush
+    // against the title.
+    return (
+      <Button class={classList(this.class, 'LinksButton--label')} icon={this.icon} data-toggle={this.attrs.isDropdownButton ? 'dropdown' : undefined}>
+        {title}
+      </Button>
     );
   }
 
