@@ -25,6 +25,12 @@
   .LinksButton {
     color: var(--button-color, var(--control-color)) !important;
 
+    // These keep their Button classes inside the menu, and .Button centers
+    // its content — core's own menu items carry no Button class, so they
+    // left-align by default. Only visible when an item is shorter than the
+    // menu, which is why link dropdowns looked fine and label ones didn't.
+    justify-content: flex-start;
+
     &--label {
       color: var(--heading-color) !important;
     }
