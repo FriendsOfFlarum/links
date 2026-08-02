@@ -64,9 +64,13 @@ class GuestLinkCacheTest extends TestCase
         $queries = array_column($db->getQueryLog(), 'query');
         $db->flushQueryLog();
 
+        // Respect the table prefix — matching a literal "links" silently
+        // finds nothing on the prefixed CI jobs.
+        $table = 'from '.$db->getTablePrefix().'links';
+
         return array_values(array_filter(
             $queries,
-            fn (string $sql) => str_contains(str_replace(['`', '"'], '', $sql), 'from links')
+            fn (string $sql) => str_contains(str_replace(['`', '"'], '', $sql), $table)
         ));
     }
 
