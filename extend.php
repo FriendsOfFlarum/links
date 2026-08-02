@@ -71,17 +71,9 @@ return [
                         return Link::all()->all();
                     }
 
-                    // Use LinkRepository to get links (handles overrides)
-                    /** @var \Illuminate\Database\Eloquent\Collection<int, Link> $links */
-                    $links = $linkRepository->getLinks($actor);
-
-                    // Filter out guest-only links for logged-in users
-                    if (!$actor->isGuest()) {
-                        $links = $links->reject(fn (Link $link) => $link->guest_only);
-                    }
-
-                    // Return array of model instances
-                    return $links->all();
+                    // The repository owns visibility, guest-only filtering,
+                    // the guest cache, and parent wiring.
+                    return $linkRepository->getLinks($actor)->all();
                 }),
         ])
         ->endpoint('show', function (Endpoint\Show $endpoint) {
