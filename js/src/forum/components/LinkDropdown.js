@@ -31,7 +31,12 @@ export default class LinkDropdown extends SplitDropdown {
 
     return [
       firstChild,
-      <button className={classList('Dropdown-toggle', 'Button', 'Button--icon', this.attrs.buttonClassName)} aria-haspopup="menu" ariaLabel={app.translator.trans('fof-links.forum.header.toggle_dropdown_accessible_label')} data-toggle="dropdown">
+      <button
+        className={classList('Dropdown-toggle', 'Button', 'Button--icon', this.attrs.buttonClassName)}
+        aria-haspopup="menu"
+        ariaLabel={app.translator.trans('fof-links.forum.header.toggle_dropdown_accessible_label')}
+        data-toggle="dropdown"
+      >
         <Icon name="fas fa-caret-down" className="Button-caret" />
       </button>,
     ];
