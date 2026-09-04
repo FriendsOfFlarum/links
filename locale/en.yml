@@ -41,6 +41,13 @@ fof-links:
     settings:
       show_icons_only_on_tablet: Show icons only on tablet screens
 
+  # Translations in this namespace are used by the forum user interface.
+  forum:
+  
+    # These translations are used in the header menu.
+    header:
+      toggle_dropdown_accessible_label: Toggle link dropdown menu
+      
   # Strings in this namespace are referenced by two or more unique keys.
   ref:
     create_link: Create Link
