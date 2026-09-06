@@ -1,125 +1,146 @@
-.LinkDropdown {
-  &.open > .LinksButton,
-  &:hover > button {
-    color: var(--header-control-color) !important;[data-colored-header=false] & {
-      color: var(--button-color, var(--primary-color)) !important;
-    }
-  }
-}
-
-.LinkDropdown ul {
-  li {
-    .Dropdown-separator {
-      display: block !important;
-    }
-
-    &:nth-child(2) .Dropdown-separator:first-of-type, &:last-child .Dropdown-separator:last-of-type {
-      display: none !important;
-    }
-
-    &:has(.Dropdown-separator) + li .Dropdown-separator:first-of-type {
-      display: none;
-    }
-  }
-
-  .LinksButton {
-    color: var(--button-color, var(--control-color)) !important;
-
-    // These keep their Button classes inside the menu, and .Button centers
-    // its content — core's own menu items carry no Button class, so they
-    // left-align by default. Only visible when an item is shorter than the
-    // menu, which is why link dropdowns looked fine and label ones didn't.
-    justify-content: flex-start;
-
-    &--label {
-      color: var(--heading-color) !important;
-    }
-
-    &-icon {
-      margin-top: 2px;
-      margin-right: 7px;
-    }
-
-    &-title {
-      display: inline;
-    }
-
-    &:hover,
-    &:active,
-    &:focus {
-      background: var(--control-bg) !important;
-    }
-  }
-}
-
 .LinksButton {
+  &:not(.LinksButton--inDropdown) .LinksButton-title::after {
+    content: attr(data-title);
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
   &--label {
-    cursor: unset !important;
-    .user-select(unset);
-    color: var(--header-control-color) !important;
-
-    .LinkDropdown > & {
-      cursor: pointer !important;
-    }
+    cursor: default;
+    .user-select(none);
   }
 
-  &:not(.LinksButton--label) {
-    &.active {
-      font-weight: 600;
-    }
+  button&--label {
+    cursor: pointer;
+  }
+}
 
-    // This prevents the links from changing width when they become bold
-    // by having an invisible copy of the text already in bold
-    // based on https://stackoverflow.com/a/20249560/3133038
-    &::after {
-      display: block;
-      content: attr(title);
-      font-weight: bold;
-      height: 0;
-      overflow: hidden;
-      visibility: hidden;
-    }
+.Header-controls > li {
+  > .LinksButton.active,
+  > .LinkDropdown--active > .LinksButton {
+    color: var(--header-color);
+    font-weight: 600;
   }
 
-  + .Dropdown-toggle {
-    width: auto;
-    margin-right: 10px;
+  > .LinksButton:hover,
+  > .LinkDropdown:hover > .LinksButton,
+  > .LinkDropdown.open > .LinksButton,
+  > .LinkDropdown.open > .Dropdown-toggle {
+    color: var(--header-color);
+  }
+}
+
+.LinkDropdown > .Dropdown-toggle {
+  width: auto;
+  padding-left: 4px;
+  padding-right: 6px;
+}
+
+// A group named by a label puts only its children in the menu, so one child
+// lands on core's "nothing to choose between" case, which drops the caret. The
+// label goes nowhere on its own, so the caret is what has to open the group.
+.LinkDropdown.itemCount1 > .Dropdown-toggle {
+  display: inline-flex;
+}
+
+.LinkDropdown-menu > li > a.active {
+  background: var(--control-bg);
+  font-weight: 600;
+}
+
+.LinksHeading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+// A navigation group is usually a mix of links with and without icons, and
+// core only indents the rows that have one. The same space is reserved either
+// way, so the titles line up as one column.
+.LinkDropdown-menu > li > a:not(.hasIcon),
+.LinkDropdown-menu > .LinksHeading:not(.hasIcon) {
+  padding-left: 40px;
+}
+
+.LinksHeading-icon {
+  // Sized on the flex basis rather than on `width`, which a FontAwesome Kit
+  // overrides with an em value of its own.
+  flex: 0 0 16px;
+  text-align: center;
+}
+
+@media @tablet-up {
+  // Where the group's own link leads the menu, core hides that first entry —
+  // which would leave the rule above a heading that follows it stranded at the
+  // top of the menu.
+  .Dropdown--split:not(.Dropdown--withMainAction) .LinkDropdown-menu > li:first-child + .LinksHeading {
+    margin-top: -8px;
+    border-top: 0;
+  }
+}
+
+// In the overflow menu core lays a group out inline: its own link at the menu
+// indent, its children stepped in from it. A group named by a label has no
+// entry of its own, so its first child is stepped in here as well.
+.OverflowingList-dropdown {
+  .LinkDropdown-menu > .LinksHeading {
+    padding-left: 30px;
   }
 
-  & when (@fof-links-show-only-icons-on-mobile = true) {
-    @media @tablet {
-      &-icon {
-        margin-right: 0;
-      }
-
-      &-title {
-        display: none;
-      }
-    }
+  .Dropdown--withMainAction > .LinkDropdown-menu > li:first-child > a {
+    padding-left: 30px;
   }
 }
 
 @media @phone {
-  // Let the main dropdown button size to its content so the caret sits next to
-  // it rather than being stranded at the far right of the drawer row.
-  .LinkDropdown {
-    .SplitDropdown-button {
-      width: auto !important;
-      flex: 0 1 auto;
+  // Core indents a menu row that has an icon and hangs the icon in the space
+  // that makes. A heading is not an `<a>`, so it is lined up on the same
+  // numbers here rather than inheriting them.
+  .LinkDropdown-menu > .LinksHeading.hasIcon {
+    padding-left: 50px;
+    padding-right: 20px;
+
+    .LinksHeading-icon {
+      margin-left: -30px;
+    }
+  }
+
+  .LinkDropdown-menu > li > a:not(.hasIcon),
+  .LinkDropdown-menu > .LinksHeading:not(.hasIcon) {
+    padding-left: 45px;
+  }
+
+  // Header controls are full-width rows in the drawer; a group is two controls
+  // on one row.
+  .Header-controls > li > .LinkDropdown {
+    display: flex;
+    width: 100%;
+
+    > .SplitDropdown-button {
+      flex: 1 1 auto;
+      width: auto;
+      justify-content: flex-start;
+    }
+
+    > .Dropdown-toggle {
+      flex: 0 0 auto;
+      width: 44px;
+      justify-content: center;
     }
   }
 }
 
-.LinkDropdown .Dropdown-menu > li > a .Button-icon {
-  margin-left: 0;
-}
-
-// Ensure links in header maintain proper styling
-#header-primary .LinksButton {
-  color: var(--header-control-color);
-  text-decoration: none;
-
-  &.active {
-    color: var(--header-color);
+& when (@fof-links-show-only-icons-on-mobile = true) {
+  @media @tablet {
+    .Header-controls > li > .LinksButton,
+    .Header-controls > li > .LinkDropdown > .LinksButton {
+      .LinksButton-title {
+        display: none;
+      }
+    }
   }
 }

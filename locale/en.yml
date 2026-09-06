@@ -7,47 +7,92 @@ fof-links:
   # Translations in this namespace are used by the admin interface.
   admin:
 
-    # These strings are used in the Edit Link modal dialog.
+    # These strings are used in the link editor.
     edit_link:
-      delete_link_button: Delete Link
-      delete_link_confirmation: "Are you sure you want to delete this link?"
-      internal_link: "Is it an internal link?"
-      open_newtab: "Open link in new tab"
-      submit_button: => core.ref.save_changes
       title: => fof-links.ref.create_link
+      title_child: "New link under {parent}"
       title_label: => fof-links.ref.title
       title_placeholder: => fof-links.ref.title
+
       icon_label: => core.ref.icon
       icon_text: => core.ref.icon_text
       icon_additional_text: If you want to use a brand icon, the prefix is <code>fab fa-</code> instead.
-      url_description: Leave blank to show as a label.
-      url_label: => fof-links.ref.url
-      url_placeholder: => fof-links.ref.url
-      use_rel_me: Add <code>rel="me"</code> attribute for identity verification on other sites
-      visibility:
-        help: Links by default are visible to only <code>{admin}</code> users. Adjust the permissions to specify who can see this link.
-        help-disabled: Save the link before changing visibility settings.
-        label: Link visibility
-        guest-only:
-          label: "{guest} only?"
-          help: "Only {guest} can see this link. The permission above should be set to '{everyone}'."
 
-    # These strings are used in the Links page.
+      type:
+        heading: What this link does
+        internal:
+          label: Goes to a page on this forum
+          help: Opens without reloading the page.
+        external:
+          label: Goes to another site
+          help: Opens an address outside this forum.
+        label:
+          label: Goes nowhere
+          help: Shown as a label. Use it to name a group of links.
+
+      url_label: => fof-links.ref.url
+      url_help:
+        internal: The part of the address after your forum's own, starting with a slash.
+        external: The full address, including <code>https://</code>.
+      url_placeholder:
+        internal: /tags
+        external: https://example.com
+
+      options_label: Options
+      open_newtab: Open in a new tab
+      use_rel_me: Add a <code>rel="me"</code> attribute
+      use_rel_me_help: Lets the site you link to verify that this forum is yours.
+
+      visibility:
+        label: Who can see it
+        help: A new link is visible to <code>{admin}</code> users only. Adjust the permission to widen that.
+        help-disabled: Save the link before choosing who can see it.
+        guest-only:
+          label: "Show to {guest} only"
+          help: "Signed-in users will not see this link. The permission above should be set to {everyone}."
+
+      submit_button: => core.ref.save_changes
+      delete_link_button: Delete link
+      delete_link_confirmation: "Are you sure you want to delete “{title}”?"
+
+    # These strings are used on the links page.
     links:
-      create_button: => fof-links.ref.create_link
       links: => fof-links.ref.links
-      preconfigured: The links on this forum have been preconfigured and cannot be edited here.
+      description: These appear in your forum's navigation, in the order they are listed here.
+      create_button: => fof-links.ref.create_link
+      preconfigured: The links on this forum have been preconfigured in code and cannot be edited here.
+      no_url: No link — shown as a label
+
+      reorder_help: Drag a link by its handle to reorder it, or drop it onto another to nest it underneath. With a handle focused, the arrow keys do the same.
+      reorder_loading: Preparing the list for reordering…
+      reorder_accessible_label: "Reorder {title}. Use the arrow keys to move it up, down, into the link above, or back out."
+
+      edit_tooltip: => core.ref.edit
+      edit_accessible_label: "Edit {title}"
+      add_child_tooltip: Add a link underneath this one
+      add_child_accessible_label: "Add a link underneath {title}"
+
+      audience_everyone: Visible to everyone
+      flag:
+        new_tab: New tab
+        rel_me: rel="me"
+        guest_only: Guests only
+
+      moved: "{title} moved to position {position} of {total}."
+      moved_under: "{title} moved under {parent}, position {position} of {total}."
 
     settings:
+      heading: Settings
       show_icons_only_on_tablet: Show icons only on tablet screens
+      show_icons_only_on_tablet_help: Hides link titles between 768px and 991px wide, where the navigation has the least room. Titles are still announced by screen readers.
 
   # Translations in this namespace are used by the forum user interface.
   forum:
-  
+
     # These translations are used in the header menu.
     header:
-      toggle_dropdown_accessible_label: Toggle link dropdown menu
-      
+      toggle_dropdown_accessible_label: "Show the links under {title}"
+
   # Strings in this namespace are referenced by two or more unique keys.
   ref:
     create_link: Create Link

@@ -1,71 +1,92 @@
-.LinksPage {
-  margin-top: 25px;
-}
-
 .LinksPage-list {
-  padding: 20px 0;
-
-  .container {
-    max-width: 600px;
-  }
+  width: 100%;
 }
 
-.LinkList {
-  &, ol {
-    list-style: none;
-  }
-
-  padding: 10px 0;
+.LinkList,
+.LinkList ol {
+  list-style: none;
+  padding: 0;
   margin: 0;
   color: var(--muted-color);
+  font-size: 13px;
+}
+
+.LinkList--root {
   font-size: 16px;
-
-  > li {
-    cursor: move;
-  }
-
-  > .sortable-placeholder {
-    height: 34px;
-    margin-bottom: 10px;
-  }
 }
 
 .LinkList ol {
-  margin-left: 27px;
+  // Somewhere to drop the first link of a group.
   min-height: 10px;
-  padding: 0;
+  margin-left: 27px;
 
-  & > :last-child {
+  > :last-child {
     margin-bottom: 10px;
   }
 }
 
 .LinkListItem-info {
-  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
   border-radius: var(--border-radius);
 
   &:hover {
     background: var(--control-bg);
   }
+}
 
-  .Button {
-    float: right;
-    visibility: hidden;
-    margin: -8px -10px -8px 10px;
+.LinkListItem-handle {
+  flex: 0 0 auto;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
   }
 }
 
-li:not(.sortable-dragging) > .LinkListItem-info:hover > .Button {
-  visibility: visible;
+.LinkListItem-icon {
+  flex: 0 0 auto;
 }
 
-.LinkItems {
-  padding-left: 150px;
+.LinkListItem-name {
+  flex: 0 0 auto;
+  color: var(--text-color);
+}
 
-  > label {
-    margin-left: -150px;
-    float: left;
-    font-weight: bold;
-    margin-top: 14px;
-  }
+.LinkListItem-url {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LinkListItem-flags {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 13px;
+}
+
+.LinkListItem-audience {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.LinkListItem-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.sortable-placeholder {
+  border: 2px dashed var(--control-bg);
+  border-radius: var(--border-radius);
+  height: 34px;
 }

@@ -1,165 +1,123 @@
-/* global m*/
-
-import app from 'flarum/forum/app';
+import Component from 'flarum/common/Component';
 import Link from 'flarum/common/components/Link';
-import LinkModel from '../../common/models/Link';
-import LinkButton from 'flarum/common/components/LinkButton';
 import Icon from 'flarum/common/components/Icon';
-import Separator from 'flarum/common/components/Separator';
 import classList from 'flarum/common/utils/classList';
-import type { IButtonAttrs } from 'flarum/common/components/Button';
+import type { ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
-import Button from 'flarum/common/components/Button';
 
-export interface ILinkItemAttrs extends IButtonAttrs {
+import type LinkModel from '../../common/models/Link';
+import { isLinkActive, linkHref } from '../utils/linkTarget';
+
+export interface ILinkItemAttrs extends ComponentAttrs {
   link: LinkModel;
   className?: string;
   inDropdown?: boolean;
   isDropdownButton?: boolean;
 }
 
-export default class LinkItem extends LinkButton {
-  // Just definitions to satisfy TypeScript
-  attrs!: ILinkItemAttrs;
-
-  view(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
-    if (this.isLabel) return this.labelView(vnode);
-
-    return this.linkView(vnode);
+export default class LinkItem<CustomAttrs extends ILinkItemAttrs = ILinkItemAttrs> extends Component<CustomAttrs> {
+  view(vnode: Mithril.Vnode<CustomAttrs, this>): Mithril.Children {
+    return this.isLabel ? this.labelView() : this.linkView();
   }
 
-  labelView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
-    const link = this.attrs.link;
-    const title = <span className="LinksButton-title">{link.title()}</span>;
+  labelView(): Mithril.Children {
+    const className = classList(this.class, 'LinksButton--label');
 
-    if (this.attrs.inDropdown) {
+    if (!this.attrs.isDropdownButton) {
       return (
-        <>
-          <Separator />
-          <span
-            class={classList(this.class, 'LinksButton--label')}
-            onclick={(e: MouseEvent) => {
-              // don't close dropdown when clicking label
-              e.stopPropagation();
-            }}
-          >
-            {this.icon}
-            {title}
-          </span>
-          <Separator />
-        </>
+        <span className={className}>
+          {this.icon}
+          {this.titleView}
+        </span>
       );
     }
 
-    // Pass the icon to Button as an attr rather than a child: children are
-    // wrapped in .Button-labelText, one level below where the button's flex
-    // gap separates icon from label, so an icon passed as a child sits flush
-    // against the title.
     return (
-      <Button class={classList(this.class, 'LinksButton--label')} icon={this.icon} data-toggle={this.attrs.isDropdownButton ? 'dropdown' : undefined}>
-        {title}
-      </Button>
+      <button type="button" className={className} aria-label={this.accessibleLabel} aria-haspopup="menu" data-toggle="dropdown">
+        {this.icon}
+        {this.titleView}
+      </button>
     );
   }
 
-  linkView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element {
+  linkView(): Mithril.Children {
     const link = this.attrs.link;
 
-    const linkAttrs = {
-      className: this.class,
-      rel: this.rel,
-      target: this.linkTarget,
-      external: link.isNewtab() ? false : !link.isInternal(),
-      href: this.linkHref,
-    };
-
     return (
-      <Link {...linkAttrs}>
+      <Link
+        className={this.class}
+        href={this.linkHref}
+        rel={this.rel}
+        target={this.linkTarget}
+        external={link.isNewtab() ? false : !link.isInternal()}
+        aria-label={this.accessibleLabel}
+        aria-current={this.isActive ? 'page' : undefined}
+      >
         {this.icon}
-        <span className="LinksButton-title">{link.title()}</span>
+        {this.titleView}
       </Link>
     );
   }
 
-  get isInternal(): boolean {
-    const link = this.attrs.link;
+  get titleView(): Mithril.Children {
+    const title = this.attrs.link.title();
 
-    return link.isInternal() && !link.isNewtab();
+    return (
+      <span className="LinksButton-title" data-title={title}>
+        {title}
+      </span>
+    );
+  }
+
+  get accessibleLabel(): string {
+    return this.attrs.link.title();
   }
 
   get isLabel(): boolean {
-    return this.attrs.link.url().length === 0;
+    return this.attrs.link.isLabel();
+  }
+
+  get isActive(): boolean {
+    return isLinkActive(this.attrs.link);
   }
 
   get linkHref(): string {
-    const link = this.attrs.link;
-    const url = link.url();
-
-    if (url.startsWith('/') && link.isInternal()) {
-      return app.forum.attribute('baseUrl') + url;
-    }
-
-    return url;
+    return linkHref(this.attrs.link);
   }
 
-  get icon(): Mithril.Child | null {
-    const link = this.attrs.link;
-    const iconClass = link.icon();
+  get icon(): Mithril.Children {
+    const iconClass = this.attrs.link.icon();
 
-    if (iconClass) {
-      return <Icon name={iconClass} className="Button-icon LinksButton-icon" />;
-    }
+    if (!iconClass) return null;
 
-    return null;
+    return <Icon name={iconClass} className="Button-icon LinksButton-icon" />;
   }
 
   get rel(): string | undefined {
-    // Prevent security risk on older browsers.
-    // Modern browsers now have `noopener` by default and
-    // require `opener` to enable `window.opener`.
-    //
-    // Learn more:
-    // https://web.dev/external-anchors-use-rel-noopener
-
-    return classList(this.attrs.link.isNewtab() && 'noopener noreferrer', this.attrs.link.useRelMe() && 'me') || undefined;
-  }
-
-  get class(): string {
-    return classList('LinksButton', 'Button Button--link', this.attrs.className, {
-      'LinksButton--inDropdown': this.attrs.inDropdown,
-      active: this.isLinkCurrentPage,
-    });
-  }
-
-  get isLinkCurrentPage(): boolean {
     const link = this.attrs.link;
 
-    if (!link.isInternal()) return false;
-
-    const base = app.forum.attribute<string>('baseUrl');
-
-    // Mithril returns the current path relative to the origin, which isn't necessarily the base forum URL
-    const currentUrl = new URL(m.route.get() || '/', base);
-    const currentPath = currentUrl.href.replace(base, '');
-
-    // The link from `this.linkHref` should already be absolute, but we'll make sure
-    const linkUrl = new URL(this.linkHref, base);
-    const linkPath = linkUrl.href.replace(base, '');
-
-    // For exact match or root path
-    if (currentPath === linkPath) return true;
-    if (linkPath === '/') return false;
-
-    // The link is active if the current path starts with the link path followed by a path boundary
-    // This prevents false matches like '/t' matching '/tags'
-    return currentPath.startsWith(linkPath) && /^[/?#]/.test(currentPath.charAt(linkPath.length));
+    return classList(link.isNewtab() && 'noopener noreferrer', link.useRelMe() && 'me') || undefined;
   }
 
   get linkTarget(): string | undefined {
     const link = this.attrs.link;
 
-    if (this.isInternal) return undefined;
+    if (link.isInternal() && !link.isNewtab()) return undefined;
 
     return link.isNewtab() ? '_blank' : undefined;
+  }
+
+  get class(): string {
+    const inDropdown = !!this.attrs.inDropdown;
+
+    return classList('LinksButton', this.attrs.className, {
+      Button: !inDropdown,
+      'Button--link': !inDropdown,
+      'LinksButton--inDropdown': inDropdown,
+      // What core's own menu items are marked with. The phone menu indents a
+      // row by it and hangs the icon in the space that makes.
+      hasIcon: !!this.attrs.link.icon(),
+      active: this.isActive,
+    });
   }
 }
