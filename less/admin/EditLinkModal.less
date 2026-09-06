@@ -1,41 +1,90 @@
+// Core clips a modal's content, which cuts off the menu the permission control
+// opens near the bottom of this form. Letting it through means taking over the
+// rounding that the clip was also doing.
 .EditLinkModal {
-  .Form-group:not(:last-child) {
-    margin-bottom: 30px;
+  .Modal-content {
+    overflow: visible;
   }
 
-  #link-url-input {
+  @media @tablet-up {
+    .Modal-body {
+      border-bottom-left-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+    }
+  }
+}
+
+.EditLinkModal-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.EditLinkModal-previewTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.EditLinkModal-delete {
+  margin-left: auto;
+}
+
+.LinkUrlInput {
+  display: flex;
+  width: 100%;
+
+  // The part of an internal address that cannot be edited is a fixed prefix, so
+  // the wrapper takes over the field's frame and the two read as one control.
+  &--prefixed {
     border: 2px solid transparent;
+    border-radius: var(--border-radius);
+    background: var(--body-bg);
+    transition: border-color 0.15s;
 
-    &[data-internal] {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      border-radius: 4px;
-      transition: border-color .15s;
+    &:focus-within {
+      border-color: var(--primary-color);
+    }
 
-      &:focus, &:focus-within {
-        border-color: var(--primary-color);
-      }
+    .LinkUrlInput-prefix {
+      // Sized to the base URL rather than to whatever the field leaves over:
+      // core gives every FormControl `width: 100%`, which would otherwise
+      // squeeze this down to an ellipsis.
+      flex: 0 0 auto;
+      max-width: 60%;
+      padding: 8px 1px 8px 11px;
+      font-size: 13px;
+      line-height: 20px;
+      color: var(--muted-more-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+      .user-select(none);
+    }
 
-      label {
-        padding: 8px 5px 8px 13px;
-        cursor: not-allowed;
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
-        background-color: var(--body-bg);
-        color: var(--muted-more-color);
-      }
+    .FormControl {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+      padding-left: 0;
+      background: transparent;
+      border-color: transparent;
+      transition: none;
 
-      input {
-        padding-left: 0;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-color: transparent !important;
-
-        --transition: none;
+      &:focus {
+        background: transparent;
       }
     }
   }
 }
-.EditLinkModal-delete {
-  float: right;
+
+.EditLinkModal .checkbox {
+  margin-bottom: 12px;
+
+  strong {
+    display: block;
+    color: var(--text-color);
+  }
 }

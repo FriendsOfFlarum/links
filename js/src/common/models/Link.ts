@@ -1,5 +1,7 @@
 import Model from 'flarum/common/Model';
 
+export type LinkType = 'internal' | 'external' | 'label';
+
 export default class Link extends Model {
   title() {
     return Model.attribute<string>('title').call(this);
@@ -47,5 +49,15 @@ export default class Link extends Model {
 
   guestOnly() {
     return Model.attribute<boolean>('guestOnly').call(this);
+  }
+
+  isLabel(): boolean {
+    return !this.url();
+  }
+
+  linkType(): LinkType {
+    if (this.isLabel()) return 'label';
+
+    return this.isInternal() ? 'internal' : 'external';
   }
 }
