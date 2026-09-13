@@ -1,4 +1,5 @@
 import Model from 'flarum/common/Model';
+export type LinkType = 'internal' | 'external' | 'label';
 export default class Link extends Model {
     title(): string;
     icon(): string;
@@ -12,4 +13,6 @@ export default class Link extends Model {
     parent(): false | Link;
     isRestricted(): boolean;
     guestOnly(): boolean;
+    isLabel(): boolean;
+    linkType(): LinkType;
 }

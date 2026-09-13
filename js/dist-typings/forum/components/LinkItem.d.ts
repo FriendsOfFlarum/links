@@ -1,24 +1,19 @@
-import LinkModel from '../../common/models/Link';
-import LinkButton from 'flarum/common/components/LinkButton';
-import type { IButtonAttrs } from 'flarum/common/components/Button';
+import Component from 'flarum/common/Component';
+import type { ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
-export interface ILinkItemAttrs extends IButtonAttrs {
+import type LinkModel from '../../common/models/Link';
+export interface ILinkItemAttrs extends ComponentAttrs {
     link: LinkModel;
     className?: string;
+    /** Rendered as a menu entry rather than as a header button. */
     inDropdown?: boolean;
-    isDropdownButton?: boolean;
 }
-export default class LinkItem extends LinkButton {
-    attrs: ILinkItemAttrs;
-    view(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element;
-    labelView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element;
-    linkView(vnode: Mithril.Vnode<ILinkItemAttrs, never>): JSX.Element;
-    get isInternal(): boolean;
-    get isLabel(): boolean;
-    get linkHref(): string;
-    get icon(): Mithril.Child | null;
-    get rel(): string | undefined;
-    get class(): string;
-    get isLinkCurrentPage(): boolean;
-    get linkTarget(): string | undefined;
+export default class LinkItem<CustomAttrs extends ILinkItemAttrs = ILinkItemAttrs> extends Component<CustomAttrs> {
+    /**
+     * Read by `listItems`, which marks the `<li>` around an active item. Core
+     * highlights an active menu entry from there.
+     */
+    static isActive(attrs: ILinkItemAttrs): boolean;
+    view(vnode: Mithril.Vnode<CustomAttrs, this>): Mithril.Children;
+    rel(): string | undefined;
 }
