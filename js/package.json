@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "prettier": "@flarum/prettier-config",
-  "dependencies": {
-    "sortablejs": "^1.14.0"
-  },
   "devDependencies": {
     "@flarum/jest-config": "^2.0.2",
     "@flarum/prettier-config": "^1.0.0",
