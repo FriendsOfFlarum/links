@@ -32,7 +32,7 @@ fof-links:
 
       url_label: => fof-links.ref.url
       url_help:
-        internal: The part of the address after your forum's own, starting with a slash.
+        internal: The part of the address after {baseUrl}, starting with a slash.
         external: The full address, including <code>https://</code>.
       url_placeholder:
         internal: /tags
@@ -45,7 +45,7 @@ fof-links:
 
       visibility:
         label: Who can see it
-        help: A new link is visible to <code>{admin}</code> users only. Adjust the permission to widen that.
+        help: A new link is visible to {admin} users only. Adjust the permission to widen that.
         help-disabled: Save the link before choosing who can see it.
         guest-only:
           label: "Show to {guest} only"
@@ -61,15 +61,13 @@ fof-links:
       description: These appear in your forum's navigation, in the order they are listed here.
       create_button: => fof-links.ref.create_link
       preconfigured: The links on this forum have been preconfigured in code and cannot be edited here.
-      no_url: No link — shown as a label
+      no_url: No link, shown as a label
 
       reorder_help: Drag a link by its handle to reorder it, or drop it onto another to nest it underneath. With a handle focused, the arrow keys do the same.
       reorder_loading: Preparing the list for reordering…
       reorder_accessible_label: "Reorder {title}. Use the arrow keys to move it up, down, into the link above, or back out."
 
-      edit_tooltip: => core.ref.edit
       edit_accessible_label: "Edit {title}"
-      add_child_tooltip: Add a link underneath this one
       add_child_accessible_label: "Add a link underneath {title}"
 
       audience_everyone: Visible to everyone

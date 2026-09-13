@@ -1,17 +1,16 @@
 import app from 'flarum/admin/app';
 import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Form from 'flarum/common/components/Form';
+import FormGroup from 'flarum/common/components/FormGroup';
+import FieldSet from 'flarum/common/components/FieldSet';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
-import Switch from 'flarum/common/components/Switch';
-import Alert from 'flarum/common/components/Alert';
 import LinkComponent from 'flarum/common/components/Link';
 import PermissionDropdown from 'flarum/admin/components/PermissionDropdown';
 import Group from 'flarum/common/models/Group';
 import Stream from 'flarum/common/utils/Stream';
 import ItemList from 'flarum/common/utils/ItemList';
 import extractText from 'flarum/common/utils/extractText';
-import withAttr from 'flarum/common/utils/withAttr';
 import type Mithril from 'mithril';
 
 import type Link from '../../common/models/Link';
@@ -26,10 +25,10 @@ export interface IEditLinkModalAttrs extends IFormModalAttrs {
 const LINK_TYPES: LinkType[] = ['internal', 'external', 'label'];
 
 /**
- * The stored flags are not independent — a label has no URL and so cannot open
+ * The stored flags are not independent: a label has no URL, so it cannot open
  * in a tab, and an internal link is routed rather than followed. They are
- * offered here as the one choice they are, with the fields that only apply to
- * some of those choices shown only for those.
+ * offered as a single choice of type, and fields that only apply to some types
+ * are shown only for those.
  */
 export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEditLinkModalAttrs> extends FormModal<CustomAttrs> {
   link!: Link;
@@ -55,7 +54,8 @@ export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEd
     this.useRelMe = Stream(!!this.link.useRelMe());
     this.guestOnly = Stream(!!this.link.guestOnly());
 
-    this.rewriteUrlForType();
+    // Runs once now, then whenever the type changes.
+    this.linkType.map(() => this.rewriteUrlForType());
   }
 
   className() {
@@ -71,13 +71,12 @@ export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEd
         : app.translator.trans('fof-links.admin.edit_link.title');
     }
 
-    const iconClass = this.icon();
+    const icon = this.icon();
 
     return (
-      <span className="EditLinkModal-preview">
-        {iconClass && <Icon name={iconClass} />}
-        <span className="EditLinkModal-previewTitle">{title}</span>
-      </span>
+      <>
+        {!!icon && <Icon name={icon} />} {title}
+      </>
     );
   }
 
@@ -91,16 +90,17 @@ export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEd
 
   fields(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
+    const type = this.linkType();
 
     items.add('title', this.titleField(), 100);
     items.add('icon', this.iconField(), 90);
     items.add('type', this.typeField(), 80);
 
-    if (this.linkType() !== 'label') {
+    if (type !== 'label') {
       items.add('url', this.urlField(), 70);
     }
 
-    if (this.linkType() === 'external') {
+    if (type === 'external') {
       items.add('options', this.optionsField(), 60);
     }
 
@@ -112,146 +112,112 @@ export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEd
 
   titleField(): Mithril.Children {
     return (
-      <div className="Form-group">
-        <label for="fof-links-title">{app.translator.trans('fof-links.admin.edit_link.title_label')}</label>
-        <input
-          id="fof-links-title"
-          name="title"
-          className="FormControl"
-          placeholder={extractText(app.translator.trans('fof-links.admin.edit_link.title_placeholder'))}
-          required={true}
-          bidi={this.itemTitle}
-        />
-      </div>
+      <FormGroup
+        type="text"
+        name="title"
+        label={app.translator.trans('fof-links.admin.edit_link.title_label')}
+        placeholder={extractText(app.translator.trans('fof-links.admin.edit_link.title_placeholder'))}
+        required={true}
+        stream={this.itemTitle}
+      />
     );
   }
 
   iconField(): Mithril.Children {
     return (
-      <div className="Form-group">
-        <label for="fof-links-icon">{app.translator.trans('fof-links.admin.edit_link.icon_label')}</label>
-        <div className="helpText" id="fof-links-icon-help">
-          {app.translator.trans('fof-links.admin.edit_link.icon_text', {
-            a: (
-              <LinkComponent
-                className="Button--text"
-                href={app.refs.fontawesome}
-                tabindex="-1"
-                external={true}
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            ),
-          })}
-          <br />
-          {app.translator.trans('fof-links.admin.edit_link.icon_additional_text')}
-        </div>
-        <input
-          id="fof-links-icon"
-          name="icon"
-          aria-describedby="fof-links-icon-help"
-          className="FormControl"
-          placeholder="fas fa-bolt"
-          bidi={this.icon}
-        />
-      </div>
+      <FormGroup
+        type="text"
+        name="icon"
+        label={app.translator.trans('fof-links.admin.edit_link.icon_label')}
+        help={[
+          app.translator.trans('fof-links.admin.edit_link.icon_text', {
+            a: <LinkComponent href={app.refs.fontawesome} external={true} target="_blank" rel="noopener noreferrer" tabindex="-1" />,
+          }),
+          <br />,
+          app.translator.trans('fof-links.admin.edit_link.icon_additional_text'),
+        ]}
+        placeholder="fas fa-bolt"
+        stream={this.icon}
+      />
     );
   }
 
   typeField(): Mithril.Children {
+    const options: Record<string, string> = {};
+
+    LINK_TYPES.forEach((type) => {
+      options[type] = extractText(app.translator.trans(`fof-links.admin.edit_link.type.${type}.label`));
+    });
+
     return (
-      <div className="Form-group">
-        <label>{app.translator.trans('fof-links.admin.edit_link.type.heading')}</label>
-        <div>
-          {LINK_TYPES.map((type) => (
-            <label className="checkbox">
-              <input
-                type="radio"
-                name="fof-links-type"
-                value={type}
-                checked={this.linkType() === type}
-                onclick={withAttr('value', (value: string) => this.setLinkType(value as LinkType))}
-              />
-              <strong>{app.translator.trans(`fof-links.admin.edit_link.type.${type}.label`)}</strong>
-              {app.translator.trans(`fof-links.admin.edit_link.type.${type}.help`)}
-            </label>
-          ))}
-        </div>
-      </div>
+      <FormGroup
+        type="select"
+        name="type"
+        label={app.translator.trans('fof-links.admin.edit_link.type.heading')}
+        help={app.translator.trans(`fof-links.admin.edit_link.type.${this.linkType()}.help`)}
+        options={options}
+        default="internal"
+        stream={this.linkType}
+      />
     );
   }
 
   urlField(): Mithril.Children {
-    const isInternal = this.linkType() === 'internal';
-    const variant = isInternal ? 'internal' : 'external';
+    const variant = this.linkType() === 'internal' ? 'internal' : 'external';
 
     return (
-      <div className="Form-group">
-        <label for="fof-links-url">{app.translator.trans('fof-links.admin.edit_link.url_label')}</label>
-        <p className="helpText" id="fof-links-url-help">
-          {app.translator.trans(`fof-links.admin.edit_link.url_help.${variant}`)}
-        </p>
-        <div className={`LinkUrlInput${isInternal ? ' LinkUrlInput--prefixed' : ''}`}>
-          {isInternal && (
-            <span className="LinkUrlInput-prefix" aria-hidden="true">
-              {app.forum.attribute('baseUrl')}
-            </span>
-          )}
-          <input
-            id="fof-links-url"
-            name="url"
-            aria-describedby="fof-links-url-help"
-            className="FormControl"
-            type="text"
-            required={true}
-            placeholder={extractText(app.translator.trans(`fof-links.admin.edit_link.url_placeholder.${variant}`))}
-            bidi={this.url}
-          />
-        </div>
-      </div>
+      <FormGroup
+        type="text"
+        name="url"
+        label={app.translator.trans('fof-links.admin.edit_link.url_label')}
+        help={app.translator.trans(`fof-links.admin.edit_link.url_help.${variant}`, {
+          baseUrl: <code>{app.forum.attribute('baseUrl')}</code>,
+        })}
+        placeholder={extractText(app.translator.trans(`fof-links.admin.edit_link.url_placeholder.${variant}`))}
+        required={true}
+        stream={this.url}
+      />
     );
   }
 
   optionsField(): Mithril.Children {
     return (
-      <div className="Form-group EditLinkModal-options">
-        <label>{app.translator.trans('fof-links.admin.edit_link.options_label')}</label>
-        <Switch state={this.isNewtab()} onchange={this.isNewtab}>
-          {app.translator.trans('fof-links.admin.edit_link.open_newtab')}
-        </Switch>
-        <Switch state={this.useRelMe()} onchange={this.useRelMe}>
-          {app.translator.trans('fof-links.admin.edit_link.use_rel_me')}
-        </Switch>
-        <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.use_rel_me_help')}</p>
-      </div>
+      <FieldSet className="FieldSet--form" label={extractText(app.translator.trans('fof-links.admin.edit_link.options_label'))}>
+        <FormGroup type="switch" label={app.translator.trans('fof-links.admin.edit_link.open_newtab')} stream={this.isNewtab} />
+        <FormGroup
+          type="switch"
+          label={app.translator.trans('fof-links.admin.edit_link.use_rel_me')}
+          help={app.translator.trans('fof-links.admin.edit_link.use_rel_me_help')}
+          stream={this.useRelMe}
+        />
+      </FieldSet>
     );
   }
 
   visibilityField(): Mithril.Children {
-    const adminLabel = this.group(Group.ADMINISTRATOR_ID)?.nameSingular();
-    const guestLabel = this.group(Group.GUEST_ID)?.namePlural();
-    const everyoneLabel = app.translator.trans('core.admin.permissions_controls.everyone_button');
+    const admin = this.group(Group.ADMINISTRATOR_ID)?.nameSingular();
+    const guest = this.group(Group.GUEST_ID)?.namePlural();
+    const everyone = app.translator.trans('core.admin.permissions_controls.everyone_button');
+
+    // The permission is keyed by the link's ID, so it only exists once saved.
+    const description = this.link.exists
+      ? app.translator.trans('fof-links.admin.edit_link.visibility.help', { admin })
+      : app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled');
 
     return (
-      <div className="Form-group EditLinkModal-visibility">
-        <label>{app.translator.trans('fof-links.admin.edit_link.visibility.label')}</label>
-        {this.link.exists ? (
-          <>
-            <p className="helpText">{app.translator.trans('fof-links.admin.edit_link.visibility.help', { admin: adminLabel })}</p>
-            <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />
-          </>
-        ) : (
-          <Alert dismissible={false} type="warning">
-            {app.translator.trans('fof-links.admin.edit_link.visibility.help-disabled')}
-          </Alert>
-        )}
-        <Switch state={this.guestOnly()} onchange={this.guestOnly}>
-          {app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.label', { guest: guestLabel })}
-        </Switch>
-        <p className="helpText">
-          {app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.help', { guest: guestLabel, everyone: everyoneLabel })}
-        </p>
-      </div>
+      <FieldSet
+        className="FieldSet--form"
+        label={extractText(app.translator.trans('fof-links.admin.edit_link.visibility.label'))}
+        description={extractText(description)}
+      >
+        {this.link.exists && <PermissionDropdown permission={`link${this.link.id()}.view`} allowGuest={true} />}
+        <FormGroup
+          type="switch"
+          label={app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.label', { guest })}
+          help={app.translator.trans('fof-links.admin.edit_link.visibility.guest-only.help', { guest, everyone })}
+          stream={this.guestOnly}
+        />
+      </FieldSet>
     );
   }
 
@@ -274,17 +240,9 @@ export default class EditLinkModal<CustomAttrs extends IEditLinkModalAttrs = IEd
     return app.store.getById<Group>('groups', id);
   }
 
-  setLinkType(type: LinkType): void {
-    if (this.linkType() === type) return;
-
-    this.linkType(type);
-    this.rewriteUrlForType();
-  }
-
   /**
-   * Internal addresses are stored relative to the forum root and shown with a
-   * fixed prefix, so what was typed moves in and out of that form as the type
-   * changes.
+   * Internal addresses are stored relative to the forum root, so what was typed
+   * moves in and out of that form as the type changes.
    */
   rewriteUrlForType(): void {
     const base = app.forum.attribute<string>('baseUrl');

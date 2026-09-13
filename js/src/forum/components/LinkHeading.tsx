@@ -1,6 +1,5 @@
 import Component from 'flarum/common/Component';
 import Icon from 'flarum/common/components/Icon';
-import classList from 'flarum/common/utils/classList';
 import type { ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
 
@@ -10,19 +9,22 @@ export interface ILinkHeadingAttrs extends ComponentAttrs {
   link: LinkModel;
 }
 
+/**
+ * A label inside a menu, shown as core's menu heading.
+ */
 export default class LinkHeading<CustomAttrs extends ILinkHeadingAttrs = ILinkHeadingAttrs> extends Component<CustomAttrs> {
+  /** Renders its own `<li>`, so `listItems` does not wrap it in another. */
   static isListItem = true;
 
   view(vnode: Mithril.Vnode<CustomAttrs, this>): Mithril.Children {
     const link = this.attrs.link;
     const icon = link.icon();
 
+    // The title stays a bare text node: core styles a `span` directly inside a
+    // menu item as a clickable entry.
     return (
-      // The title is a bare text node: core styles a `span` that is a direct
-      // child of a menu item as an item of its own, padding included.
-      <li className={classList('Dropdown-header LinksHeading', { hasIcon: !!icon })} role="presentation">
-        {icon && <Icon name={icon} className="LinksHeading-icon" />}
-        {link.title()}
+      <li className="Dropdown-header LinksHeading" role="presentation">
+        {!!icon && <Icon name={icon} />} {link.title()}
       </li>
     );
   }

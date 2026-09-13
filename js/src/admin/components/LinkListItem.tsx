@@ -55,15 +55,13 @@ export default class LinkListItem<CustomAttrs extends ILinkListItemAttrs = ILink
     // No tooltip: it would hang around for the length of a drag, and the help
     // text above the list already says what the handle does.
     return (
-      <button
-        type="button"
-        className="LinkListItem-handle Button Button--icon Button--link"
+      <Button
+        className="Button Button--icon Button--link LinkListItem-handle"
+        icon="fas fa-grip-vertical"
         aria-label={extractText(app.translator.trans('fof-links.admin.links.reorder_accessible_label', { title: link.title() }))}
         aria-describedby="fof-links-reorder-help"
         onkeydown={this.onhandlekeydown.bind(this)}
-      >
-        <Icon name="fas fa-grip-vertical" className="Button-icon" />
-      </button>
+      />
     );
   }
 
@@ -120,11 +118,9 @@ export default class LinkListItem<CustomAttrs extends ILinkListItemAttrs = ILink
 
     if (!link.isRestricted()) {
       return (
-        <Tooltip text={extractText(app.translator.trans('fof-links.admin.links.audience_everyone'))}>
-          <span className="LinkListItem-audience">
-            <Badge icon="fas fa-globe" label={null} />
-          </span>
-        </Tooltip>
+        <span className="LinkListItem-audience">
+          <Badge icon="fas fa-globe" label={extractText(app.translator.trans('fof-links.admin.links.audience_everyone'))} />
+        </span>
       );
     }
 
@@ -149,31 +145,35 @@ export default class LinkListItem<CustomAttrs extends ILinkListItemAttrs = ILink
     if (this.attrs.onaddchild) {
       items.add(
         'add-child',
-        <Tooltip text={extractText(app.translator.trans('fof-links.admin.links.add_child_tooltip'))}>
-          <Button
-            className="Button Button--icon Button--link"
-            icon="fas fa-level-down-alt"
-            aria-label={extractText(app.translator.trans('fof-links.admin.links.add_child_accessible_label', { title: link.title() }))}
-            onclick={() => this.attrs.onaddchild!(link)}
-          />
-        </Tooltip>,
+        this.control('fas fa-level-down-alt', app.translator.trans('fof-links.admin.links.add_child_accessible_label', { title: link.title() }), () =>
+          this.attrs.onaddchild!(link)
+        ),
         10
       );
     }
 
     items.add(
       'edit',
-      <Tooltip text={extractText(app.translator.trans('fof-links.admin.links.edit_tooltip'))}>
-        <Button
-          className="Button Button--icon Button--link"
-          icon="fas fa-pencil-alt"
-          aria-label={extractText(app.translator.trans('fof-links.admin.links.edit_accessible_label', { title: link.title() }))}
-          onclick={() => this.attrs.onedit(link)}
-        />
-      </Tooltip>,
+      this.control('fas fa-pencil-alt', app.translator.trans('fof-links.admin.links.edit_accessible_label', { title: link.title() }), () =>
+        this.attrs.onedit(link)
+      ),
       0
     );
 
     return items;
+  }
+
+  /**
+   * Tooltip replaces the `aria-label` of what it wraps with its own text, so
+   * the tooltip carries the full label.
+   */
+  control(icon: string, label: Mithril.Children, onclick: () => void): Mithril.Children {
+    const text = extractText(label);
+
+    return (
+      <Tooltip text={text}>
+        <Button className="Button Button--icon Button--link" icon={icon} aria-label={text} onclick={onclick} />
+      </Tooltip>
+    );
   }
 }

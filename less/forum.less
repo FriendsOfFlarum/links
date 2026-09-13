@@ -1,129 +1,49 @@
-.LinksButton {
-  &:not(.LinksButton--inDropdown) .LinksButton-title::after {
-    content: attr(data-title);
-    display: block;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
-    font-weight: 600;
-    pointer-events: none;
-  }
-
-  &--label {
-    cursor: default;
-    .user-select(none);
-  }
-
-  button&--label {
-    cursor: pointer;
-  }
+// Bold makes the active link wider, which would shift the rest of the row. The
+// bold width is reserved up front instead.
+.LinksButton-title::after {
+  content: attr(data-title);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+  pointer-events: none;
 }
 
 .Header-controls > li {
-  > .LinksButton.active,
+  &.active > .LinksButton,
   > .LinkDropdown--active > .LinksButton {
     color: var(--header-color);
     font-weight: 600;
   }
-
-  > .LinksButton:hover,
-  > .LinkDropdown:hover > .LinksButton,
-  > .LinkDropdown.open > .LinksButton,
-  > .LinkDropdown.open > .Dropdown-toggle {
-    color: var(--header-color);
-  }
-}
-
-.LinkDropdown > .Dropdown-toggle {
-  width: auto;
-  padding-left: 4px;
-  padding-right: 6px;
-}
-
-// A group named by a label puts only its children in the menu, so one child
-// lands on core's "nothing to choose between" case, which drops the caret. The
-// label goes nowhere on its own, so the caret is what has to open the group.
-.LinkDropdown.itemCount1 > .Dropdown-toggle {
-  display: inline-flex;
-}
-
-.LinkDropdown-menu > li > a.active {
-  background: var(--control-bg);
-  font-weight: 600;
-}
-
-.LinksHeading {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-// A navigation group is usually a mix of links with and without icons, and
-// core only indents the rows that have one. The same space is reserved either
-// way, so the titles line up as one column.
-.LinkDropdown-menu > li > a:not(.hasIcon),
-.LinkDropdown-menu > .LinksHeading:not(.hasIcon) {
-  padding-left: 40px;
-}
-
-.LinksHeading-icon {
-  // Sized on the flex basis rather than on `width`, which a FontAwesome Kit
-  // overrides with an em value of its own.
-  flex: 0 0 16px;
-  text-align: center;
 }
 
 @media @tablet-up {
-  // Where the group's own link leads the menu, core hides that first entry —
-  // which would leave the rule above a heading that follows it stranded at the
-  // top of the menu.
-  .Dropdown--split:not(.Dropdown--withMainAction) .LinkDropdown-menu > li:first-child + .LinksHeading {
+  // Core hides the first entry of a split menu, the link already shown beside
+  // the caret. A heading right after it would keep the rule meant to separate
+  // it from that entry.
+  .Dropdown--split > .LinkDropdown-menu > li:first-child + .LinksHeading {
     margin-top: -8px;
     border-top: 0;
   }
 }
 
-// In the overflow menu core lays a group out inline: its own link at the menu
-// indent, its children stepped in from it. A group named by a label has no
-// entry of its own, so its first child is stepped in here as well.
-.OverflowingList-dropdown {
-  .LinkDropdown-menu > .LinksHeading {
-    padding-left: 30px;
-  }
-
-  .Dropdown--withMainAction > .LinkDropdown-menu > li:first-child > a {
-    padding-left: 30px;
-  }
+// The overflow menu lays a group out inline and steps its entries in from the
+// group's title. Headings inside the group take the same step.
+.OverflowingList-dropdown .LinkDropdown-menu > .LinksHeading:not(:first-child) {
+  padding-left: 30px;
 }
 
 @media @phone {
-  // Core indents a menu row that has an icon and hangs the icon in the space
-  // that makes. A heading is not an `<a>`, so it is lined up on the same
-  // numbers here rather than inheriting them.
-  .LinkDropdown-menu > .LinksHeading.hasIcon {
-    padding-left: 50px;
-    padding-right: 20px;
-
-    .LinksHeading-icon {
-      margin-left: -30px;
-    }
-  }
-
-  .LinkDropdown-menu > li > a:not(.hasIcon),
-  .LinkDropdown-menu > .LinksHeading:not(.hasIcon) {
-    padding-left: 45px;
-  }
-
-  // Header controls are full-width rows in the drawer; a group is two controls
-  // on one row.
-  .Header-controls > li > .LinkDropdown {
+  // Header controls are full-width rows in the drawer, and a split group is two
+  // controls sharing one row.
+  .Header-controls > li > .LinkDropdown.Dropdown--split {
     display: flex;
     width: 100%;
 
     > .SplitDropdown-button {
       flex: 1 1 auto;
       width: auto;
-      justify-content: flex-start;
     }
 
     > .Dropdown-toggle {
@@ -136,9 +56,9 @@
 
 & when (@fof-links-show-only-icons-on-mobile = true) {
   @media @tablet {
-    .Header-controls > li > .LinksButton,
-    .Header-controls > li > .LinkDropdown > .LinksButton {
-      .LinksButton-title {
+    .Header-controls > li > .LinksButton.hasIcon,
+    .Header-controls > li > .LinkDropdown > .LinksButton.hasIcon {
+      .Button-label {
         display: none;
       }
     }
