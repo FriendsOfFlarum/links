@@ -1,35 +1,43 @@
 {
   "name": "@fof/links",
-  "version": "0.0.0",
   "private": true,
+  "type": "module",
   "prettier": "@flarum/prettier-config",
   "devDependencies": {
     "@flarum/jest-config": "^2.0.2",
     "@flarum/prettier-config": "^1.0.0",
+    "@types/mithril": "^2.2.9",
+    "@types/node": "^22.20.2",
     "@types/sortablejs": "^1.15.9",
     "flarum-tsconfig": "^2.0.0",
-    "flarum-webpack-config": "^3.0.0",
-    "prettier": "^3.0.2",
-    "typescript-coverage-report": "^0.6.1",
-    "webpack": "^5.65.0",
-    "webpack-cli": "^5.0",
-    "@types/node": "^22.0.0"
+    "flarum-webpack-config": "^3.0.4",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2",
+    "webpack": "^5.110.3",
+    "webpack-cli": "^7.2.3"
   },
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production",
-    "analyze": "cross-env ANALYZER=true npm run build",
-    "format": "prettier --write src",
-    "format-check": "prettier --check src",
-    "clean-typings": "npx rimraf dist-typings && mkdir dist-typings",
-    "build-typings": "npm run clean-typings && ([ -e src/@types ] && cp -r src/@types dist-typings/@types || true) && tsc && npm run post-build-typings",
+    "analyze": "pnx cross-env ANALYZER=true pnpm run build",
+    "format": "prettier --write src tests",
+    "format-check": "prettier --check src tests",
+    "clean-typings": "pnx rimraf dist-typings && mkdir dist-typings",
+    "build-typings": "pnpm run clean-typings && ([ -e src/@types ] && cp -r src/@types dist-typings/@types || true) && tsc && pnpm run post-build-typings",
     "post-build-typings": "find dist-typings -type f -name '*.d.ts' -print0 | xargs -0 sed -i 's,../src/@types,@types,g'",
     "check-typings": "tsc --noEmit --emitDeclarationOnly false",
-    "check-typings-coverage": "typescript-coverage-report",
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest)"
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
-  "type": "module",
-  "resolutions": {
-    "@types/node": "^22.0.0"
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "download",
+      "version": ">=11 <13"
+    }
   }
 }
