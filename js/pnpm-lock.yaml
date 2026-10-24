@@ -167,8 +167,8 @@ importers:
   .:
     devDependencies:
       '@flarum/jest-config':
-        specifier: ^2.0.2
-        version: 2.0.2(@babel/core@7.29.7(supports-color@8.1.1))(@jest/transform@29.7.0(supports-color@8.1.1))(@jest/types@29.6.3)(@types/node@22.20.2)(jest-util@29.7.0)(supports-color@8.1.1)(typescript@7.0.2)(webpack@5.110.3)
+        specifier: ^2.1.1
+        version: 2.1.1(@babel/core@7.29.7(supports-color@8.1.1))(@jest/transform@29.7.0(supports-color@8.1.1))(@jest/types@29.6.3)(@types/node@22.20.2)(jest-util@29.7.0)(supports-color@8.1.1)(typescript@7.0.2)(webpack@5.110.3)
       '@flarum/prettier-config':
         specifier: ^1.0.0
         version: 1.0.0
@@ -185,8 +185,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       flarum-webpack-config:
-        specifier: ^3.0.4
-        version: 3.0.4(supports-color@8.1.1)(webpack@5.110.3)
+        specifier: ^3.1.0
+        version: 3.1.0(supports-color@8.1.1)(webpack@5.110.3)
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.20.2)(supports-color@8.1.1)
@@ -887,8 +887,8 @@ packages:
     resolution: {integrity: sha512-Xc3VhU02wqZ1HvHRJUwL09HkZSTvidqY5Ya0NXBSYOxAp+Ln9dcJr9fySI+CkONzP3PekQo9WdzCv0PGER/mOA==}
     engines: {node: '>=14.17.0'}
 
-  '@flarum/jest-config@2.0.2':
-    resolution: {integrity: sha512-V+FvD568F4Iyp80lZQo5YCXBuaodyD40243KyA35jZ8JnZgC9rurEMmJI18Xjsu7xhMiIdwbZkGJfrq1bjMFJA==}
+  '@flarum/jest-config@2.1.1':
+    resolution: {integrity: sha512-55+ILQTmwa2FvFLlkfgm1J65A0uC4u5BQqgijketNFl6s/dFfpyLd2XxbxQICroUHQtRphp1KU4zPNqn/8fUEg==}
 
   '@flarum/prettier-config@1.0.0':
     resolution: {integrity: sha512-3/AcliIi5jPt4i7COb5hsLv6hm4EeXT9yI9I2EuEvhPi2QR+O9Y/8wrqRuO5mDkRzCIhUY+mjIL/f9770Zwfqg==}
@@ -1739,8 +1739,8 @@ packages:
   flarum-tsconfig@2.0.0:
     resolution: {integrity: sha512-YEyYu9uZCc7WIXw4Q+W60aC2RVSw7/K0tlaVfQrJbovw6Uu0dIV5AdRRtpJFGjVhzv+OmMfbQeG5aI+xxf/gvQ==}
 
-  flarum-webpack-config@3.0.4:
-    resolution: {integrity: sha512-6ZOcORMbUzNtl/UPP/ltNfDYOfyaGjNo443o6oJoXxRGwrEmooAoUA3GsLvGGtP0Afe0hNR6FFSHVovCkXzS0A==}
+  flarum-webpack-config@3.1.0:
+    resolution: {integrity: sha512-pFM2YC30Pj0yt+AU4bU7qFMagX5J3453xVpbCXmgmf7yAYXt8E/eK2bl7P4HM54T+224wUF+38M2mywO+sJt1Q==}
     peerDependencies:
       webpack: ^5.104.1
 
@@ -2301,8 +2301,8 @@ packages:
   mithril-query@4.0.1:
     resolution: {integrity: sha512-OWbR6a7SsDqrlbNUsXnoiiZr62JF+oG9msOY9Xqf708dNiyBDHDtaxlTDiTKBM0uFd/yCJd6pHNMG5IViCri6A==}
 
-  mithril@2.3.8:
-    resolution: {integrity: sha512-za/Yo7qXEckjm5syrSfaaI9Utf4tCUT3T1IOIYqH6Lrj7G0OZuYYLAY9SV4ygoaAf0+CNqU92MBt+7pmo53JVQ==}
+  mithril@2.2.8:
+    resolution: {integrity: sha512-P9SP7y22qNdsKKGofrPMvQzTQvUjEH03eENeR5KXTj+rGFyvs+DqZyx3HS5c7K7EMOo0OYmcZnLEY/sc2ybLdQ==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -2712,9 +2712,9 @@ packages:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
 
-  typescript@4.9.5:
-    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
-    engines: {node: '>=4.2.0'}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
     hasBin: true
 
   typescript@7.0.2:
@@ -3819,7 +3819,7 @@ snapshots:
 
   '@discoveryjs/json-ext@1.1.0': {}
 
-  '@flarum/jest-config@2.0.2(@babel/core@7.29.7(supports-color@8.1.1))(@jest/transform@29.7.0(supports-color@8.1.1))(@jest/types@29.6.3)(@types/node@22.20.2)(jest-util@29.7.0)(supports-color@8.1.1)(typescript@7.0.2)(webpack@5.110.3)':
+  '@flarum/jest-config@2.1.1(@babel/core@7.29.7(supports-color@8.1.1))(@jest/transform@29.7.0(supports-color@8.1.1))(@jest/types@29.6.3)(@types/node@22.20.2)(jest-util@29.7.0)(supports-color@8.1.1)(typescript@7.0.2)(webpack@5.110.3)':
     dependencies:
       '@types/jest': 29.5.14
       babel-jest: 29.7.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
@@ -3828,7 +3828,7 @@ snapshots:
       clsx: 1.2.1
       color-thief-browser: 2.0.2
       dayjs: 1.11.23
-      flarum-webpack-config: 3.0.4(supports-color@8.1.1)(webpack@5.110.3)
+      flarum-webpack-config: 3.1.0(supports-color@8.1.1)(webpack@5.110.3)
       flat: 5.0.2
       focus-trap: 6.9.4
       format-message: 6.2.4
@@ -3838,7 +3838,7 @@ snapshots:
       jquery.hotkeys: 0.1.0
       js-yaml: 4.3.2
       jsdom: 24.1.3(supports-color@8.1.1)
-      mithril: 2.3.8
+      mithril: 2.2.8
       mithril-query: 4.0.1
       nanoid: 3.3.19
       punycode: 2.3.1
@@ -4792,7 +4792,7 @@ snapshots:
       '@types/throttle-debounce': 2.1.0
       dayjs: 1.11.23
 
-  flarum-webpack-config@3.0.4(supports-color@8.1.1)(webpack@5.110.3):
+  flarum-webpack-config@3.1.0(supports-color@8.1.1)(webpack@5.110.3):
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/plugin-transform-object-assign': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
@@ -4805,7 +4805,7 @@ snapshots:
       babel-loader: 9.2.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.110.3)
       loader-utils: 1.4.2
       schema-utils: 3.3.0
-      typescript: 4.9.5
+      typescript: 5.9.3
       webpack: 5.110.3(uglify-js@3.19.3)(webpack-cli@7.2.3)
       webpack-bundle-analyzer: 4.10.2
     transitivePeerDependencies:
@@ -5546,7 +5546,7 @@ snapshots:
       pretty-html-log: 1.1.1
       yields-keycode: 1.1.0
 
-  mithril@2.3.8: {}
+  mithril@2.2.8: {}
 
   mrmime@2.0.1: {}
 
@@ -5892,7 +5892,7 @@ snapshots:
 
   type-fest@4.41.0: {}
 
-  typescript@4.9.5: {}
+  typescript@5.9.3: {}
 
   typescript@7.0.2:
     optionalDependencies:
