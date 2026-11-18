@@ -97,7 +97,7 @@ return [
 
 #### Using a Provider Class
 
-For more complex scenarios, you can use a provider class. The provider is called when links are first needed (once per request lifecycle), not while the forum boots.
+For more complex scenarios, you can use a provider class. The provider is called when links are first needed (once per request lifecycle), not while the forum boots. A provider may inject `FoF\Links\LinkRepository` to read stored links through `all()` or `query()`, but must not call `getLinks()` or `getGuestLinks()`, which return the override links the provider is building.
 
 ```php
 use FoF\Links\Extend\LinksOverride;
