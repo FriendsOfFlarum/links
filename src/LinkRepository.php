@@ -14,6 +14,7 @@ namespace FoF\Links;
 use Flarum\Locale\Translator;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -29,7 +30,7 @@ class LinkRepository
      */
     protected $overrideLinks = null;
 
-    public function __construct(protected Cache $cache, protected Translator $translator)
+    public function __construct(protected Cache $cache, protected Translator $translator, protected Container $container)
     {
     }
 
@@ -173,8 +174,10 @@ class LinkRepository
 
     public function getLinks(User $actor): EloquentCollection
     {
-        if ($this->overrideLinks !== null) {
-            $links = collect($this->getFlattenedLinks($this->overrideLinks));
+        $overrideLinks = $this->overrideLinks();
+
+        if ($overrideLinks !== null) {
+            $links = collect($this->getFlattenedLinks($overrideLinks));
 
             if (!$actor->isGuest()) {
                 $links = $links->reject(fn (Link $link) => $link->guest_only)->values();
@@ -205,8 +208,10 @@ class LinkRepository
      */
     public function getGuestLinks(User $actor): EloquentCollection
     {
-        if ($this->overrideLinks !== null) {
-            return new EloquentCollection($this->getFlattenedLinks($this->overrideLinks));
+        $overrideLinks = $this->overrideLinks();
+
+        if ($overrideLinks !== null) {
+            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
         }
 
         $cached = $this->cache->get($this->cacheKey($actor));
@@ -290,6 +295,17 @@ class LinkRepository
     public function setOverrideLinks(array $links): void
     {
         $this->overrideLinks = $links;
+    }
+
+    /**
+     * Read lazily rather than when the repository is resolved: a links
+     * provider may itself inject this repository to read stored links.
+     *
+     * @return LinkDefinition[]|null
+     */
+    protected function overrideLinks(): ?array
+    {
+        return $this->overrideLinks ?? ($this->container->make('fof-links.override-links') ?: null);
     }
 
     /**

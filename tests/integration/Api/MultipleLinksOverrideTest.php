@@ -17,6 +17,7 @@ use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
 use FoF\Links\Link;
 use FoF\Links\LinkDefinition;
+use FoF\Links\LinkRepository;
 use PHPUnit\Framework\Attributes\Test;
 
 class MultipleLinksOverrideTest extends TestCase
@@ -260,6 +261,19 @@ class MultipleLinksOverrideTest extends TestCase
         $this->assertNull($included['402']['attributes']['position']);
         $this->assertNull($included['401']['attributes']['position']);
     }
+
+    #[Test]
+    public function providers_can_read_stored_links_through_the_repository(): void
+    {
+        $this->extend((new LinksOverride())->addLinks(RepositoryReadingLinksProvider::class));
+
+        foreach ([null, 2] as $actorId) {
+            $data = $this->fetchForum($actorId);
+
+            $this->assertEquals(['601'], $this->linkIds($data));
+            $this->assertEquals('https://google.com', $this->includedLinks($data)['601']['attributes']['url']);
+        }
+    }
 }
 
 class EmptyLinksProvider
@@ -292,5 +306,22 @@ class CountingLinksProvider
                 ->withTranslationKey('fof-links.override.link501')
                 ->withUrl('https://link501.example.com'),
         ];
+    }
+}
+
+class RepositoryReadingLinksProvider
+{
+    public function __construct(protected LinkRepository $links)
+    {
+    }
+
+    public function __invoke(): array
+    {
+        return $this->links->all()->map(
+            fn (Link $link) => LinkDefinition::make()
+                ->withId(600 + $link->id)
+                ->withTranslationKey($link->title)
+                ->withUrl($link->url)
+        )->all();
     }
 }
