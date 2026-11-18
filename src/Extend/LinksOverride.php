@@ -55,32 +55,14 @@ class LinksOverride implements ExtenderInterface
         return $this;
     }
 
-    /**
-     * Extend the container.
-     *
-     * This binds the override links into the LinkRepository.
-     *
-     * @param Container      $container
-     * @param Extension|null $extension
-     */
     public function extend(Container $container, ?Extension $extension = null): void
     {
-        // Determine the override links array.
-        if (is_string($this->links)) {
-            // Resolve the invokable class via the container.
-            $linksProvider = $container->make($this->links);
-            $links = $linksProvider();
-        } else {
-            $links = $this->links;
-        }
+        $container->extend('fof-links.override-links', function (array $links, Container $container) {
+            $added = is_string($this->links)
+                ? LinkRepository::withoutOverrides(fn () => $container->make($this->links)())
+                : $this->links;
 
-        if (!empty($links)) {
-            $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
-                $repository->setOverrideLinks($links);
-            });
-            $container->extend('fof-links.override', function () {
-                return true;
-            });
-        }
+            return array_merge($links, array_values($added ?: []));
+        });
     }
 }

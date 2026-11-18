@@ -23,11 +23,14 @@ class LinkRepository
     protected static string $cacheGuestLinksKey = 'guest';
 
     /**
-     * Optional programmatic override links.
+     * Only the list set through setOverrideLinks(), which takes precedence
+     * over LinksOverride extenders.
      *
      * @var LinkDefinition[]|null
      */
     protected $overrideLinks = null;
+
+    protected static bool $overridesDisabled = false;
 
     public function __construct(protected Cache $cache, protected Translator $translator)
     {
@@ -128,6 +131,7 @@ class LinkRepository
     protected function getFlattenedLinks(array $definitions): array
     {
         $links = [];
+        $definitions = collect($definitions)->sortBy(fn (LinkDefinition $definition) => $definition->position ?? 0);
 
         foreach ($definitions as $definition) {
             $link = $this->buildLinkFromDefinition($definition);
@@ -172,11 +176,13 @@ class LinkRepository
 
     public function getLinks(User $actor): EloquentCollection
     {
-        if ($this->overrideLinks !== null) {
-            $links = collect($this->getFlattenedLinks($this->overrideLinks));
+        $overrideLinks = $this->overrideLinks();
+
+        if ($overrideLinks !== null) {
+            $links = collect($this->getFlattenedLinks($overrideLinks));
 
             if (!$actor->isGuest()) {
-                $links = $links->reject(fn (Link $link) => $link->guest_only);
+                $links = $links->reject(fn (Link $link) => $link->guest_only)->values();
             }
 
             return new EloquentCollection($links->all());
@@ -204,8 +210,10 @@ class LinkRepository
      */
     public function getGuestLinks(User $actor): EloquentCollection
     {
-        if ($this->overrideLinks !== null) {
-            return new EloquentCollection($this->getFlattenedLinks($this->overrideLinks));
+        $overrideLinks = $this->overrideLinks();
+
+        if ($overrideLinks !== null) {
+            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
         }
 
         $cached = $this->cache->get($this->cacheKey($actor));
@@ -289,6 +297,50 @@ class LinkRepository
     public function setOverrideLinks(array $links): void
     {
         $this->overrideLinks = $links;
+    }
+
+    /**
+     * Lets a links provider read the stored links while the override list it adds to is being built.
+     *
+     * @internal
+     *
+     * @template T
+     *
+     * @param callable(): T $callback
+     *
+     * @return T
+     */
+    public static function withoutOverrides(callable $callback): mixed
+    {
+        $previous = self::$overridesDisabled;
+        self::$overridesDisabled = true;
+
+        try {
+            return $callback();
+        } finally {
+            self::$overridesDisabled = $previous;
+        }
+    }
+
+    public function hasOverrideLinks(): bool
+    {
+        return $this->overrideLinks() !== null;
+    }
+
+    /**
+     * Null while links providers run.
+     *
+     * @see self::withoutOverrides()
+     *
+     * @return LinkDefinition[]|null
+     */
+    protected function overrideLinks(): ?array
+    {
+        if (self::$overridesDisabled) {
+            return null;
+        }
+
+        return $this->overrideLinks ?? (resolve('fof-links.override-links') ?: null);
     }
 
     /**

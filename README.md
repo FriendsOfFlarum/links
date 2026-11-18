@@ -38,6 +38,8 @@ Links can be managed through the admin interface under the "Links" tab.
 
 This extension provides a way to define links programmatically through PHP code. This can be useful in situations where there are multiple environments (ie dev, staging, production) and you want to define a set of links only once (in code), and not have to re-enter or define them via the admin interface.
 
+Links defined in code replace all links stored in the database. While any are defined, the admin Links page shows a notice instead of the editable list, and the API refuses to create, edit or reorder links.
+
 #### Basic Usage
 
 ```php
@@ -95,7 +97,7 @@ return [
 
 #### Using a Provider Class
 
-For more complex scenarios, you can use a provider class:
+For more complex scenarios, you can use a provider class. The provider is called when links are first needed (once per request lifecycle), not while the forum boots. A provider may inject `FoF\Links\LinkRepository`, and every read it makes returns the stored (database) links.
 
 ```php
 use FoF\Links\Extend\LinksOverride;
@@ -103,7 +105,7 @@ use FoF\Links\LinkDefinition;
 
 class MyLinksProvider
 {
-    public function __invoke()
+    public function __invoke(): array
     {
         return [
             LinkDefinition::make()
@@ -122,6 +124,45 @@ return [
 ];
 ```
 
+#### Several Extensions
+
+More than one extension can add links. Each one uses its own `LinksOverride` extender:
+
+```php
+// acme/docs extend.php
+return [
+    (new LinksOverride())
+        ->addLinks([
+            LinkDefinition::make()
+                ->withId(100)
+                ->withTranslationKey('acme-docs.link')
+                ->withUrl('/docs')
+                ->withPosition(2)
+        ])
+];
+```
+
+```php
+// acme/polls extend.php
+return [
+    (new LinksOverride())
+        ->addLinks([
+            LinkDefinition::make()
+                ->withId(200)
+                ->withTranslationKey('acme-polls.link')
+                ->withUrl('/polls')
+                ->withPosition(1)
+        ])
+];
+```
+
+The polls link appears first, whichever extension boots first.
+
+- Links from every extender are combined.
+- Top-level links are ordered by `withPosition()`. Links without a position count as 0, so set positions to control the order across extensions.
+- Ids must be unique across all extensions, for example by giving each extension its own id range.
+- Child links keep the order in which they were added with `addChild()`.
+
 ### LinkDefinition API
 
 The `LinkDefinition` class provides a fluent interface for defining links:
@@ -137,7 +178,7 @@ The `LinkDefinition` class provides a fluent interface for defining links:
 | `withUseRelme(bool $useRelme)` | Set whether to use rel="me" attribute |
 | `withGuestOnly(bool $guestOnly)` | Set whether the link is only visible to guests |
 | `withParentId(?int $parentId)` | Set the parent link ID |
-| `withPosition(int $position)` | Set the link position |
+| `withPosition(int $position)` | Set the position (orders top-level links) |
 | `addChild(LinkDefinition $child)` | Add a child link |
 
 ## Links
