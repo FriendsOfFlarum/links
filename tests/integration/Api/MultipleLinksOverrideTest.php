@@ -15,6 +15,7 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
+use FoF\Links\Link;
 use FoF\Links\LinkDefinition;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -178,7 +179,19 @@ class MultipleLinksOverrideTest extends TestCase
         );
 
         $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals([1], Link::query()->pluck('id')->all());
         $this->assertNotEmpty($this->fetchForum(1)['data']['attributes']['links.set']);
+    }
+
+    #[Test]
+    public function array_and_provider_extenders_are_both_shown(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks([$this->link(201)]),
+            (new LinksOverride())->addLinks(CountingLinksProvider::class)
+        );
+
+        $this->assertEquals(['201', '501'], $this->linkIds($this->fetchForum(null)));
     }
 
     #[Test]
