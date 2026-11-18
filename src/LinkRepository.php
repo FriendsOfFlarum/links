@@ -322,6 +322,11 @@ class LinkRepository
         }
     }
 
+    public function hasOverrideLinks(): bool
+    {
+        return $this->overrideLinks() !== null;
+    }
+
     /**
      * Null while links providers run.
      *

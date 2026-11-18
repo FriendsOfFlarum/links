@@ -11,6 +11,8 @@
 
 namespace FoF\Links\Tests\integration\Api;
 
+use Flarum\Extend\ExtenderInterface;
+use Flarum\Extension\Extension;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\Guest;
@@ -19,6 +21,7 @@ use FoF\Links\Extend\LinksOverride;
 use FoF\Links\Link;
 use FoF\Links\LinkDefinition;
 use FoF\Links\LinkRepository;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
@@ -205,6 +208,63 @@ class MultipleLinksOverrideTest extends TestCase
 
         $this->assertEquals(422, $response->getStatusCode());
         $this->assertEquals([1], Link::query()->pluck('id')->all());
+        $this->assertNotEmpty($this->fetchForum(1)['data']['attributes']['links.set']);
+    }
+
+    #[Test]
+    public function extender_added_after_the_lock_was_read_still_locks_link_management(): void
+    {
+        $this->extend(
+            new class() implements ExtenderInterface {
+                public function extend(Container $container, ?Extension $extension = null): void
+                {
+                    $container->make('fof-links.override');
+                }
+            },
+            (new LinksOverride())->addLinks([$this->link(201)])
+        );
+
+        $create = $this->send(
+            $this->request('POST', '/api/links', [
+                'authenticatedAs' => 1,
+                'json'            => [
+                    'data' => [
+                        'type'       => 'links',
+                        'attributes' => [
+                            'title' => 'Facebook',
+                            'url'   => 'https://facebook.com',
+                            'icon'  => 'fab fa-facebook',
+                        ],
+                    ],
+                ],
+            ])
+        );
+
+        $update = $this->send(
+            $this->request('PATCH', '/api/links/1', [
+                'authenticatedAs' => 1,
+                'json'            => [
+                    'data' => [
+                        'type'       => 'links',
+                        'id'         => '1',
+                        'attributes' => ['title' => 'Changed'],
+                    ],
+                ],
+            ])
+        );
+
+        $order = $this->send(
+            $this->request('POST', '/api/links/order', [
+                'authenticatedAs' => 1,
+                'json'            => ['order' => [['id' => 1]]],
+            ])
+        );
+
+        $this->assertEquals(422, $create->getStatusCode());
+        $this->assertEquals(422, $update->getStatusCode());
+        $this->assertEquals(422, $order->getStatusCode());
+        $this->assertEquals([1], Link::query()->pluck('id')->all());
+        $this->assertSame('Google', Link::query()->findOrFail(1)->title);
         $this->assertNotEmpty($this->fetchForum(1)['data']['attributes']['links.set']);
     }
 
