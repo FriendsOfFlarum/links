@@ -21,6 +21,7 @@ use FoF\Links\LinkDefinition;
 use FoF\Links\LinkRepository;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 
 class MultipleLinksOverrideTest extends TestCase
 {
@@ -33,6 +34,7 @@ class MultipleLinksOverrideTest extends TestCase
         StoredLinksReadingProvider::$running = false;
         StoredLinksReadingProvider::$reentries = 0;
         StoredLinksReadingProvider::$received = [];
+        FailingOnceLinksProvider::$invocations = 0;
 
         $this->extension('fof-links');
         $this->prepareDatabase([
@@ -296,16 +298,31 @@ class MultipleLinksOverrideTest extends TestCase
         $this->assertProviderReceivedStoredLinks();
     }
 
+    #[Test]
+    public function override_links_are_served_after_a_provider_throws(): void
+    {
+        $this->extend((new LinksOverride())->addLinks(FailingOnceLinksProvider::class));
+
+        try {
+            $this->app()->getContainer()->make('fof-links.override-links');
+            $this->fail('provider did not throw');
+        } catch (RuntimeException $e) {
+            $this->assertSame('provider failed', $e->getMessage());
+        }
+
+        $this->assertEquals(['801'], $this->linkIds($this->fetchForum(null)));
+    }
+
     protected function assertProviderReceivedStoredLinks(): void
     {
         foreach ([null, 2] as $actorId) {
             $data = $this->fetchForum($actorId);
 
-            $this->assertSame(0, StoredLinksReadingProvider::$reentries, 'provider re-entered');
             $this->assertEquals(['701'], $this->linkIds($data));
             $this->assertEquals('https://google.com', $this->includedLinks($data)['701']['attributes']['url']);
         }
 
+        $this->assertSame(0, StoredLinksReadingProvider::$reentries, 'provider re-entered');
         $this->assertSame([1], StoredLinksReadingProvider::$received);
     }
 }
@@ -360,6 +377,25 @@ class RepositoryReadingLinksProvider
     }
 }
 
+class FailingOnceLinksProvider
+{
+    public static int $invocations = 0;
+
+    public function __invoke(): array
+    {
+        if (static::$invocations++ === 0) {
+            throw new RuntimeException('provider failed');
+        }
+
+        return [
+            LinkDefinition::make()
+                ->withId(801)
+                ->withTranslationKey('fof-links.override.link801')
+                ->withUrl('https://link801.example.com'),
+        ];
+    }
+}
+
 abstract class StoredLinksReadingProvider
 {
     public static bool $running = false;
@@ -376,7 +412,6 @@ abstract class StoredLinksReadingProvider
 
     public function __invoke(): array
     {
-        // Returning instead of recursing keeps a re-entry a test failure, not a crash.
         if (static::$running) {
             static::$reentries++;
 
