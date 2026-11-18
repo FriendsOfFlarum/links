@@ -80,7 +80,12 @@ class LinkResource extends Resource\AbstractDatabaseResource
 
             Endpoint\Delete::make()
                 ->authenticated()
-                ->can('delete'),
+                ->can('delete')
+                ->before(function (Context $context) {
+                    if ($this->linksAreOverridden()) {
+                        $this->notValid();
+                    }
+                }),
 
             Endpoint\Index::make()
                 ->defaultInclude(['parent']),

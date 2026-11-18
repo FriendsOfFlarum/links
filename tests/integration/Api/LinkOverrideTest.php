@@ -14,7 +14,9 @@ namespace FoF\Links\Tests\integration\Api;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
+use FoF\Links\Link;
 use FoF\Links\LinkDefinition;
+use PHPUnit\Framework\Attributes\Test;
 
 class LinkOverrideTest extends TestCase
 {
@@ -212,5 +214,22 @@ class LinkOverrideTest extends TestCase
         }
         $this->assertNotNull($overrideGoogle);
         $this->assertEquals('fof-links.override.overridegoogle', $overrideGoogle['attributes']['title']);
+    }
+
+    #[Test]
+    public function delete_is_refused_when_code_links_are_active(): void
+    {
+        $response = $this->send(
+            $this->request('DELETE', '/api/links/1', [
+                'authenticatedAs' => 1,
+            ])
+        );
+
+        $this->assertEquals(422, $response->getStatusCode());
+
+        $data = json_decode($response->getBody(), true);
+        $this->assertEquals('/data/attributes/links', $data['errors'][0]['source']['pointer']);
+
+        $this->assertNotNull(Link::find(1));
     }
 }
