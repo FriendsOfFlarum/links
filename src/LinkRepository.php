@@ -14,7 +14,6 @@ namespace FoF\Links;
 use Flarum\Locale\Translator;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -24,13 +23,14 @@ class LinkRepository
     protected static string $cacheGuestLinksKey = 'guest';
 
     /**
-     * Optional programmatic override links.
+     * Only the list set through setOverrideLinks(), which takes precedence
+     * over LinksOverride extenders.
      *
      * @var LinkDefinition[]|null
      */
     protected $overrideLinks = null;
 
-    public function __construct(protected Cache $cache, protected Translator $translator, protected Container $container)
+    public function __construct(protected Cache $cache, protected Translator $translator)
     {
     }
 
@@ -298,14 +298,15 @@ class LinkRepository
     }
 
     /**
-     * Read lazily rather than when the repository is resolved: a links
-     * provider may itself inject this repository to read stored links.
+     * Not read on construction: a links provider may inject this repository
+     * and call all() or query(); calling getLinks() or getGuestLinks() from a
+     * provider would rebuild the list being built.
      *
      * @return LinkDefinition[]|null
      */
     protected function overrideLinks(): ?array
     {
-        return $this->overrideLinks ?? ($this->container->make('fof-links.override-links') ?: null);
+        return $this->overrideLinks ?? (resolve('fof-links.override-links') ?: null);
     }
 
     /**

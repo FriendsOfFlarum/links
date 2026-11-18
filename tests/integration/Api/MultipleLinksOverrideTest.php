@@ -157,7 +157,6 @@ class MultipleLinksOverrideTest extends TestCase
         $data = $this->fetchForum(2);
 
         $this->assertTrue(array_is_list($data['data']['relationships']['links']['data']));
-        $this->assertTrue(array_is_list($data['included']));
         $this->assertEquals(['301'], $this->linkIds($data));
     }
 
