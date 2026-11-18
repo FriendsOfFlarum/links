@@ -30,6 +30,8 @@ class LinkRepository
      */
     protected $overrideLinks = null;
 
+    protected static bool $overridesDisabled = false;
+
     public function __construct(protected Cache $cache, protected Translator $translator)
     {
     }
@@ -298,14 +300,39 @@ class LinkRepository
     }
 
     /**
-     * Not read on construction: a links provider may inject this repository
-     * and call all() or query(); calling getLinks() or getGuestLinks() from a
-     * provider would rebuild the list being built.
+     * Lets a links provider read the stored links while the override list it adds to is being built.
+     *
+     * @internal
+     *
+     * @template T
+     *
+     * @param callable(): T $callback
+     *
+     * @return T
+     */
+    public static function withoutOverrides(callable $callback): mixed
+    {
+        $previous = self::$overridesDisabled;
+        self::$overridesDisabled = true;
+
+        try {
+            return $callback();
+        } finally {
+            self::$overridesDisabled = $previous;
+        }
+    }
+
+    /**
+     * Null while links providers run (@see withoutOverrides()).
      *
      * @return LinkDefinition[]|null
      */
     protected function overrideLinks(): ?array
     {
+        if (self::$overridesDisabled) {
+            return null;
+        }
+
         return $this->overrideLinks ?? (resolve('fof-links.override-links') ?: null);
     }
 

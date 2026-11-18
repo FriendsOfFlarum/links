@@ -13,11 +13,13 @@ namespace FoF\Links\Tests\integration\Api;
 
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\Guest;
 use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
 use FoF\Links\Link;
 use FoF\Links\LinkDefinition;
 use FoF\Links\LinkRepository;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use PHPUnit\Framework\Attributes\Test;
 
 class MultipleLinksOverrideTest extends TestCase
@@ -27,6 +29,10 @@ class MultipleLinksOverrideTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        StoredLinksReadingProvider::$running = false;
+        StoredLinksReadingProvider::$reentries = 0;
+        StoredLinksReadingProvider::$received = [];
 
         $this->extension('fof-links');
         $this->prepareDatabase([
@@ -273,6 +279,35 @@ class MultipleLinksOverrideTest extends TestCase
             $this->assertEquals('https://google.com', $this->includedLinks($data)['601']['attributes']['url']);
         }
     }
+
+    #[Test]
+    public function providers_reading_member_links_receive_the_stored_links(): void
+    {
+        $this->extend((new LinksOverride())->addLinks(MemberLinksReadingProvider::class));
+
+        $this->assertProviderReceivedStoredLinks();
+    }
+
+    #[Test]
+    public function providers_reading_guest_links_receive_the_stored_links(): void
+    {
+        $this->extend((new LinksOverride())->addLinks(GuestLinksReadingProvider::class));
+
+        $this->assertProviderReceivedStoredLinks();
+    }
+
+    protected function assertProviderReceivedStoredLinks(): void
+    {
+        foreach ([null, 2] as $actorId) {
+            $data = $this->fetchForum($actorId);
+
+            $this->assertSame(0, StoredLinksReadingProvider::$reentries, 'provider re-entered');
+            $this->assertEquals(['701'], $this->linkIds($data));
+            $this->assertEquals('https://google.com', $this->includedLinks($data)['701']['attributes']['url']);
+        }
+
+        $this->assertSame([1], StoredLinksReadingProvider::$received);
+    }
 }
 
 class EmptyLinksProvider
@@ -322,5 +357,63 @@ class RepositoryReadingLinksProvider
                 ->withTranslationKey($link->title)
                 ->withUrl($link->url)
         )->all();
+    }
+}
+
+abstract class StoredLinksReadingProvider
+{
+    public static bool $running = false;
+    public static int $reentries = 0;
+
+    /** @var list<int> */
+    public static array $received = [];
+
+    public function __construct(protected LinkRepository $links)
+    {
+    }
+
+    abstract protected function read(): EloquentCollection;
+
+    public function __invoke(): array
+    {
+        // Returning instead of recursing keeps a re-entry a test failure, not a crash.
+        if (static::$running) {
+            static::$reentries++;
+
+            return [];
+        }
+
+        static::$running = true;
+
+        try {
+            $links = $this->read();
+        } finally {
+            static::$running = false;
+        }
+
+        static::$received = $links->pluck('id')->all();
+
+        return $links->map(
+            fn (Link $link) => LinkDefinition::make()
+                ->withId(700 + $link->id)
+                ->withTranslationKey($link->title)
+                ->withUrl($link->url)
+        )->all();
+    }
+}
+
+class MemberLinksReadingProvider extends StoredLinksReadingProvider
+{
+    protected function read(): EloquentCollection
+    {
+        return $this->links->getLinks(User::findOrFail(2));
+    }
+}
+
+class GuestLinksReadingProvider extends StoredLinksReadingProvider
+{
+    protected function read(): EloquentCollection
+    {
+        return $this->links->getGuestLinks(new Guest());
     }
 }

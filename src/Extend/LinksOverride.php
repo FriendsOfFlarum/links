@@ -14,6 +14,7 @@ namespace FoF\Links\Extend;
 use Flarum\Extend\ExtenderInterface;
 use Flarum\Extension\Extension;
 use FoF\Links\LinkDefinition;
+use FoF\Links\LinkRepository;
 use Illuminate\Contracts\Container\Container;
 
 class LinksOverride implements ExtenderInterface
@@ -57,7 +58,9 @@ class LinksOverride implements ExtenderInterface
     public function extend(Container $container, ?Extension $extension = null): void
     {
         $container->extend('fof-links.override-links', function (array $links, Container $container) {
-            $added = is_string($this->links) ? $container->make($this->links)() : $this->links;
+            $added = is_string($this->links)
+                ? LinkRepository::withoutOverrides(fn () => $container->make($this->links)())
+                : $this->links;
 
             return array_merge($links, array_values($added ?: []));
         });
