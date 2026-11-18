@@ -57,7 +57,9 @@ class LinksOverride implements ExtenderInterface
     public function extend(Container $container, ?Extension $extension = null): void
     {
         $container->extend('fof-links.override-links', function (array $links, Container $container) {
-            return array_merge($links, is_string($this->links) ? $container->make($this->links)() : $this->links);
+            $added = is_string($this->links) ? $container->make($this->links)() : $this->links;
+
+            return array_merge($links, array_values($added ?: []));
         });
     }
 }

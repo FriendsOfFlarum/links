@@ -193,6 +193,17 @@ class MultipleLinksOverrideTest extends TestCase
     }
 
     #[Test]
+    public function provider_returning_null_adds_no_links_beside_an_array_extender(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks(NullLinksProvider::class),
+            (new LinksOverride())->addLinks([$this->link(201)])
+        );
+
+        $this->assertEquals(['201'], $this->linkIds($this->fetchForum(null)));
+    }
+
+    #[Test]
     public function provider_is_invoked_when_links_are_needed_not_at_boot(): void
     {
         CountingLinksProvider::$invocations = 0;
@@ -226,6 +237,14 @@ class EmptyLinksProvider
     public function __invoke(): array
     {
         return [];
+    }
+}
+
+class NullLinksProvider
+{
+    public function __invoke(): ?array
+    {
+        return null;
     }
 }
 
