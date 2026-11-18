@@ -323,7 +323,9 @@ class LinkRepository
     }
 
     /**
-     * Null while links providers run (@see withoutOverrides()).
+     * Null while links providers run.
+     *
+     * @see self::withoutOverrides()
      *
      * @return LinkDefinition[]|null
      */
