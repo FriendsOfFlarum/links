@@ -38,7 +38,7 @@ Links can be managed through the admin interface under the "Links" tab.
 
 This extension provides a way to define links programmatically through PHP code. This can be useful in situations where there are multiple environments (ie dev, staging, production) and you want to define a set of links only once (in code), and not have to re-enter or define them via the admin interface.
 
-Links defined in code replace all links stored in the database, and the admin Links page becomes read-only while any are defined.
+Links defined in code replace all links stored in the database. While any are defined, the admin Links page shows a notice instead of the editable list, and the API refuses to create, edit or reorder links.
 
 #### Basic Usage
 
@@ -97,7 +97,7 @@ return [
 
 #### Using a Provider Class
 
-For more complex scenarios, you can use a provider class:
+For more complex scenarios, you can use a provider class. The provider is called when links are first needed (once per request lifecycle), not while the forum boots.
 
 ```php
 use FoF\Links\Extend\LinksOverride;
@@ -105,7 +105,7 @@ use FoF\Links\LinkDefinition;
 
 class MyLinksProvider
 {
-    public function __invoke()
+    public function __invoke(): array
     {
         return [
             LinkDefinition::make()
