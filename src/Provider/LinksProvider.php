@@ -12,13 +12,25 @@
 namespace FoF\Links\Provider;
 
 use Flarum\Foundation\AbstractServiceProvider;
+use FoF\Links\LinkRepository;
+use Illuminate\Contracts\Container\Container;
 
 class LinksProvider extends AbstractServiceProvider
 {
     public function register()
     {
-        $this->container->singleton('fof-links.override', function () {
-            return false;
+        $this->container->singleton('fof-links.override-links', fn () => []);
+
+        $this->container->singleton('fof-links.override', function (Container $container) {
+            return $container->make('fof-links.override-links') !== [];
+        });
+
+        $this->container->resolving(LinkRepository::class, function (LinkRepository $repository, Container $container) {
+            $links = $container->make('fof-links.override-links');
+
+            if ($links !== []) {
+                $repository->setOverrideLinks($links);
+            }
         });
     }
 }

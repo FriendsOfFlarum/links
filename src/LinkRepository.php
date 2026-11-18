@@ -128,6 +128,7 @@ class LinkRepository
     protected function getFlattenedLinks(array $definitions): array
     {
         $links = [];
+        $definitions = collect($definitions)->sortBy(fn (LinkDefinition $definition) => $definition->position ?? 0);
 
         foreach ($definitions as $definition) {
             $link = $this->buildLinkFromDefinition($definition);

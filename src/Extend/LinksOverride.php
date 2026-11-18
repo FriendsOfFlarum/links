@@ -14,7 +14,6 @@ namespace FoF\Links\Extend;
 use Flarum\Extend\ExtenderInterface;
 use Flarum\Extension\Extension;
 use FoF\Links\LinkDefinition;
-use FoF\Links\LinkRepository;
 use Illuminate\Contracts\Container\Container;
 
 class LinksOverride implements ExtenderInterface
@@ -55,32 +54,10 @@ class LinksOverride implements ExtenderInterface
         return $this;
     }
 
-    /**
-     * Extend the container.
-     *
-     * This binds the override links into the LinkRepository.
-     *
-     * @param Container      $container
-     * @param Extension|null $extension
-     */
     public function extend(Container $container, ?Extension $extension = null): void
     {
-        // Determine the override links array.
-        if (is_string($this->links)) {
-            // Resolve the invokable class via the container.
-            $linksProvider = $container->make($this->links);
-            $links = $linksProvider();
-        } else {
-            $links = $this->links;
-        }
-
-        if (!empty($links)) {
-            $container->resolving(LinkRepository::class, function (LinkRepository $repository) use ($links) {
-                $repository->setOverrideLinks($links);
-            });
-            $container->extend('fof-links.override', function () {
-                return true;
-            });
-        }
+        $container->extend('fof-links.override-links', function (array $links, Container $container) {
+            return array_merge($links, is_string($this->links) ? $container->make($this->links)() : $this->links);
+        });
     }
 }
