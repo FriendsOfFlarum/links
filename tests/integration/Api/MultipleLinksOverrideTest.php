@@ -38,6 +38,9 @@ class MultipleLinksOverrideTest extends TestCase
         StoredLinksReadingProvider::$reentries = 0;
         StoredLinksReadingProvider::$received = [];
         FailingOnceLinksProvider::$invocations = 0;
+        OverrideReadingLinksProvider::$running = false;
+        OverrideReadingLinksProvider::$entries = 0;
+        OverrideReadingLinksProvider::$seen = [];
 
         $this->extension('fof-links');
         $this->prepareDatabase([
@@ -224,6 +227,9 @@ class MultipleLinksOverrideTest extends TestCase
             (new LinksOverride())->addLinks([$this->link(201)])
         );
 
+        $this->app();
+        $stored = Link::query()->findOrFail(1)->getAttributes();
+
         $create = $this->send(
             $this->request('POST', '/api/links', [
                 'authenticatedAs' => 1,
@@ -264,7 +270,7 @@ class MultipleLinksOverrideTest extends TestCase
         $this->assertEquals(422, $update->getStatusCode());
         $this->assertEquals(422, $order->getStatusCode());
         $this->assertEquals([1], Link::query()->pluck('id')->all());
-        $this->assertSame('Google', Link::query()->findOrFail(1)->title);
+        $this->assertSame($stored, Link::query()->findOrFail(1)->getAttributes());
         $this->assertNotEmpty($this->fetchForum(1)['data']['attributes']['links.set']);
     }
 
@@ -373,6 +379,16 @@ class MultipleLinksOverrideTest extends TestCase
         $this->assertEquals(['801'], $this->linkIds($this->fetchForum(null)));
     }
 
+    #[Test]
+    public function providers_see_links_as_not_overridden_while_they_run(): void
+    {
+        $this->extend((new LinksOverride())->addLinks(OverrideReadingLinksProvider::class));
+
+        $this->assertEquals(['901'], $this->linkIds($this->fetchForum(null)));
+        $this->assertSame([false], OverrideReadingLinksProvider::$seen);
+        $this->assertSame(1, OverrideReadingLinksProvider::$entries, 'provider re-entered');
+    }
+
     protected function assertProviderReceivedStoredLinks(): void
     {
         foreach ([null, 2] as $actorId) {
@@ -452,6 +468,39 @@ class FailingOnceLinksProvider
                 ->withId(801)
                 ->withTranslationKey('fof-links.override.link801')
                 ->withUrl('https://link801.example.com'),
+        ];
+    }
+}
+
+class OverrideReadingLinksProvider
+{
+    public static bool $running = false;
+    public static int $entries = 0;
+
+    /** @var list<mixed> */
+    public static array $seen = [];
+
+    public function __invoke(): array
+    {
+        static::$entries++;
+
+        if (static::$running) {
+            return [];
+        }
+
+        static::$running = true;
+
+        try {
+            static::$seen[] = resolve('fof-links.override');
+        } finally {
+            static::$running = false;
+        }
+
+        return [
+            LinkDefinition::make()
+                ->withId(901)
+                ->withTranslationKey('fof-links.override.link901')
+                ->withUrl('https://link901.example.com'),
         ];
     }
 }
