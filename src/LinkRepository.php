@@ -177,7 +177,7 @@ class LinkRepository
             $links = collect($this->getFlattenedLinks($this->overrideLinks));
 
             if (!$actor->isGuest()) {
-                $links = $links->reject(fn (Link $link) => $link->guest_only);
+                $links = $links->reject(fn (Link $link) => $link->guest_only)->values();
             }
 
             return new EloquentCollection($links->all());

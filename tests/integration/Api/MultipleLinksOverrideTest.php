@@ -144,6 +144,23 @@ class MultipleLinksOverrideTest extends TestCase
     }
 
     #[Test]
+    public function member_links_stay_a_json_list_after_guest_only_links_are_removed(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks([
+                $this->link(301)->withPosition(2),
+                $this->link(201)->withGuestOnly(true)->withPosition(1),
+            ])
+        );
+
+        $data = $this->fetchForum(2);
+
+        $this->assertTrue(array_is_list($data['data']['relationships']['links']['data']));
+        $this->assertTrue(array_is_list($data['included']));
+        $this->assertEquals(['301'], $this->linkIds($data));
+    }
+
+    #[Test]
     public function database_links_are_ignored_with_several_extenders(): void
     {
         $this->extend(
