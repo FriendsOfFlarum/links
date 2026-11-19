@@ -174,12 +174,41 @@ class LinkRepository
         return $childLinks;
     }
 
+    /**
+     * The definitions are a container singleton, so the visible tree is built from copies.
+     *
+     * @param array<LinkDefinition> $definitions
+     *
+     * @return array<LinkDefinition>
+     */
+    protected function definitionsVisibleTo(User $actor, array $definitions): array
+    {
+        return collect($definitions)
+            ->filter(fn (LinkDefinition $definition) => $definition->permission === null || $actor->hasPermission($definition->permission))
+            ->map(function (LinkDefinition $definition) use ($actor) {
+                $children = $this->definitionsVisibleTo($actor, $definition->getChildren());
+                $shownChildren = collect($children)->reject(fn (LinkDefinition $child) => $child->guestOnly && !$actor->isGuest());
+
+                if ($definition->url === '' && !empty($definition->getChildren()) && $shownChildren->isEmpty()) {
+                    return null;
+                }
+
+                $visible = clone $definition;
+                $visible->children = $children;
+
+                return $visible;
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
     public function getLinks(User $actor): EloquentCollection
     {
         $overrideLinks = $this->overrideLinks();
 
         if ($overrideLinks !== null) {
-            $links = collect($this->getFlattenedLinks($overrideLinks));
+            $links = collect($this->getFlattenedLinks($this->definitionsVisibleTo($actor, $overrideLinks)));
 
             if (!$actor->isGuest()) {
                 $links = $links->reject(fn (Link $link) => $link->guest_only)->values();
@@ -213,7 +242,7 @@ class LinkRepository
         $overrideLinks = $this->overrideLinks();
 
         if ($overrideLinks !== null) {
-            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
+            return new EloquentCollection($this->getFlattenedLinks($this->definitionsVisibleTo($actor, $overrideLinks)));
         }
 
         $cached = $this->cache->get($this->cacheKey($actor));
