@@ -163,6 +163,75 @@ The polls link appears first, whichever extension boots first.
 - Ids must be unique across all extensions, for example by giving each extension its own id range.
 - Child links keep the order in which they were added with `addChild()`.
 
+#### Permissions
+
+A link can require a permission with `withPermission()`. This dropdown label has no URL, and each link under it has its own permission:
+
+```php
+use FoF\Links\Extend\LinksOverride;
+use FoF\Links\LinkDefinition;
+
+$insiders = LinkDefinition::make()
+    ->withId(300)
+    ->withTranslationKey('acme-insiders.links.insiders')
+    ->addChild(
+        LinkDefinition::make()
+            ->withId(301)
+            ->withTranslationKey('acme-insiders.links.mentors_lounge')
+            ->withUrl('/t/mentors-lounge')
+            ->withPermission('insiders.mentorsLounge')
+    )
+    ->addChild(
+        LinkDefinition::make()
+            ->withId(302)
+            ->withTranslationKey('acme-insiders.links.beta')
+            ->withUrl('/t/beta-insider')
+            ->withPermission('insiders.beta')
+    );
+
+return [
+    (new LinksOverride())
+        ->addLinks([$insiders])
+];
+```
+
+- Children inherit nothing: a child without its own permission is shown whenever its parent is.
+- A hidden parent hides all of its children.
+- A parent without a URL whose children are all hidden is not shown.
+- Admins pass every permission check. Guests are checked against the Guest group, and a permission granted to Guests applies to members too.
+
+FoF Links only checks the permission. The extension that defines the link registers and grants it, for example with a migration:
+
+```php
+// acme/insiders migrations/2026_01_01_000000_grant_insiders_permissions.php
+use Flarum\Database\Migration;
+use Flarum\Group\Group;
+
+return Migration::addPermissions([
+    'insiders.mentorsLounge' => Group::MODERATOR_ID,
+    'insiders.beta'          => [Group::MODERATOR_ID, Group::MEMBER_ID],
+]);
+```
+
+To let admins change who has it, register it on that extension's Permissions page in its admin JS (`allowGuest: true` adds the "Everyone" option):
+
+```ts
+// acme/insiders js/src/admin/extend.ts
+import app from 'flarum/admin/app';
+import Extend from 'flarum/common/extenders';
+
+export default [
+  new Extend.Admin().permission(
+    () => ({
+      icon: 'fas fa-user-secret',
+      label: app.translator.trans('acme-insiders.admin.permissions.mentors_lounge_label'),
+      permission: 'insiders.mentorsLounge',
+    }),
+    'view'
+  ),
+];
+```
+
 ### LinkDefinition API
 
 The `LinkDefinition` class provides a fluent interface for defining links:
@@ -179,6 +248,7 @@ The `LinkDefinition` class provides a fluent interface for defining links:
 | `withGuestOnly(bool $guestOnly)` | Set whether the link is only visible to guests |
 | `withParentId(?int $parentId)` | Set the parent link ID |
 | `withPosition(int $position)` | Set the position (orders top-level links) |
+| `withPermission(string $permission)` | Show the link only to users with this permission |
 | `addChild(LinkDefinition $child)` | Add a child link |
 
 ## Links
