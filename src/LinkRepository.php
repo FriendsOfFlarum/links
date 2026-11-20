@@ -216,7 +216,7 @@ class LinkRepository
     protected function permittedDefinitions(User $actor, array $definitions): array
     {
         return collect($definitions)
-            ->filter(fn (LinkDefinition $definition) => $definition->permission === null || $actor->hasPermission($definition->permission))
+            ->filter(fn (LinkDefinition $definition) => $definition->permission === null || $actor->can($definition->permission))
             ->map(function (LinkDefinition $definition) use ($actor) {
                 $children = $this->permittedDefinitions($actor, $definition->getChildren());
                 $shownChildren = collect($children)->reject(fn (LinkDefinition $child) => $child->guestOnly && !$actor->isGuest());

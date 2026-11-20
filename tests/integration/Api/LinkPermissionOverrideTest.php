@@ -11,6 +11,7 @@
 
 namespace FoF\Links\Tests\integration\Api;
 
+use Flarum\Extend;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
@@ -19,6 +20,7 @@ use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
 use FoF\Links\LinkDefinition;
 use FoF\Links\LinkRepository;
+use FoF\Links\Tests\fixtures\CodeLinkPolicy;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -113,6 +115,36 @@ class LinkPermissionOverrideTest extends TestCase
         ]));
 
         $this->assertEquals($visible ? ['101', '102'] : ['101'], $this->linkIds($authenticatedAs));
+    }
+
+    #[Test]
+    public function global_policy_can_grant_a_permission_the_groups_lack(): void
+    {
+        $this->extend(
+            (new Extend\Policy())->globalPolicy(CodeLinkPolicy::class),
+            (new LinksOverride())->addLinks([
+                $this->link(101),
+                $this->link(102)->withPermission(CodeLinkPolicy::GRANTED),
+            ])
+        );
+
+        $this->assertEquals(['101', '102'], $this->linkIds(2));
+    }
+
+    #[Test]
+    public function global_policy_can_deny_a_permission_the_groups_have(): void
+    {
+        $this->grant(CodeLinkPolicy::DENIED, Group::MEMBER_ID);
+
+        $this->extend(
+            (new Extend\Policy())->globalPolicy(CodeLinkPolicy::class),
+            (new LinksOverride())->addLinks([
+                $this->link(101),
+                $this->link(102)->withPermission(CodeLinkPolicy::DENIED),
+            ])
+        );
+
+        $this->assertEquals(['101'], $this->linkIds(2));
     }
 
     #[Test]
