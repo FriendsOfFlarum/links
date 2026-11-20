@@ -16,6 +16,7 @@ use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 
 class LinkRepository
 {
@@ -175,22 +176,78 @@ class LinkRepository
     }
 
     /**
-     * The definitions are a container singleton, so this returns copies
-     * instead of changing them.
-     *
      * @param array<LinkDefinition> $definitions
      *
      * @return array<LinkDefinition>
      */
-    protected function withoutGuestOnly(array $definitions): array
+    protected function definitionsVisibleTo(User $actor, array $definitions): array
+    {
+        $all = $this->flattenDefinitions($definitions);
+        $hidden = $all->filter(fn (LinkDefinition $definition) => ($definition->guestOnly && !$actor->isGuest())
+            || ($definition->permission !== null && !$actor->can($definition->permission)));
+
+        // Hiding a parent orphans its children and hiding a child can empty its parent, so repeat until nothing changes.
+        do {
+            $hiddenCount = $hidden->count();
+            $hiddenIds = $hidden->pluck('id')->whereNotNull();
+            $hiddenChildren = $hidden->flatMap(fn (LinkDefinition $definition) => $definition->getChildren());
+
+            $hidden = $all->filter(fn (LinkDefinition $definition) => $hidden->containsStrict($definition)
+                || $hiddenChildren->containsStrict($definition)
+                || $hiddenIds->containsStrict($definition->parentId)
+                || $this->isEmptyLabel($definition, $all, $hidden));
+        } while ($hidden->count() > $hiddenCount);
+
+        return $this->copyWithout($definitions, $hidden);
+    }
+
+    /**
+     * @param array<LinkDefinition> $definitions
+     *
+     * @return Collection<int, LinkDefinition>
+     */
+    protected function flattenDefinitions(array $definitions): Collection
     {
         return collect($definitions)
-            ->reject(fn (LinkDefinition $definition) => $definition->guestOnly)
-            ->map(function (LinkDefinition $definition) {
-                $copy = clone $definition;
-                $copy->children = $this->withoutGuestOnly($definition->getChildren());
+            ->flatMap(fn (LinkDefinition $definition) => $this->flattenDefinitions($definition->getChildren())->prepend($definition));
+    }
 
-                return $copy;
+    /**
+     * A URL-less parent whose children (addChild() or withParentId()) are none of them shown has nothing to open.
+     *
+     * @param Collection<int, LinkDefinition> $all
+     * @param Collection<int, LinkDefinition> $hidden
+     */
+    protected function isEmptyLabel(LinkDefinition $definition, Collection $all, Collection $hidden): bool
+    {
+        if ($definition->url !== '') {
+            return false;
+        }
+
+        $children = collect($definition->getChildren())->merge(
+            $definition->id === null ? [] : $all->filter(fn (LinkDefinition $link) => $link->parentId === $definition->id)
+        );
+
+        return $children->isNotEmpty() && $children->every(fn (LinkDefinition $child) => $hidden->containsStrict($child));
+    }
+
+    /**
+     * The definitions are a container singleton, so the visible tree is built from copies.
+     *
+     * @param array<LinkDefinition>           $definitions
+     * @param Collection<int, LinkDefinition> $hidden
+     *
+     * @return array<LinkDefinition>
+     */
+    protected function copyWithout(array $definitions, Collection $hidden): array
+    {
+        return collect($definitions)
+            ->reject(fn (LinkDefinition $definition) => $hidden->containsStrict($definition))
+            ->map(function (LinkDefinition $definition) use ($hidden) {
+                $visible = clone $definition;
+                $visible->children = $this->copyWithout($definition->getChildren(), $hidden);
+
+                return $visible;
             })
             ->values()
             ->all();
@@ -201,11 +258,7 @@ class LinkRepository
         $overrideLinks = $this->overrideLinks();
 
         if ($overrideLinks !== null) {
-            if (!$actor->isGuest()) {
-                $overrideLinks = $this->withoutGuestOnly($overrideLinks);
-            }
-
-            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
+            return new EloquentCollection($this->getFlattenedLinks($this->definitionsVisibleTo($actor, $overrideLinks)));
         }
 
         if ($actor->isGuest()) {
@@ -233,7 +286,7 @@ class LinkRepository
         $overrideLinks = $this->overrideLinks();
 
         if ($overrideLinks !== null) {
-            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
+            return new EloquentCollection($this->getFlattenedLinks($this->definitionsVisibleTo($actor, $overrideLinks)));
         }
 
         $cached = $this->cache->get($this->cacheKey($actor));

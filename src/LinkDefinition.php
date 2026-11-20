@@ -46,6 +46,8 @@ class LinkDefinition
 
     public ?int $position = null;
 
+    public ?string $permission = null;
+
     /** @var LinkDefinition[] */
     public array $children = [];
 
@@ -142,6 +144,13 @@ class LinkDefinition
     public function withPosition(int $position): self
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function withPermission(string $permission): self
+    {
+        $this->permission = $permission;
 
         return $this;
     }
