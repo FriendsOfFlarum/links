@@ -179,6 +179,7 @@ $insiders = LinkDefinition::make()
             ->withId(301)
             ->withTranslationKey('acme-insiders.links.mentors_lounge')
             ->withUrl('/t/mentors-lounge')
+            ->withIsInternal(true)
             ->withPermission('insiders.mentorsLounge')
     )
     ->addChild(
@@ -186,6 +187,7 @@ $insiders = LinkDefinition::make()
             ->withId(302)
             ->withTranslationKey('acme-insiders.links.beta')
             ->withUrl('/t/beta-insider')
+            ->withIsInternal(true)
             ->withPermission('insiders.beta')
     );
 
