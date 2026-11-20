@@ -125,6 +125,35 @@ class GuestOnlyParentOverrideTest extends TestCase
     }
 
     #[Test]
+    public function member_keeps_sibling_order_and_parent_after_a_guest_only_first_child(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks([
+                $this->link(201)
+                    ->addChild($this->link(202)->withGuestOnly(true))
+                    ->addChild($this->link(203))
+                    ->addChild($this->link(204))
+                    ->addChild($this->link(205)),
+            ])
+        );
+
+        $data = $this->fetchForum(2);
+        $links = array_column($this->includedLinks($data), null, 'id');
+
+        $this->assertSame(['201', '203', '204', '205'], $this->linkIds($data));
+        $this->assertArrayNotHasKey('202', $links);
+
+        foreach (['203', '204', '205'] as $id) {
+            $this->assertSame('201', $this->parentId($data, $id));
+        }
+
+        $positions = collect(['203', '204', '205'])->map(fn (string $id) => $links[$id]['attributes']['position']);
+
+        $this->assertSame($positions->sort()->values()->all(), $positions->all());
+        $this->assertCount(3, $positions->unique());
+    }
+
+    #[Test]
     public function guest_receives_guest_only_parents_with_their_children(): void
     {
         $this->extendWithGuestOnlyParent();
