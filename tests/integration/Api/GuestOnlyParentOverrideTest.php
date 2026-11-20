@@ -101,6 +101,17 @@ class GuestOnlyParentOverrideTest extends TestCase
         );
     }
 
+    protected function extendWithParentIdChildOfGuestOnlyParent(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks([
+                $this->link(201)->withGuestOnly(true),
+                $this->link(202)->withParentId(201),
+                $this->link(301),
+            ])
+        );
+    }
+
     #[Test]
     public function member_does_not_receive_a_guest_only_parent_or_its_descendants(): void
     {
@@ -177,5 +188,26 @@ class GuestOnlyParentOverrideTest extends TestCase
         $this->assertSame(['201', '202', '203', '204'], $this->linkIds($data));
         $this->assertSame('201', $this->parentId($data, '203'));
         $this->assertSame('203', $this->parentId($data, '204'));
+    }
+
+    #[Test]
+    public function member_does_not_receive_a_parent_id_child_of_a_guest_only_parent(): void
+    {
+        $this->extendWithParentIdChildOfGuestOnlyParent();
+
+        $data = $this->fetchForum(2);
+
+        $this->assertSame(['301'], array_column($this->includedLinks($data), 'id'));
+        $this->assertSame(['301'], $this->linkIds($data));
+    }
+
+    #[Test]
+    public function guest_receives_a_parent_id_child_of_a_guest_only_parent(): void
+    {
+        $this->extendWithParentIdChildOfGuestOnlyParent();
+
+        $data = $this->fetchForum(null);
+
+        $this->assertSame(['201', '202', '301'], $this->linkIds($data));
     }
 }
