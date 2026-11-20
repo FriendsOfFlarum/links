@@ -254,18 +254,40 @@ class LinkRepository
             ->all();
     }
 
+    /**
+     * The definitions are a container singleton, so this returns copies
+     * instead of changing them.
+     *
+     * @param array<LinkDefinition> $definitions
+     *
+     * @return array<LinkDefinition>
+     */
+    protected function withoutGuestOnly(array $definitions): array
+    {
+        return collect($definitions)
+            ->reject(fn (LinkDefinition $definition) => $definition->guestOnly)
+            ->map(function (LinkDefinition $definition) {
+                $copy = clone $definition;
+                $copy->children = $this->withoutGuestOnly($definition->getChildren());
+
+                return $copy;
+            })
+            ->values()
+            ->all();
+    }
+
     public function getLinks(User $actor): EloquentCollection
     {
         $overrideLinks = $this->overrideLinks();
 
         if ($overrideLinks !== null) {
-            $links = collect($this->getFlattenedLinks($this->definitionsVisibleTo($actor, $overrideLinks)));
+            $overrideLinks = $this->definitionsVisibleTo($actor, $overrideLinks);
 
             if (!$actor->isGuest()) {
-                $links = $links->reject(fn (Link $link) => $link->guest_only)->values();
+                $overrideLinks = $this->withoutGuestOnly($overrideLinks);
             }
 
-            return new EloquentCollection($links->all());
+            return new EloquentCollection($this->getFlattenedLinks($overrideLinks));
         }
 
         if ($actor->isGuest()) {
