@@ -131,6 +131,43 @@ class LinkPermissionOverrideTest extends TestCase
     }
 
     #[Test]
+    public function hidden_parent_hides_its_with_parent_id_children(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->link(101),
+            $this->link(203)->withParentId(202),
+            $this->link(201)->withPermission(self::INSIDER),
+            $this->link(202)->withParentId(201),
+        ]));
+
+        $this->assertEquals(['101'], $this->linkIds(2));
+        $this->assertEquals(['101', '203', '201', '202'], $this->linkIds(1));
+    }
+
+    #[Test]
+    public function with_parent_id_child_of_a_hidden_nested_child_is_hidden(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->link(201)->addChild($this->link(202)->withPermission(self::INSIDER)),
+            $this->link(210)->withParentId(202),
+        ]));
+
+        $this->assertEquals(['201'], $this->linkIds(2));
+    }
+
+    #[Test]
+    public function with_parent_id_child_of_a_visible_or_unknown_parent_is_kept(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->link(201)->addChild($this->link(202)),
+            $this->link(210)->withParentId(202),
+            $this->link(220)->withParentId(999),
+        ]));
+
+        $this->assertEquals(['201', '202', '210', '220'], $this->linkIds(2));
+    }
+
+    #[Test]
     public function child_with_a_permission_is_hidden_under_an_unrestricted_parent(): void
     {
         $this->extend((new LinksOverride())->addLinks([

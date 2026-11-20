@@ -16,6 +16,7 @@ use Flarum\User\User;
 use Illuminate\Contracts\Cache\Store as Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 
 class LinkRepository
 {
@@ -175,18 +176,49 @@ class LinkRepository
     }
 
     /**
-     * The definitions are a container singleton, so the visible tree is built from copies.
-     *
      * @param array<LinkDefinition> $definitions
      *
      * @return array<LinkDefinition>
      */
     protected function definitionsVisibleTo(User $actor, array $definitions): array
     {
+        $visible = collect($this->permittedDefinitions($actor, $definitions));
+        $hiddenIds = $this->definitionIds($definitions)->diff($this->definitionIds($visible->all()));
+
+        do {
+            $orphans = $visible->filter(fn (LinkDefinition $definition) => $hiddenIds->containsStrict($definition->parentId));
+            $visible = $visible->diffKeys($orphans);
+            $hiddenIds = $hiddenIds->merge($this->definitionIds($orphans->all()));
+        } while ($orphans->isNotEmpty());
+
+        return $visible->values()->all();
+    }
+
+    /**
+     * @param array<LinkDefinition> $definitions
+     *
+     * @return Collection<int, int>
+     */
+    protected function definitionIds(array $definitions): Collection
+    {
+        return collect($definitions)
+            ->flatMap(fn (LinkDefinition $definition) => $this->definitionIds($definition->getChildren())->prepend($definition->id))
+            ->whereNotNull();
+    }
+
+    /**
+     * The definitions are a container singleton, so the visible tree is built from copies.
+     *
+     * @param array<LinkDefinition> $definitions
+     *
+     * @return array<LinkDefinition>
+     */
+    protected function permittedDefinitions(User $actor, array $definitions): array
+    {
         return collect($definitions)
             ->filter(fn (LinkDefinition $definition) => $definition->permission === null || $actor->hasPermission($definition->permission))
             ->map(function (LinkDefinition $definition) use ($actor) {
-                $children = $this->definitionsVisibleTo($actor, $definition->getChildren());
+                $children = $this->permittedDefinitions($actor, $definition->getChildren());
                 $shownChildren = collect($children)->reject(fn (LinkDefinition $child) => $child->guestOnly && !$actor->isGuest());
 
                 if ($definition->url === '' && !empty($definition->getChildren()) && $shownChildren->isEmpty()) {
