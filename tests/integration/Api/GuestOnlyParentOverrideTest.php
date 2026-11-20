@@ -16,6 +16,7 @@ use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
 use FoF\Links\LinkDefinition;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 class GuestOnlyParentOverrideTest extends TestCase
@@ -190,24 +191,24 @@ class GuestOnlyParentOverrideTest extends TestCase
         $this->assertSame('203', $this->parentId($data, '204'));
     }
 
-    #[Test]
-    public function member_does_not_receive_a_parent_id_child_of_a_guest_only_parent(): void
+    public static function parentIdChildOfGuestOnlyParentProvider(): array
     {
-        $this->extendWithParentIdChildOfGuestOnlyParent();
-
-        $data = $this->fetchForum(2);
-
-        $this->assertSame(['301'], array_column($this->includedLinks($data), 'id'));
-        $this->assertSame(['301'], $this->linkIds($data));
+        return [
+            'guest receives the guest-only parent and its withParentId() child' => ['authenticatedAs' => null, 'expectedIds' => ['201', '202', '301']],
+            'member receives neither the guest-only parent nor its child'       => ['authenticatedAs' => 2, 'expectedIds' => ['301']],
+            'admin receives neither the guest-only parent nor its child'        => ['authenticatedAs' => 1, 'expectedIds' => ['301']],
+        ];
     }
 
     #[Test]
-    public function guest_receives_a_parent_id_child_of_a_guest_only_parent(): void
+    #[DataProvider('parentIdChildOfGuestOnlyParentProvider')]
+    public function parent_id_child_of_a_guest_only_parent_is_shown_only_to_guests(?int $authenticatedAs, array $expectedIds): void
     {
         $this->extendWithParentIdChildOfGuestOnlyParent();
 
-        $data = $this->fetchForum(null);
+        $data = $this->fetchForum($authenticatedAs);
 
-        $this->assertSame(['201', '202', '301'], $this->linkIds($data));
+        $this->assertSame($expectedIds, $this->linkIds($data));
+        $this->assertEqualsCanonicalizing($expectedIds, array_column($this->includedLinks($data), 'id'));
     }
 }
