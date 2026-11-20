@@ -247,7 +247,7 @@ The `LinkDefinition` class provides a fluent interface for defining links:
 | `withIsInternal(bool $isInternal)` | Set whether the link is internal |
 | `withIsNewtab(bool $isNewtab)` | Set whether the link should open in a new tab |
 | `withUseRelme(bool $useRelme)` | Set whether to use rel="me" attribute |
-| `withGuestOnly(bool $guestOnly)` | Set whether the link is only visible to guests |
+| `withGuestOnly(bool $guestOnly)` | Set whether the link is only visible to guests. Members don't see its children either, whether added with `addChild()` or `withParentId()` |
 | `withParentId(?int $parentId)` | Set the parent link ID |
 | `withPosition(int $position)` | Set the position (orders top-level links) |
 | `withPermission(string $permission)` | Show the link only to users with this permission |
