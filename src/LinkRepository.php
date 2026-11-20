@@ -175,8 +175,8 @@ class LinkRepository
     }
 
     /**
-     * Drops guest-only definitions with their subtrees. The definitions are a
-     * container singleton, so this returns copies instead of changing them.
+     * The definitions are a container singleton, so this returns copies
+     * instead of changing them.
      *
      * @param array<LinkDefinition> $definitions
      *
