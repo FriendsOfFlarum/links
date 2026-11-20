@@ -200,7 +200,7 @@ return [
 - Children inherit nothing: a child without its own permission is shown whenever its parent is.
 - A hidden parent hides all of its children.
 - A parent without a URL whose children are all hidden is not shown.
-- The check runs through `$actor->can()`, so a global policy of the defining extension can decide. Otherwise admins pass every permission check. Guests are checked against the Guest group, and a permission granted to Guests applies to members too.
+- The check runs through `$actor->can()`, so any extension's global policy can allow or deny it, for admins too. When no policy decides, admins pass and everyone else needs the permission through a group. Guests are checked against the Guest group, and a permission granted to Guests applies to members too.
 
 FoF Links only checks the permission. The extension that defines the link registers and grants it, for example with a migration:
 
