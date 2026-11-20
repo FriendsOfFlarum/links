@@ -182,55 +182,74 @@ class LinkRepository
      */
     protected function definitionsVisibleTo(User $actor, array $definitions): array
     {
-        $visible = collect($this->permittedDefinitions($actor, $definitions));
-        $hiddenIds = $this->definitionIds($definitions)->diff($this->definitionIds($visible->all()));
+        $all = $this->flattenDefinitions($definitions);
+        $hidden = $all->reject(fn (LinkDefinition $definition) => $definition->permission === null || $actor->can($definition->permission));
 
+        // Hiding a parent orphans its children and hiding a child can empty its parent, so repeat until nothing changes.
         do {
-            $orphans = $visible->filter(fn (LinkDefinition $definition) => $hiddenIds->containsStrict($definition->parentId));
-            $visible = $visible->diffKeys($orphans);
-            $hiddenIds = $hiddenIds->merge($this->definitionIds($orphans->all()));
-        } while ($orphans->isNotEmpty());
+            $hiddenCount = $hidden->count();
+            $hiddenIds = $hidden->pluck('id')->whereNotNull();
+            $hiddenChildren = $hidden->flatMap(fn (LinkDefinition $definition) => $definition->getChildren());
 
-        return $visible->values()->all();
+            $hidden = $all->filter(fn (LinkDefinition $definition) => $hidden->containsStrict($definition)
+                || $hiddenChildren->containsStrict($definition)
+                || $hiddenIds->containsStrict($definition->parentId)
+                || $this->isEmptyLabel($actor, $definition, $all, $hidden));
+        } while ($hidden->count() > $hiddenCount);
+
+        return $this->copyWithout($definitions, $hidden);
     }
 
     /**
      * @param array<LinkDefinition> $definitions
      *
-     * @return Collection<int, int>
+     * @return Collection<int, LinkDefinition>
      */
-    protected function definitionIds(array $definitions): Collection
+    protected function flattenDefinitions(array $definitions): Collection
     {
         return collect($definitions)
-            ->flatMap(fn (LinkDefinition $definition) => $this->definitionIds($definition->getChildren())->prepend($definition->id))
-            ->whereNotNull();
+            ->flatMap(fn (LinkDefinition $definition) => $this->flattenDefinitions($definition->getChildren())->prepend($definition));
+    }
+
+    /**
+     * A URL-less parent whose children (addChild() or withParentId()) are none of them shown has nothing to open.
+     *
+     * @param Collection<int, LinkDefinition> $all
+     * @param Collection<int, LinkDefinition> $hidden
+     */
+    protected function isEmptyLabel(User $actor, LinkDefinition $definition, Collection $all, Collection $hidden): bool
+    {
+        if ($definition->url !== '') {
+            return false;
+        }
+
+        $children = collect($definition->getChildren())->merge(
+            $definition->id === null ? [] : $all->filter(fn (LinkDefinition $link) => $link->parentId === $definition->id)
+        );
+
+        return $children->isNotEmpty() && $children->every(
+            fn (LinkDefinition $child) => $hidden->containsStrict($child) || ($child->guestOnly && !$actor->isGuest())
+        );
     }
 
     /**
      * The definitions are a container singleton, so the visible tree is built from copies.
      *
-     * @param array<LinkDefinition> $definitions
+     * @param array<LinkDefinition>           $definitions
+     * @param Collection<int, LinkDefinition> $hidden
      *
      * @return array<LinkDefinition>
      */
-    protected function permittedDefinitions(User $actor, array $definitions): array
+    protected function copyWithout(array $definitions, Collection $hidden): array
     {
         return collect($definitions)
-            ->filter(fn (LinkDefinition $definition) => $definition->permission === null || $actor->can($definition->permission))
-            ->map(function (LinkDefinition $definition) use ($actor) {
-                $children = $this->permittedDefinitions($actor, $definition->getChildren());
-                $shownChildren = collect($children)->reject(fn (LinkDefinition $child) => $child->guestOnly && !$actor->isGuest());
-
-                if ($definition->url === '' && !empty($definition->getChildren()) && $shownChildren->isEmpty()) {
-                    return null;
-                }
-
+            ->reject(fn (LinkDefinition $definition) => $hidden->containsStrict($definition))
+            ->map(function (LinkDefinition $definition) use ($hidden) {
                 $visible = clone $definition;
-                $visible->children = $children;
+                $visible->children = $this->copyWithout($definition->getChildren(), $hidden);
 
                 return $visible;
             })
-            ->filter()
             ->values()
             ->all();
     }

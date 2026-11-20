@@ -269,6 +269,46 @@ class LinkPermissionOverrideTest extends TestCase
     }
 
     #[Test]
+    public function label_whose_added_children_are_hidden_is_kept_by_a_with_parent_id_child(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->label(300)->addChild($this->link(301)->withPermission(self::INSIDER)),
+            $this->link(310)->withParentId(300),
+        ]));
+
+        $this->assertEquals(['300', '310'], $this->linkIds(2));
+    }
+
+    #[Test]
+    public function label_whose_with_parent_id_children_are_all_hidden_is_not_sent(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->link(101),
+            $this->label(300),
+            $this->link(310)->withParentId(300)->withPermission(self::MENTOR),
+            $this->link(311)->withParentId(300)->withPermission(self::BETA),
+        ]));
+
+        $this->assertEquals(['101'], $this->linkIds(2));
+        $this->assertEquals(['101', '300', '310', '311'], $this->linkIds(1));
+    }
+
+    #[Test]
+    public function label_emptied_through_a_nested_label_is_not_sent(): void
+    {
+        $this->extend((new LinksOverride())->addLinks([
+            $this->link(101)->withPosition(1),
+            $this->label(300)->withPosition(2)->addChild($this->label(301)),
+            $this->link(310)->withPosition(3)->withParentId(301)->withPermission(self::INSIDER),
+            $this->label(320)->withPosition(4),
+            $this->label(321)->withPosition(5)->withParentId(320)->addChild($this->link(322)->withPermission(self::INSIDER)),
+        ]));
+
+        $this->assertEquals(['101'], $this->linkIds(2));
+        $this->assertEquals(['101', '300', '301', '310', '320', '321', '322'], $this->linkIds(1));
+    }
+
+    #[Test]
     public function label_whose_remaining_children_are_guest_only_is_not_sent_to_members(): void
     {
         $this->extend((new LinksOverride())->addLinks([
