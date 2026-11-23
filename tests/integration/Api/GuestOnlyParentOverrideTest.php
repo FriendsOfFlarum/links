@@ -16,6 +16,7 @@ use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
 use FoF\Links\Extend\LinksOverride;
 use FoF\Links\LinkDefinition;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 class GuestOnlyParentOverrideTest extends TestCase
@@ -101,6 +102,17 @@ class GuestOnlyParentOverrideTest extends TestCase
         );
     }
 
+    protected function extendWithParentIdChildOfGuestOnlyParent(): void
+    {
+        $this->extend(
+            (new LinksOverride())->addLinks([
+                $this->link(201)->withGuestOnly(true),
+                $this->link(202)->withParentId(201),
+                $this->link(301),
+            ])
+        );
+    }
+
     #[Test]
     public function member_does_not_receive_a_guest_only_parent_or_its_descendants(): void
     {
@@ -177,5 +189,26 @@ class GuestOnlyParentOverrideTest extends TestCase
         $this->assertSame(['201', '202', '203', '204'], $this->linkIds($data));
         $this->assertSame('201', $this->parentId($data, '203'));
         $this->assertSame('203', $this->parentId($data, '204'));
+    }
+
+    public static function parentIdChildOfGuestOnlyParentProvider(): array
+    {
+        return [
+            'guest receives the guest-only parent and its withParentId() child' => ['authenticatedAs' => null, 'expectedIds' => ['201', '202', '301']],
+            'member receives neither the guest-only parent nor its child'       => ['authenticatedAs' => 2, 'expectedIds' => ['301']],
+            'admin receives neither the guest-only parent nor its child'        => ['authenticatedAs' => 1, 'expectedIds' => ['301']],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('parentIdChildOfGuestOnlyParentProvider')]
+    public function parent_id_child_of_a_guest_only_parent_is_shown_only_to_guests(?int $authenticatedAs, array $expectedIds): void
+    {
+        $this->extendWithParentIdChildOfGuestOnlyParent();
+
+        $data = $this->fetchForum($authenticatedAs);
+
+        $this->assertSame($expectedIds, $this->linkIds($data));
+        $this->assertEqualsCanonicalizing($expectedIds, array_column($this->includedLinks($data), 'id'));
     }
 }
